@@ -73,25 +73,20 @@
                 @csrf
 
                 <!-- Email Address -->
-                <div>
-                    <x-input-label for="email" :value="__('Adresse Email')" class="font-semibold" />
+                <div class="mb-5">
                     <x-text-input id="email" class="login-input" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
                     <x-input-error :messages="$errors->get('email')" class="mt-2 text-red-500" />
                 </div>
 
                 <!-- Password -->
-                <div class="mt-4">
-                    <x-input-label for="password" :value="__('Mot de passe')" class="font-semibold" />
+                <div class="mb-5">
                     <x-text-input id="password" class="login-input" type="password" name="password" required autocomplete="current-password" />
                     <x-input-error :messages="$errors->get('password')" class="mt-2 text-red-500" />
                 </div>
 
                 <!-- Remember Me -->
                 <div class="flex items-center justify-between mt-4">
-                    <label for="remember_me" class="flex items-center">
-                        <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                        <span class="ml-2 text-sm text-gray-600">{{ __('Se souvenir de moi') }}</span>
-                    </label>
+                    
                 
                 </div>
 

@@ -14,4 +14,23 @@ class ClientController extends Controller
             'clients' => Client::all()
         ]);
     }
+
+    public function store(Request $request){
+        if ($request) {
+            $tab = [
+                'nom' => $request->nom,
+                'numero' => $request->numero,
+                'reference' =>$request->reference ? $request->reference : null,
+            ];
+
+            $insert = Client::create($tab);
+            if ($insert) {
+                return redirect()->route('client.liste')->withSuccess('Success', 'success');
+            }
+        }
+    }
+
+    public function performance(){
+        return view('pages.clients.Performance');
+    }
 }

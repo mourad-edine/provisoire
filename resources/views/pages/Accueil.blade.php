@@ -7,8 +7,8 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Tableau de Bord</h1>
-        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
-            <i class="fas fa-download fa-sm text-white-50"></i> Générer un Rapport
+        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50"></i> exporter
         </a>
     </div>
 
@@ -19,27 +19,11 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Boissons Vendues (Mois)</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">1,200</div>
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Boissons Vendues (Aujourd'hui)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{$ventejour}} cageot</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-wine-bottle fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Revenu Total (Annuel)</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">$75,000</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -51,7 +35,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Boissons Vendues (Mois)</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">1,200</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{$ventemois}} cageot</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-wine-bottle fa-2x text-gray-300"></i>
@@ -66,31 +50,32 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Revenu Total (Annuel)</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">$75,000</div>
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Revenu Total (Aujourd'hui)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{$recettejour}} Ar</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                            <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Boissons Vendues (Mois)</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">1,200</div>
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Revenu Total (Ce mois ci)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{$recettemois}}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-wine-bottle fa-2x text-gray-300"></i>
+                            <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
 
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
@@ -98,15 +83,55 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Revenu Total (Annuel)</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">$75,000</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{$recetteannee}} Ar</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                            <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a href="{{route('vente.liste')}}">
+            <div class="card  shadow h-100 py-2" style="background : rgb(22 163 74 / var(--tw-bg-opacity, 1));">
+
+                    <div class="card-body bg-blue-600">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">VENDRE</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800"></div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a href="{{route('achat.liste')}}">
+                <div class="card shadow h-100 py-2" style="--tw-bg-opacity: 1;background: rgb(37 99 235 / var(--tw-bg-opacity, 1));">
+
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">ACHETER</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800"></div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-cart-plus fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+        
     </div>
 
     <!-- Graphique des ventes -->
@@ -128,21 +153,24 @@
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered">
-                        <thead>
+                        <thead class="bg-gray-300">
                             <tr>
                                 <th>Produit</th>
                                 <th>Ventes</th>
                             </tr>
                         </thead>
                         <tbody>
+                            @forelse($meilleur as $meilleu)
                             <tr>
-                                <td>Boisson C</td>
-                                <td>300</td>
+                                <td>{{$meilleu->nom}}</td>
+                                <td>{{$meilleu->achats_count}}</td>
                             </tr>
-                            <tr>
-                                <td>Boisson D</td>
-                                <td>250</td>
+                           @empty
+                           <tr>
+                                <td class="text-primary">pas encore de vente</td>
+                                
                             </tr>
+                           @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -159,21 +187,25 @@
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered">
-                        <thead>
+                        <thead class="bg-gray-300">
                             <tr>
-                                <th>Produit</th>
-                                <th>Stock Restant</th>
+                                <th>produit</th>
+                                <th>reste</th>
                             </tr>
                         </thead>
                         <tbody>
+                            @forelse($faible as $faib)
                             <tr>
-                                <td>Boisson A</td>
-                                <td>5</td>
+                                <td>{{$faib->nom}}</td>
+                                <td>{{$faib->quantite}}</td>
                             </tr>
+                            @empty
+
                             <tr>
-                                <td>Boisson B</td>
-                                <td>2</td>
+                                <td class="text-primary">pas encore de vente</td>
                             </tr>
+                            @endforelse
+        
                         </tbody>
                     </table>
                 </div>
@@ -183,63 +215,79 @@
         <div class="col-lg-6">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Meilleures Ventes</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Statistiques journalières</h6>
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered">
-                        <thead>
+                        <thead class="thead-light">
                             <tr>
-                                <th>Produit</th>
-                                <th>Ventes</th>
+                                <th>Type d'opération</th>
+                                <th>Valeur</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Boisson C</td>
-                                <td>300</td>
+                                <td>Ventes</td>
+                                <td>{{$ventejour}}</td>
                             </tr>
                             <tr>
-                                <td>Boisson D</td>
-                                <td>250</td>
+                                <td>Achats</td>
+                                <td>{{$achatjour}}</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+
     </div>
     <div class="row">
-        <div class="col-lg-4">
-            <div class="card shadow mb-4">
+        <div class="col-lg-3">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Revenus</h6>
+                    <h6 class="m-0 font-weight-bold text-secondary">Revenus</h6>
                 </div>
                 <div class="card-body">
                     <canvas id="revenuChart"></canvas>
                 </div>
             </div>
         </div>
-        <div class="col-lg-4">
-            <div class="card shadow mb-4">
+
+        <!-- Ventes -->
+        <div class="col-lg-3">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Ventes</h6>
+                    <h6 class="m-0 font-weight-bold text-secondary">Ventes</h6>
                 </div>
                 <div class="card-body">
                     <canvas id="venteChart"></canvas>
                 </div>
             </div>
         </div>
-        <div class="col-lg-4">
-            <div class="card shadow mb-4">
+
+        <!-- Ventes par Catégorie -->
+        <div class="col-lg-3">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Ventes par Catégorie</h6>
+                    <h6 class="m-0 font-weight-bold text-secondary">Répartition des Ventes</h6>
                 </div>
                 <div class="card-body">
                     <canvas id="categorieChart"></canvas>
                 </div>
             </div>
         </div>
-        
+
+        <!-- Profits -->
+        <div class="col-lg-3">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-secondary">Profits</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="profitChart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

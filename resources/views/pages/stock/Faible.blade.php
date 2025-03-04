@@ -13,8 +13,8 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Listes catégorie</h6>
-            <button class="btn btn-primary btn-sm">Ajouter catégorie</button>
+            <h6 class="m-0 font-weight-bold text-primary">Listes articles faibles</h6>
+            <button class="btn btn-primary btn-sm">retour</button>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -23,11 +23,12 @@
                         <tr>
                         <th>id</th>
                             <th>nom</th>
-                            <th>article</th>
-                            <th>prix unitaire(PU)</th>
-                            <th>prix cageot(P.C)</th>
+                            <th>categorie</th>
+                            <th>P.U</th>
+                            <th>P.C</th>
                             <th>quantite</th>
                             <th>image</th>
+                            <th>consignation</th>
                             <th>mise à jour</th>
                             <th>date creation</th>
                             <th>options</th>
@@ -37,11 +38,12 @@
                         <tr>
                             <th>id</th>
                             <th>nom</th>
-                            <th>article</th>
-                            <th>prix unitaire(PU)</th>
-                            <th>prix cageot(P.C)</th>
+                            <th>categorie</th>
+                            <th>P.U</th>
+                            <th>P.C</th>
                             <th>quantite</th>
                             <th>image</th>
+                            <th>consignation</th>
                             <th>mise à jour</th>
                             <th>date creation</th>
                             <th>options</th>
@@ -53,12 +55,13 @@
                             <td>{{$article->id }}</td>
                             <td>{{$article->nom}}</td>
                             <td>{{$article->categorie_id}}</td>
-                            <td>{{$article->prix_unitaire}}</td>
-                            <td>{{$article->prix_conditionne}}</td>
+                            <td>{{$article->prix_unitaire}} Ar</td>
+                            <td>{{$article->prix_conditionne  ? $article->prix_conditionne :'pas de prix'}}</td>
                             <td>{{$article->quantite}}</td>
-                            <td>{{$article->prix_consignation}}</td>
-                            <td>{{$article->created_at}}</td>
-                            <td>{{$article->updated_at}}</td>
+                            <td><img src="{{asset('assets/images/bouteille.jpg')}}" alt="" width="40" height="40"></td>
+                            <td>{{$article->prix_consignation ? $article->prix_consignation :'pas de prix'}}</td>
+                            <td>{{ \Carbon\Carbon::parse($article->created_at)->format('Y-m-d') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($article->updated_at)->format('Y-m-d') }}</td>
                             <td>
                                 <!-- Icônes d'options -->
                                 <a href="#"><i class="fas fa-eye"></i></a>

@@ -14,4 +14,23 @@ class FournisseurController extends Controller
             'fournisseurs' => Fournisseur::all()
         ]);
     }
+
+    public function store(Request $request){
+        if ($request) {
+            $tab = [
+                'nom' => $request->nom,
+                'numero' => $request->numero,
+                'reference' =>$request->reference ? $request->reference : null,
+            ];
+
+            $insert = Fournisseur::create($tab);
+            if ($insert) {
+                return redirect()->route('fournisseur.liste')->withSuccess('Success', 'success');
+            }
+        }
+    }
+
+    public function performance(){
+        return view('pages.fournisseur.performance');
+    }
 }

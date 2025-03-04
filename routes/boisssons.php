@@ -15,10 +15,13 @@ Route::prefix('boissons')->group(function () {
     Route::get('/dashboard', [AccueilController::class, 'dash'])->name('page.accueil');
 
     Route::get('/categories', [CategorieController::class, 'show'])->name('categorie.liste');
+    Route::post('/categories', [CategorieController::class, 'store'])->name('categorie.store');
 
     Route::get('/articles', [ArticleController::class, 'show'])->name('article.liste');
+    Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
 
     Route::get('/ventes', [VenteController::class, 'show'])->name('vente.liste');
+    Route::post('/ventes', [VenteController::class, 'store'])->name('vente.store');
 
     Route::get('/achats', [AchatController::class, 'show'])->name('achat.liste');
     Route::post('/achats', [AchatController::class, 'store'])->name('achat.store');
@@ -28,8 +31,12 @@ Route::prefix('boissons')->group(function () {
     Route::get('/ventes', [VenteController::class, 'show'])->name('vente.liste');
 
     Route::get('/clients', [ClientController::class, 'show'])->name('client.liste');
+    Route::get('/clients-performance', [ClientController::class, 'performance'])->name('client.performance');
+    Route::post('/clients', [ClientController::class, 'store'])->name('client.store');
 
     Route::get('/fournisseurs', [FournisseurController::class, 'show'])->name('fournisseur.liste');
+    Route::get('/fournisseurs-performance', [FournisseurController::class, 'performance'])->name('fournisseur.performance');
+    Route::post('/fournisseurs', [FournisseurController::class, 'store'])->name('fournisseur.store');
 
     Route::get('/stock-categorie', [StockController::class, 'categorie'])->name('stock.categorie.liste');
     Route::get('/stock-globale', [StockController::class, 'show'])->name('stock.liste');

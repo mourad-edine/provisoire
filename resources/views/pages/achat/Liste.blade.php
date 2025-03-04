@@ -13,6 +13,11 @@
             <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#achatModal">Nouvel Achat</button>
         </div>
         <div class="card-body">
+        @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
@@ -31,9 +36,9 @@
                         <tr>
                             <td>{{$achat['id']}}</td>
                             <td>{{$achat['article']}}</td>
-                            <td>{{$achat['prix']}}</td>
-                            <td>{{$achat['numero_commande']}}</td>
-                            <td>{{$achat['quantite']}}</td>
+                            <td>{{$achat['prix']}} Ar</td>
+                            <td>C-{{$achat['numero_commande']}}</td>
+                            <td>{{$achat['quantite']}} - cageot</td>
                             <td>{{$achat['created_at']}}</td>
                             <td>
                                 <a href="#"><i class="fas fa-eye"></i></a>
@@ -119,8 +124,8 @@
                         <!-- Colonne 1 -->
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="quantite">Quantité</label>
-                                <input type="number" class="form-control" id="quantite" min="1" value="1">
+                                <label for="quantite">Quantité en cageot</label>
+                                <input type="number" class="form-control" id="quantite" min="1" value="1" max="300">
                             </div>
                         </div>
                     </div>
@@ -183,7 +188,7 @@
         // Ajout de la ligne dans le tableau d'affichage
         let newRow = `<tr>
         <td>${articleNom}</td>
-        <td>${price}</td>
+        <td>${price} Ar</td>
         <td>${quantite}</td>
         <td>${total}</td>
         <td><button type="button" class="btn btn-danger btn-sm removeArticle">X</button></td>

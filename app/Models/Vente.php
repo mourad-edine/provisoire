@@ -12,6 +12,7 @@ class Vente extends Model
         'commande_id',
         'quantite',
         'date_sortie',
+        'prix'
     ];
 
     public function article(){

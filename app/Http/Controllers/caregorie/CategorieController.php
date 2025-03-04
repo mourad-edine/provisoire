@@ -16,4 +16,21 @@ class CategorieController extends Controller
             'categories' => $Categories
         ]);
     }
+
+    public function store(Request $request){
+        //dd($request->all());
+
+        if ($request) {
+            $tab = [
+                'nom' => $request->nom,
+                'imagep' => $request->imagep ? $request->imagep : null,
+                'reference' =>$request->reference ? $request->reference : null,
+            ];
+
+            $insert = Categorie::create($tab);
+            if ($insert) {
+                return redirect()->route('categorie.liste')->withSuccess('Success', 'success');
+            }
+        }
+    }
 }

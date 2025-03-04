@@ -11,6 +11,8 @@ class Client extends Model
         'nom',
         'numero',
         'reference',
+        'created_at',
+        'updated_at'
 
     ];
 
