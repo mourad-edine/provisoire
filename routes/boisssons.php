@@ -11,7 +11,7 @@ use App\Http\Controllers\stock\StockController;
 use App\Http\Controllers\vente\VenteController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('boissons')->group(function () {
+Route::middleware('auth')->prefix('boissons')->group(function () {
     Route::get('/dashboard', [AccueilController::class, 'dash'])->name('page.accueil');
 
     Route::get('/categories', [CategorieController::class, 'show'])->name('categorie.liste');

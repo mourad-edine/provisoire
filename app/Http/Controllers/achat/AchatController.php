@@ -33,6 +33,7 @@ class AchatController extends Controller
     }
 
     public function store(Request $request){
+        //dd($request->all());
         $data = $request->validate([
             'articles' => 'required|array',
             'quantites' => 'required|array',
@@ -54,6 +55,11 @@ class AchatController extends Controller
                 'prix' => $data['prices'][$index],
                 'fournisseur_id' => $data['fournisseurs'][$index],
             ]);
+            // Mise à jour de la quantité d'article
+            $article = Article::find($article);
+            $article->quantite = $article->quantite + ($data['quantites'][$index] * (int)$article->conditionnement);
+            $article->prix_unitaire = $data['prices'][$index];
+            $article->save();
         }
     
         return redirect()->back()->with('success', 'Achats enregistrés avec succès.');

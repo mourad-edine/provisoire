@@ -27,7 +27,7 @@ class ArticleController extends Controller
         //dd($articles);
         return view('pages.article.Liste', [
             'articles' => $articles,
-            'categories' => Categorie::all()
+            'categories' => Categorie::all(),
         ]);
     }
 
@@ -41,9 +41,10 @@ class ArticleController extends Controller
                 'reference' => $request->reference ? $request->reference : null,
                 'imagep' => $request->imagep ? $request->imagep : null,
                 'prix_unitaire' => (int)$request->prix_unitaire,
+                'conditionnement' => $request->conditionnement ? $request->conditionnement : null,
                 'prix_consignation' => $request->prix_consignationn ? $request->prix_consignation : null,
                 'prix_conditionne' =>   $request->prix_conditionne ? $request->prix_conditionne : null,
-                'quantite' => (int)$request->quantite,
+                'quantite' => $request->quantite ?  (int)$request->quantite : 0,
             ];
 
             $insert = Article::create($tab);

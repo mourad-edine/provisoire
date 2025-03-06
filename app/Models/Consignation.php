@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Consignation extends Model
 {
+    public $timestamps = false;
     protected $tables = 'consignations';
     protected $fillable = [
-        'vente_achat_id',
+        'vente_id',
         'prix',
         'etat',
         'date_consignation'

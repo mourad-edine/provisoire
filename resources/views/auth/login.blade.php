@@ -74,13 +74,13 @@
 
                 <!-- Email Address -->
                 <div class="mb-5">
-                    <x-text-input id="email" class="login-input" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+                    <x-text-input id="email" class="login-input" type="email" name="email" :value="old('email')" placeholder="votre email" required autofocus autocomplete="username" />
                     <x-input-error :messages="$errors->get('email')" class="mt-2 text-red-500" />
                 </div>
 
                 <!-- Password -->
                 <div class="mb-5">
-                    <x-text-input id="password" class="login-input" type="password" name="password" required autocomplete="current-password" />
+                    <x-text-input id="password" class="login-input" type="password" name="password" placeholder="votre mot de passe" required autocomplete="current-password" />
                     <x-input-error :messages="$errors->get('password')" class="mt-2 text-red-500" />
                 </div>
 

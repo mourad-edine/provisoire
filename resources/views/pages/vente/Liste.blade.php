@@ -16,34 +16,34 @@
             <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#venteModal">Nouvelle vente</button>
         </div>
         <div class="card-body">
-        @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
+            @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
             @endif
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>id</th>
-                            <th>Désignation (article)</th>
+                            <th>Désignation</th>
                             <th>Numéro commande</th>
                             <th>Quantité</th>
                             <th>Prix unitaire (P.U)</th>
                             <th>Date vente</th>
-                            <th>Référence</th>
+                            <th>total</th>
                             <th>Options</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
                             <th>id</th>
-                            <th>Désignation (article)</th>
+                            <th>Désignation</th>
                             <th>Numéro commande</th>
                             <th>Quantité</th>
                             <th>Prix unitaire (P.U)</th>
                             <th>Date vente</th>
-                            <th>Référence</th>
+                            <th>total</th>
                             <th>Options</th>
                         </tr>
                     </tfoot>
@@ -53,10 +53,10 @@
                             <td>{{$vente['id']}}</td>
                             <td>{{$vente['article']}}</td>
                             <td>C-{{$vente['numero_commande']}}</td>
-                            <td>{{$vente['quantite']}}</td>
+                            <td>{{$vente['quantite']}} {{$vente['type_achat']}}</td>
                             <td>{{$vente['prix_unitaire']}} Ar</td>
                             <td>{{$vente['created_at']}}</td>
-                            <td>{{$vente['reference']  ? $vente['reference'] : 'pas de reference'}}</td>
+                            <td>{{$vente['reference'] ? $vente['reference'] : 'pas de reference'}}</td>
                             <td>
                                 <!-- Icônes d'options -->
                                 <a href="#"><i class="fas fa-eye"></i></a>
@@ -100,6 +100,7 @@
                             <div class="form-group">
                                 <label for="client">Clients</label>
                                 <select class="form-control select-search" id="client" name="client_id">
+                                    <option value="">--client passager--</option>
                                     @foreach($clients as $client)
                                     <option value="{{ $client->id }}">{{ $client->nom }}</option>
                                     @endforeach
@@ -121,12 +122,12 @@
                                 <label for="article">Article</label>
                                 <select class="form-control select-search" id="article">
                                     @foreach($articles as $article)
-                                    <option value="{{ $article->id }}" data-prix="{{ $article->prix_unitaire }}">{{ $article->nom }}</option>
+                                    <option value="{{ $article->id }}" data-prix="{{ $article->prix_unitaire }}" data-condi="{{ $article->conditionnement }}" data-consignation="{{ $article->prix_consignation }}">{{ $article->nom }}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
-                       <div class="col-md-6">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="dateachat">Date</label>
                                 <input type="date" class="form-control" id="datevente" value="today" disabled>
@@ -169,6 +170,12 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-12 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="non">
+                                <label class="form-check-label" for="non">non consingé</label>
+                            </div>
+                        </div>
                     </div>
 
                     <button type="button" class="btn btn-success" id="ajouterArticle">Ajouter</button>
@@ -182,6 +189,7 @@
                                 <th>Article</th>
                                 <th>Prix Unitaire</th>
                                 <th>Quantité</th>
+                                <th>état</th>
                                 <th>Total</th>
                                 <th>Action</th>
                             </tr>
@@ -232,21 +240,30 @@
             let articleId = selectedOption.value;
             let articleNom = selectedOption.text;
             let prix = selectedOption.getAttribute('data-prix');
-            let quantite = achatUnite.checked ? document.getElementById('quantiteUnite').value : document.getElementById('quantiteCageot').value;
+            let conditionnement = selectedOption.getAttribute('data-condi');
+            let prix_consignation = selectedOption.getAttribute('data-consignation');
 
+            let quantite = achatUnite.checked ? document.getElementById('quantiteUnite').value : document.getElementById('quantiteCageot').value;
+            let types = achatUnite.checked ? '1' : '0';
+            let non = document.getElementById('non');
+            let consignation = non.checked ? 'non consigné' : 'consigné';
             if (quantite <= 0) {
                 alert("Veuillez saisir une quantité valide.");
                 return;
             }
 
-            let total = prix * quantite;
+            let total = non.checked ? prix * quantite : (parseInt(prix ,10) + parseInt(prix_consignation)) * quantite ;
+            let totalconsigne = parseInt(prix, 10) + parseInt(prix_consignation, 10);
+            let totalconsignecageot =  (parseInt(prix_consignation, 10) + parseInt(prix, 10)) * conditionnement  * quantite;
+            let totalcageot = non.checked ? prix * quantite * conditionnement :  totalconsignecageot;
 
             // Ajout de la ligne dans le tableau d'affichage
             let newRow = `<tr>
                 <td>${articleNom}</td>
-                <td>${prix} Ar</td>
-                <td>${quantite}</td>
-                <td>${total}</td>
+                <td>${non.checked ? prix : totalconsigne} Ar</td>
+                 <td>${quantite} ${achatUnite.checked ? 'bouteille' : 'cageot('+conditionnement+' bouteilles)'}</td>
+                <td>${consignation} ${non.checked ? '' : prix_consignation+' Ar'}</td>
+                <td>${achatUnite.checked ? total : totalcageot} Ar</td>
                 <td><button type="button" class="btn btn-danger btn-sm removeArticle">X</button></td>
             </tr>`;
 
@@ -259,6 +276,9 @@
                 <input type="hidden" name="quantites[]" value="${quantite}">
                 <input type="hidden" name="prices[]" value="${prix}">
                 <input type="hidden" name="dateventes[]" value="${datevente}">
+                <input type="hidden" name="types[]" value="${types}">
+                <input type="hidden" name="consignations[]" value="${non.checked ? '1' : '0'}">
+
 
             `);
         });

@@ -4,7 +4,7 @@ use App\Http\Controllers\acceil\AccueilController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
+Route::middleware('guest')->get('/', function () {
     return view('auth.login');
 });
 

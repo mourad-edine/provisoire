@@ -83,7 +83,7 @@
                                 <label for="article">Article</label>
                                 <select class="form-control select-search" id="article">
                                     @foreach($articles as $article)
-                                    <option value="{{ $article->id }}" data-prix="{{ $article->prix_unitaire }}">{{ $article->nom }}</option>
+                                    <option value="{{ $article->id }}" data-prix="{{ $article->prix_unitaire }}" data-condi="{{$article->conditionnement}}">{{ $article->nom }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -94,6 +94,7 @@
                             <div class="form-group">
                                 <label for="fournisseur">Fournisseur</label>
                                 <select class="form-control select-search" id="fournisseur">
+                                    <option value="">--choisir fournisseur--</option>
                                     @foreach($fournisseurs as $fournisseur)
                                     <option value="{{ $fournisseur->id }}">{{ $fournisseur->nom }}</option>
                                     @endforeach
@@ -114,7 +115,7 @@
                         <!-- Colonne 2 -->
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="price">Prix</label>
+                                <label for="price">Nouveau prix</label>
                                 <input type="number" class="form-control" id="price" min="1">
                             </div>
                         </div>
@@ -167,18 +168,20 @@
 
         let selectedOption = articleSelect.options[articleSelect.selectedIndex];
         let selectedOptionfrns = frnsSelect.options[frnsSelect.selectedIndex];
-
+        
         let articleId = selectedOption.value;
         let articleNom = selectedOption.text;
 
         let fnrsId = selectedOptionfrns.value;
 
         let prix = selectedOption.getAttribute('data-prix');
+        let condi = selectedOption.getAttribute('data-condi');
+
         let quantite = document.getElementById('quantite').value;
         let dateachat = document.getElementById('dateachat').value;
         let price = document.getElementById('price').value;
 
-        let total = price * quantite;
+        let total = price ?  price * quantite * condi : prix * condi * quantite ;
 
         if (quantite <= 0) {
             alert("Veuillez saisir une quantité valide.");
@@ -188,9 +191,9 @@
         // Ajout de la ligne dans le tableau d'affichage
         let newRow = `<tr>
         <td>${articleNom}</td>
-        <td>${price} Ar</td>
-        <td>${quantite}</td>
-        <td>${total}</td>
+        <td>${price  ? price : prix} Ar</td>
+        <td>${quantite} cageot</td>
+        <td>${total}Ar</td>
         <td><button type="button" class="btn btn-danger btn-sm removeArticle">X</button></td>
     </tr>`;
 
@@ -202,7 +205,7 @@
         <input type="hidden" name="articles[]" value="${articleId}">
         <input type="hidden" name="quantites[]" value="${quantite}">
         <input type="hidden" name="dateachat[]" value="${dateachat}">
-        <input type="hidden" name="prices[]" value="${price}">
+        <input type="hidden" name="prices[]" value="${price ? price : prix}">
         <input type="hidden" name="fournisseurs[]" value="${fnrsId}">
     `);
     });

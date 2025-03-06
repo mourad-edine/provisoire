@@ -31,7 +31,7 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{route('dashboard')}}">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{route('page.accueil')}}">
                 <div class="sidebar-brand-icon rotate-n-15">
                 <i class="fas fa-wine-bottle fa-2x text-gray-300"></i>
                 </div>
@@ -108,7 +108,8 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">options:</h6>
                         <a class="collapse-item" href="{{route('client.liste')}}">listes clients</a>
-                        <a class="collapse-item" href="{{route('client.performance')}}">performances</a>
+                        <!-- <a class="collapse-item" href="{{route('client.performance')}}">performances</a> -->
+                        <a class="collapse-item" href="#">performances</a>
                     </div>
                 </div>
             </li>
@@ -124,7 +125,9 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">options:</h6>
                         <a class="collapse-item" href="{{route('fournisseur.liste')}}">listes fournisseurs</a>
-                        <a class="collapse-item" href="{{route('fournisseur.performance')}}">performances</a>
+                        <!-- <a class="collapse-item" href="{{route('fournisseur.performance')}}">performances</a> -->
+                        <a class="collapse-item" href="#">performances</a>
+
                     </div>
                 </div>
             </li>

@@ -92,6 +92,16 @@
                             </select>
                         </div>
                     </div>
+                    <div class="">
+                        <div class="form-group">
+                            <label for="conditionnement">conditionnement</label>
+                            <select class="form-control" id="conditionnement" name="conditionnement" >
+                                <option value="20">---selectionner--</option>
+                                <option value="20">cageot de 20</option>
+                                <option value="24">cageot de 24</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label for="prix_unitaire">Prix Unitaire</label>
                         <input type="number" class="form-control" id="prix_unitaire" name="prix_unitaire" required>
@@ -105,8 +115,8 @@
                         <input type="number" class="form-control" id="prix_conditionne" name="prix_conditionne">
                     </div>
                     <div class="form-group">
-                        <label for="quantite">Quantité</label>
-                        <input type="number" class="form-control" id="quantite" name="quantite" required>
+                        <label for="quantite">Quantité en cageot (facultatif <span style="color: red;">*</span> )</label>
+                        <input type="number" class="form-control" id="quantite" name="quantite">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>

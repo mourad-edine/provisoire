@@ -12,6 +12,7 @@ class Article extends Model
         'categorie_id',
         'nom',
         'reference',
+        'conditionnement',
         'imagep',
         'prix_unitaire',
         'prix_consignation',
