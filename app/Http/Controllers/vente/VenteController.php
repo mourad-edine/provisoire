@@ -119,5 +119,34 @@ class VenteController extends Controller
         return redirect()->back()->with('success', 'ventes enregistrés avec succès.');
     }
 
+    public function showcommande(){
+        //dd(Commande::withcount('ventes')->get()->toArray());
+        return view('pages.vente.commande' ,[
+            'commandes' => Commande::withcount('ventes')->orderby('id', 'DESC')->take(6)->get(),
+            'articles' => Article::all(),
+            'clients' => Client::all(),
+            'dernier' => Commande::latest()->first()
+        ]);
+    }
+
+    public function DetailCommande($id){
+        $ventes = Vente::with('article')->where('commande_id' , $id)->orderby('id', 'DESC')->get()->map(function ($vente) {
+            return [
+                'id' => $vente->id,
+                'article' => $vente->article ? $vente->article->nom : null,
+                'prix_unitaire' => $vente->article ? $vente->article->prix_unitaire : null,
+                'reference' => $vente->article ? $vente->article->reference : null,
+                'numero_commande' => $vente->commande_id,
+                'quantite' => $vente->quantite,
+                'type_achat' => $vente->type_achat,
+                'created_at' => Carbon::parse($vente->created_at)->format('d/m/Y H:i:s'),
+            ];
+        });
+        //dd($ventes);
+        return view('pages.vente.Detail' ,[
+            'ventes' => $ventes,
+        ]);
+    }
+
   
 }

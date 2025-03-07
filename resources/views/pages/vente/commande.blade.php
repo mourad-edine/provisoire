@@ -7,12 +7,12 @@
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">VENTE</h1>
-    <p class="mb-4">Ajouter votre vente.</p>
+    <p class="mb-4">liste par commande.</p>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Listes ventes --- <a href="{{route('commande.liste.vente')}}">Listes par commandes</a></h6>
+            <h6 class="m-0 font-weight-bold text-primary"><a href="{{route('vente.liste')}}">Listes ventes</a> --- Listes par commandes</h6>
             <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#venteModal">Nouvelle vente</button>
         </div>
         <div class="card-body">
@@ -26,32 +26,26 @@
                     <thead>
                         <tr>
                             <th>id</th>
-                            <th>Désignation</th>
-                            <th>Numéro commande</th>
-                            <th>Quantité</th>
-                            <th>Prix unitaire (P.U)</th>
-                            <th>Date vente</th>
-                            <th>total</th>
+                            <th>id client</th>
+                            <th>date commande</th>
+                            <th>nombre d'achat</th>
                             <th>Options</th>
                         </tr>
                     </thead>
-                   
+                  
                     <tbody>
-                        @forelse($ventes as $vente)
+                        @forelse($commandes as $commande)
                         <tr>
-                            <td>{{$vente['id']}}</td>
-                            <td>{{$vente['article']}}</td>
-                            <td>C-{{$vente['numero_commande']}}</td>
-                            <td>{{$vente['quantite']}} {{$vente['type_achat']}}</td>
-                            <td>{{$vente['prix_unitaire']}} Ar</td>
-                            <td>{{$vente['created_at']}}</td>
-                            <td>{{$vente['reference'] ? $vente['reference'] : 'pas de reference'}}</td>
+                            <td>C-{{$commande->id}}</td>
+                            <td>{{$commande->client_id ? $commande->client_id : 'client passager'}}</td>
+                            <td>{{$commande->created_at}}</td>
+                            <td>{{$commande->ventes_count}} </td>
                             <td>
                                 <!-- Icônes d'options -->
-                                <a href="#"><i class="fas fa-eye"></i></a>
-                                <a href="#"><i class="fas fa-edit"></i></a>
-                                <form action="#" style="display:inline;">
-                                    <button type="submit" style="background:none; border:none; color:red;"><i class="fas fa-trash-alt"></i></button>
+                                <a href="{{route('commande.liste.vente.detail', ['id' => $commande->id]) }}"><i class="fas fa-eye"></i></a>
+                                <a href="#"><i class="fas fa-print"></i></a>
+                                <form action="#" method="POST" style="display:inline;">
+                                 
                                 </form>
                             </td>
                         </tr>

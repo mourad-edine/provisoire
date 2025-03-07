@@ -18,4 +18,8 @@ class Commande extends Model
     public function achats(){
         return $this->hasMany(Achat::class , 'commande_id');
     }
+
+    public function ventes(){
+        return $this->hasMany(Vente::class , 'commande_id');
+    }
 }

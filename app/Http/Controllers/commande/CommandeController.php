@@ -10,7 +10,7 @@ class CommandeController extends Controller
 {
     public function show(){
         dd(Commande::all()->toArray());
-        return view('pages.categorie.Liste' ,[
+        return view('pages.vente.commande' ,[
             'categorie' => Commande::all()
         ]);
     }
