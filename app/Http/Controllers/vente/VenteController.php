@@ -14,8 +14,11 @@ use Illuminate\Support\Facades\Auth;
 
 class VenteController extends Controller
 {
+    //public $nombre =  10;
     public function show()
     {
+        //dd($this->nombre);
+
         $ventes = Vente::with('article')->orderby('id', 'DESC')->get()->map(function ($vente) {
             return [
                 'id' => $vente->id,
@@ -60,64 +63,71 @@ class VenteController extends Controller
         return Article::find($id);
     }
     
-    public function consignation(int $type , int $idvente , int $article){
-        if($type == '0'){
+    public function consignation(int $type , int $idvente , int $article , int $quantite){
+        $articleObj = $this->getArticle($article);
+    
+        if ($type === 0) {  // Type cageot
+            $prix_consignation = $articleObj->prix_consignation 
+                ? $articleObj->prix_consignation * $quantite * ($articleObj->conditionnement ?? 1) 
+                : 500;
+    
             Consignation::create([
                 'vente_id' => $idvente,
                 'etat' => 'non rendu',
-                'prix' => $this->getArticle($article)->prix_consignation ? $this->getArticle($article)->prix_consignation : 500,
+                'prix' => $prix_consignation,
                 'date_consignation' => now(),
                 'type_consignation' => false
             ]);
+        } elseif ($type === 1) {  // Type bouteille
+            Consignation::create([
+                'vente_id' => $idvente,
+                'etat' => 'non rendu',
+                'prix' => 700 * $quantite, // Prix fixe par bouteille
+                'date_consignation' => now(),
+                'type_consignation' => true
+            ]);
         }
     }
+    
 
     public function store(Request $request)
     {
-        //dd($request->all());
         $data = $request->validate([
             'articles' => 'required|array',
             'quantites' => 'required|array',
             'dateventes' => 'required|array',
             'prices' => 'required|array',
-            'types' => "required|array",
+            'types' => 'required|array',
             'consignations' => 'required|array',
-            
         ]);
-
+    
         $commande = Commande::create([
             'user_id' => Auth::user()->id,
             'client_id' => $request->client_id
         ]);
+    
         // Boucle pour enregistrer chaque achat
         foreach ($data['articles'] as $index => $article) {
-            if ($data['types'][$index] == '0') {
-                $tab = Vente::create([
-                    'article_id' => $article,
-                    'commande_id' => $commande->id,
-                    'quantite' => $data['quantites'][$index],
-                    'date_sortie' => $data['dateventes'][$index],
-                    'prix' => $data['prices'][$index],
-                    'type_achat' => 'cageot'
-                ]);
-                $this->updatearticle($article, 0, $data['quantites'][$index]);
-                $this->consignation($data['consignations'][$index] , $tab->id , $article);
-            } else if ($data['types'][$index] == '1') {
-                $tab = Vente::create([
-                    'article_id' => $article,
-                    'commande_id' => $commande->id,
-                    'quantite' => $data['quantites'][$index],
-                    'date_sortie' => $data['dateventes'][$index],
-                    'prix' => $data['prices'][$index],
-                    'type_achat' => 'bouteille'
-                ]);
-                $this->updatearticle($article, 1, $data['quantites'][$index]);
-                $this->consignation($data['consignations'][$index] , $tab->id , $article);
-            }
+            $type = (int) $data['types'][$index]; // Convertir en entier pour éviter les erreurs de type
+    
+            $vente = Vente::create([
+                'article_id' => $article,
+                'commande_id' => $commande->id,
+                'quantite' => $data['quantites'][$index],
+                'date_sortie' => $data['dateventes'][$index],
+                'prix' => $data['prices'][$index],
+                'type_achat' => $type === 0 ? 'cageot' : 'bouteille'
+            ]);
+    
+            $this->updatearticle($article, $type, $data['quantites'][$index]);
+    
+            // Correction : Passer $type au lieu de $data['consignations'][$index]
+            $this->consignation($type, $vente->id, $article, $data['quantites'][$index]);
         }
-
-        return redirect()->back()->with('success', 'ventes enregistrés avec succès.');
+    
+        return redirect()->back()->with('success', 'Ventes enregistrées avec succès.');
     }
+    
 
     public function showcommande(){
         //dd(Commande::withcount('ventes')->get()->toArray());

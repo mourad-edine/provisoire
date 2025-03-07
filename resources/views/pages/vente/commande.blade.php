@@ -43,7 +43,7 @@
                             <td>
                                 <!-- Icônes d'options -->
                                 <a href="{{route('commande.liste.vente.detail', ['id' => $commande->id]) }}"><i class="fas fa-eye"></i></a>
-                                <a href="#"><i class="fas fa-print"></i></a>
+                                <a href="{{route('pdf.download')}}"><i class="fas fa-print"></i></a>
                                 <form action="#" method="POST" style="display:inline;">
                                  
                                 </form>

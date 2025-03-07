@@ -14,4 +14,8 @@ class Consignation extends Model
         'etat',
         'date_consignation'
     ];
+
+    public function vente(){
+        return $this->belongsTo(Vente::class , 'vente_id');
+    }
 }

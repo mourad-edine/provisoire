@@ -70,7 +70,7 @@
 
 <!-- Modal Nouvelle vente -->
 <div class="modal fade" id="venteModal" tabindex="-1" role="dialog" aria-labelledby="venteModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="venteModalLabel">Nouvelle vente</h5>
@@ -174,7 +174,8 @@
                         <thead>
                             <tr>
                                 <th>Article</th>
-                                <th>Prix Unitaire</th>
+                                <th>P.U</th>
+                                <th>Prix consigné</th>
                                 <th>Quantité</th>
                                 <th>état</th>
                                 <th>Total</th>
@@ -185,7 +186,7 @@
                     </table>
 
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Valider</button>
+                        <p id="final" class="ml-5">0</p><span>Ar</span><button type="submit" class="btn btn-primary">Valider</button>
                     </div>
                 </form>
             </div>
@@ -211,6 +212,7 @@
                 achatCageot.checked = true;
             }
         }
+        
 
         achatUnite.addEventListener("change", toggleDisplay);
         achatCageot.addEventListener("change", function() {
@@ -239,18 +241,20 @@
                 return;
             }
 
-            let total = non.checked ? prix * quantite : (parseInt(prix ,10) + parseInt(prix_consignation)) * quantite ;
+            let total = (parseInt(prix ,10) + parseInt(prix_consignation)) * quantite ;
             let totalconsigne = parseInt(prix, 10) + parseInt(prix_consignation, 10);
             let totalconsignecageot =  (parseInt(prix_consignation, 10) + parseInt(prix, 10)) * conditionnement  * quantite;
             let totalcageot = non.checked ? prix * quantite * conditionnement :  totalconsignecageot;
-
+            let final = document.getElementById('final');
+            final.innerHTML = parseInt(final.innerHTML, 10) + total;
             // Ajout de la ligne dans le tableau d'affichage
             let newRow = `<tr>
                 <td>${articleNom}</td>
-                <td>${non.checked ? prix : totalconsigne} Ar</td>
+                <td>${prix} Ar</td>
+                <td>${totalconsigne} Ar</td>
                  <td>${quantite} ${achatUnite.checked ? 'bouteille' : 'cageot('+conditionnement+' bouteilles)'}</td>
                 <td>${consignation} ${non.checked ? '' : prix_consignation+' Ar'}</td>
-                <td>${achatUnite.checked ? total : totalcageot} Ar</td>
+                <td>${achatUnite.checked ? total : totalconsignecageot} Ar</td>
                 <td><button type="button" class="btn btn-danger btn-sm removeArticle">X</button></td>
             </tr>`;
 

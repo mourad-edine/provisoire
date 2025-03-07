@@ -7,16 +7,21 @@
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">VENTE</h1>
-    <p class="mb-4">Ajouter votre vente.</p>
+    <p class="mb-4">Details de la commande</p>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Listes ventes --- <a href="{{route('commande.liste.vente')}}">Listes par commandes</a></h6>
-            <button class="btn btn-primary btn-sm"><a class="text-white" href="{{route('commande.liste.vente')}}">retour</a></button>
+            <h6 class="m-0 font-weight-bold text-primary"><a href="{{route('vente.liste')}}">Listes ventes</a> --- <a href="{{route('commande.liste.vente')}}">Listes par commandes</a></h6>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-secondary btn-sm mr-3"> <a href="{{route('pdf.download')}}"><i class="fas fa-print text-white"></i></a>
+                    <a class="text-white" href="{{route('pdf.download')}}">facture</a></button>
+                <button class="btn btn-primary btn-sm"><a class="text-white" href="{{route('commande.liste.vente')}}">retour</a></button>
+
+            </div>
         </div>
         <div class="card-body">
-            
+
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
@@ -64,7 +69,7 @@
 </div>
 
 <script>
-    
+
 </script>
 
 @endsection

@@ -7,6 +7,7 @@ use App\Http\Controllers\caregorie\CategorieController;
 use App\Http\Controllers\client\ClientController;
 use App\Http\Controllers\commande\CommandeController;
 use App\Http\Controllers\fournisseur\FournisseurController;
+use App\Http\Controllers\PdfController;
 use App\Http\Controllers\stock\StockController;
 use App\Http\Controllers\vente\VenteController;
 use Illuminate\Support\Facades\Route;
@@ -45,4 +46,6 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
     Route::get('/stock-faible', [StockController::class, 'faible'])->name('stock.faible.liste');
     Route::get('/stock-by-id/{id}', [StockController::class, 'stockbyCategorie'])->name('stock.liste.id');
 
+
+    Route::get('/download-pdf', [PdfController::class, 'generatePDF'])->name('pdf.download');
 });

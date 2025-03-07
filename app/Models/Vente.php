@@ -22,4 +22,8 @@ class Vente extends Model
     public function commande(){
         return $this->belongsTo(Commande::class ,'commande_id');
     }
+
+    public function consignation(){
+        return $this->hasOne(Consignation::class , 'vente_id');
+    }
 }
