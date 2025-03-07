@@ -59,7 +59,7 @@
                             <td>{{$article->prix_conditionne  ? $article->prix_conditionne :'pas de prix'}}</td>
                             <td>{{$article->quantite}}</td>
                             <td><img src="{{asset('assets/images/bouteille.jpg')}}" alt="" width="40" height="40"></td>
-                            <td>{{$article->prix_consignation ? $article->prix_consignation :'pas de prix'}}</td>
+                            <td>{{$article->prix_consignation ? $article->prix_consignation . ' Ar' : 'pas de prix'}}</td>
                             <td>{{ \Carbon\Carbon::parse($article->created_at)->format('Y-m-d') }}</td>
                             <td>{{ \Carbon\Carbon::parse($article->updated_at)->format('Y-m-d') }}</td>
                             <td>

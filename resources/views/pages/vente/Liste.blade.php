@@ -27,25 +27,37 @@
                         <tr>
                             <th>id</th>
                             <th>Désignation</th>
-                            <th>Numéro commande</th>
+                            <th>commande</th>
+                            <th>consignation</th>
+                            <th>état</th>
                             <th>Quantité</th>
-                            <th>Prix unitaire (P.U)</th>
-                            <th>Date vente</th>
+                            <!-- <th>(P.U)</th> -->
+                            <th>(P.Consigné)</th>
                             <th>total</th>
+                            <th>Date vente</th>
                             <th>Options</th>
                         </tr>
                     </thead>
-                   
+
                     <tbody>
                         @forelse($ventes as $vente)
                         <tr>
                             <td>{{$vente['id']}}</td>
                             <td>{{$vente['article']}}</td>
                             <td>C-{{$vente['numero_commande']}}</td>
+                            <td>{{$vente['consignation'] ? $vente['consignation'] .'Ar' : 'non consigné'}}</td>
+                            <td>{{$vente['etat']}}</td>
                             <td>{{$vente['quantite']}} {{$vente['type_achat']}}</td>
-                            <td>{{$vente['prix_unitaire']}} Ar</td>
+                            <!-- <td>{{$vente['prix_unitaire']}} Ar</td> -->
+                            <td>{{$vente['prix_unitaire'] + $vente['prix_consignation']}} Ar</td>
+                            <td>
+                                @if($vente['type_achat'] === 'cageot')
+                                {{ ($vente['prix_unitaire'] + $vente['prix_consignation']) * $vente['quantite'] * $vente['conditionnement'] }}Ar
+                                @else
+                                {{ ($vente['prix_unitaire'] + $vente['prix_consignation']) * $vente['quantite'] }} Ar
+                                @endif
+                            </td>
                             <td>{{$vente['created_at']}}</td>
-                            <td>{{$vente['reference'] ? $vente['reference'] : 'pas de reference'}}</td>
                             <td>
                                 <!-- Icônes d'options -->
                                 <a href="#"><i class="fas fa-eye"></i></a>
@@ -212,7 +224,7 @@
                 achatCageot.checked = true;
             }
         }
-        
+
 
         achatUnite.addEventListener("change", toggleDisplay);
         achatCageot.addEventListener("change", function() {
@@ -241,10 +253,10 @@
                 return;
             }
 
-            let total = (parseInt(prix ,10) + parseInt(prix_consignation)) * quantite ;
+            let total = (parseInt(prix, 10) + parseInt(prix_consignation)) * quantite;
             let totalconsigne = parseInt(prix, 10) + parseInt(prix_consignation, 10);
-            let totalconsignecageot =  (parseInt(prix_consignation, 10) + parseInt(prix, 10)) * conditionnement  * quantite;
-            let totalcageot = non.checked ? prix * quantite * conditionnement :  totalconsignecageot;
+            let totalconsignecageot = (parseInt(prix_consignation, 10) + parseInt(prix, 10)) * conditionnement * quantite;
+            let totalcageot = non.checked ? prix * quantite * conditionnement : totalconsignecageot;
             let final = document.getElementById('final');
             final.innerHTML = parseInt(final.innerHTML, 10) + total;
             // Ajout de la ligne dans le tableau d'affichage

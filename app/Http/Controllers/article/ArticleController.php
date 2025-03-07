@@ -45,6 +45,8 @@ class ArticleController extends Controller
                 'prix_consignation' => $request->prix_consignationn ? $request->prix_consignation : null,
                 'prix_conditionne' =>   $request->prix_conditionne ? $request->prix_conditionne : null,
                 'quantite' => $request->quantite ?  (int)$request->quantite : 0,
+                'prix_vente' => $request->prix_vente ?  (int)$request->prix_vente : 0,
+
             ];
 
             $insert = Article::create($tab);

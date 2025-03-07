@@ -22,17 +22,20 @@
         </div>
         <div class="card-body">
 
-            <div class="table-responsive">
+        <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>id</th>
                             <th>Désignation</th>
-                            <th>Numéro commande</th>
+                            <th>commande</th>
+                            <th>consignation</th>
+                            <th>état</th>
                             <th>Quantité</th>
-                            <th>Prix unitaire (P.U)</th>
-                            <th>Date vente</th>
+                            <!-- <th>(P.U)</th> -->
+                            <th>(P.Consigné)</th>
                             <th>total</th>
+                            <th>Date vente</th>
                             <th>Options</th>
                         </tr>
                     </thead>
@@ -43,13 +46,22 @@
                             <td>{{$vente['id']}}</td>
                             <td>{{$vente['article']}}</td>
                             <td>C-{{$vente['numero_commande']}}</td>
+                            <td>{{$vente['consignation'] ? $vente['consignation'] : 'non consigné'}}Ar</td>
+                            <td>{{$vente['etat']}}</td>
                             <td>{{$vente['quantite']}} {{$vente['type_achat']}}</td>
-                            <td>{{$vente['prix_unitaire']}} Ar</td>
+                            <!-- <td>{{$vente['prix_unitaire']}} Ar</td> -->
+                            <td>{{$vente['prix_unitaire'] + $vente['prix_consignation']}} Ar</td>
+                            <td>
+                                @if($vente['type_achat'] === 'cageot')
+                                {{ ($vente['prix_unitaire'] + $vente['prix_consignation']) * $vente['quantite'] * $vente['conditionnement'] }}Ar
+                                @else
+                                {{ ($vente['prix_unitaire'] + $vente['prix_consignation']) * $vente['quantite'] }} Ar
+                                @endif
+                            </td>
                             <td>{{$vente['created_at']}}</td>
-                            <td>{{$vente['reference'] ? $vente['reference'] : 'pas de reference'}}</td>
                             <td>
                                 <!-- Icônes d'options -->
-                                <a href="#"><i class="fas fa-print"></i></a>
+                                <a href="{{route('pdf.download')}}"><i class="fas fa-print"></i></a>
                                 <form action="#" style="display:inline;">
                                     <button type="submit" style="background:none; border:none; color:red;"><i class="fas fa-trash-alt"></i></button>
                                 </form>
