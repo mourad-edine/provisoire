@@ -150,7 +150,7 @@
                     </table>
 
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Valider</button>
+                        <p id="final" class="ml-5">0</p><span>Ar</span><button type="submit" class="btn btn-primary">Valider</button>
                     </div>
                 </form>
             </div>

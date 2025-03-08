@@ -34,21 +34,7 @@
                             <th>options</th>
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            <th>id</th>
-                            <th>nom</th>
-                            <th>categorie</th>
-                            <th>P.U</th>
-                            <th>P.C</th>
-                            <th>quantite</th>
-                            <th>image</th>
-                            <th>consignation</th>
-                            <th>mise à jour</th>
-                            <th>date</th>
-                            <th>options</th>
-                        </tr>
-                    </tfoot>
+                 
                     <tbody>
                         @forelse($articles as $article)
                         <tr>

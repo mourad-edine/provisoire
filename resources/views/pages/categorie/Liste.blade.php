@@ -35,18 +35,7 @@
                             <th>options</th>
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            <th>id</th>
-                            <th>nom</th>
-                            <th>reference</th>
-                            <th>nombre articles</th>
-                            <th>image</th>
-                            <th>date création</th>
-                            <th>mise à jour</th>
-                            <th>options</th>
-                        </tr>
-                    </tfoot>
+
                     <tbody>
                         @forelse($categories as $categorie)
                         <tr>
@@ -75,6 +64,9 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div class="d-flex justify-content-start mt-3">
+                    {{ $categories->links('pagination::bootstrap-4') }} <!-- ou 'pagination::bootstrap-5' -->
+                </div>
             </div>
         </div>
     </div>

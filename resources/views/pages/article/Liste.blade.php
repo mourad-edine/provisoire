@@ -107,6 +107,10 @@
                         <input type="number" class="form-control" id="prix_unitaire" name="prix_unitaire" required>
                     </div>
                     <div class="form-group">
+                        <label for="prix_unitaire">Prix de vente</label>
+                        <input type="number" class="form-control" id="prix_vente" name="prix_vente" required>
+                    </div>
+                    <div class="form-group">
                         <input type="checkbox" id="checkCageot" name="checkCageot">
                         <label for="checkCageot">Ajouter un prix en cageot</label>
                     </div>

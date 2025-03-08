@@ -11,10 +11,18 @@
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Listes ventes --- <a href="{{route('commande.liste.vente')}}">Listes par commandes</a></h6>
-            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#venteModal">Nouvelle vente</button>
+        <div class="card-header py-3 d-flex justify-content-between align-items-center bg-light border-bottom shadow-sm">
+            <div class="d-flex">
+                <a href="{{route('vente.liste')}}" class="btn btn-outline-primary btn-sm font-weight-bold mr-2 px-3 shadow-sm">Listes ventes</a>
+                <a href="{{route('commande.liste.vente')}}" class="btn btn-outline-success btn-sm font-weight-bold px-3 shadow-sm">Listes par commandes</a>
+            </div>
+            <div class="d-flex">
+                
+                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#venteModal">Nouvelle vente</button>
+
+            </div>
         </div>
+
         <div class="card-body">
             @if(session('success'))
             <div class="alert alert-success">
@@ -46,25 +54,34 @@
                             <td>{{$vente['article']}}</td>
                             <td>C-{{$vente['numero_commande']}}</td>
                             <td>{{$vente['consignation'] ? $vente['consignation'] .'Ar' : 'non consigné'}}</td>
-                            <td>{{$vente['etat']}}</td>
+                            <td>
+                                {!! $vente['etat'] ? $vente['etat'] : '<p class="text-success">payé</p>' !!}
+                            </td>
                             <td>{{$vente['quantite']}} {{$vente['type_achat']}}</td>
                             <!-- <td>{{$vente['prix_unitaire']}} Ar</td> -->
-                            <td>{{$vente['prix_unitaire'] + $vente['prix_consignation']}} Ar</td>
+                            <td>{{$vente['btl'] == 0 ? $vente['prix_unitaire'] + $vente['prix_consignation'] : $vente['prix_unitaire']}} Ar</td>
                             <td>
-                                @if($vente['type_achat'] === 'cageot')
-                                {{ ($vente['prix_unitaire'] + $vente['prix_consignation']) * $vente['quantite'] * $vente['conditionnement'] }}Ar
-                                @else
-                                {{ ($vente['prix_unitaire'] + $vente['prix_consignation']) * $vente['quantite'] }} Ar
-                                @endif
+                                @php
+                                $prix_total = $vente['prix_unitaire'] * $vente['quantite'];
+
+                                if ($vente['btl'] == 0) {
+                                $prix_total += $vente['prix_consignation'] * $vente['quantite'];
+                                }
+
+                                if ($vente['type_achat'] === 'cageot') {
+                                $prix_total *= $vente['conditionnement'];
+                                }
+                                @endphp
+
+                                {{ $prix_total }} Ar
                             </td>
                             <td>{{$vente['created_at']}}</td>
                             <td>
                                 <!-- Icônes d'options -->
                                 <a href="#"><i class="fas fa-eye"></i></a>
                                 <a href="#"><i class="fas fa-edit"></i></a>
-                                <form action="#" style="display:inline;">
-                                    <button type="submit" style="background:none; border:none; color:red;"><i class="fas fa-trash-alt"></i></button>
-                                </form>
+                                <a target="_blank" href="{{ route('pdf.download', $vente['commande_id']) }}"><i class="fas fa-print text-warning"></i></a>
+
                             </td>
                         </tr>
                         @empty
@@ -109,7 +126,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="cm">Numéro commande</label>
-                                <input type="text" value="C0{{ $dernier->id + 1}}" class="form-control" id="cm" disabled>
+                                <input type="text" value="C-{{ $dernier->id + 1}}" class="form-control" id="cm" disabled>
                             </div>
                         </div>
                     </div>
@@ -169,10 +186,18 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-12 mb-3">
-                            <div class="form-check">
+                        <div class="col-md-12 mb-3 d-flex justify-content-start">
+                            <div class="form-check mr-3">
                                 <input class="form-check-input" type="checkbox" id="non">
                                 <label class="form-check-label" for="non">non consingé</label>
+                            </div>
+                            <div class="form-check mr-3">
+                                <input class="form-check-input" type="checkbox" id="avec" disabled>
+                                <label class="form-check-label" for="avec">Avec bouteille</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="cgt" disabled>
+                                <label class="form-check-label" for="cgt">avec cageot</label>
                             </div>
                         </div>
                     </div>
@@ -189,6 +214,7 @@
                                 <th>P.U</th>
                                 <th>Prix consigné</th>
                                 <th>Quantité</th>
+                                <th>BTL</th>
                                 <th>état</th>
                                 <th>Total</th>
                                 <th>Action</th>
@@ -205,13 +231,15 @@
         </div>
     </div>
 </div>
-
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const achatUnite = document.getElementById("achatUnite");
         const achatCageot = document.getElementById("achatCageot");
         const quantiteCageotContainer = document.getElementById("quantiteCageotContainer");
         const quantiteUniteContainer = document.getElementById("quantiteUniteContainer");
+        const non = document.getElementById('non');
+        const avec = document.getElementById('avec');
+        const final = document.getElementById('final'); // Assurez-vous que cet élément existe
 
         function toggleDisplay() {
             if (achatUnite.checked) {
@@ -225,12 +253,32 @@
             }
         }
 
+        if (non) {
+            non.addEventListener("change", function() {
+                if (!non.checked) {
+                    avec.checked = false; // Désactive "Avec"
+                    avec.disabled = true;
+                } else {
+                    avec.disabled = false;
+                }
+            });
+        }
 
-        achatUnite.addEventListener("change", toggleDisplay);
-        achatCageot.addEventListener("change", function() {
-            achatUnite.checked = !achatCageot.checked;
-            toggleDisplay();
-        });
+        if (avec) {
+            avec.addEventListener("change", function() {
+                if (!avec.checked && !non.checked) {
+                    avec.checked = false;
+                }
+            });
+        }
+
+        if (achatUnite) achatUnite.addEventListener("change", toggleDisplay);
+        if (achatCageot) {
+            achatCageot.addEventListener("change", function() {
+                achatUnite.checked = !achatCageot.checked;
+                toggleDisplay();
+            });
+        }
 
         document.getElementById('datevente').value = new Date().toISOString().split('T')[0];
 
@@ -238,41 +286,57 @@
             let articleSelect = document.getElementById('article');
             let datevente = document.getElementById('datevente').value;
             let selectedOption = articleSelect.options[articleSelect.selectedIndex];
-            let articleId = selectedOption.value;
-            let articleNom = selectedOption.text;
-            let prix = selectedOption.getAttribute('data-prix');
-            let conditionnement = selectedOption.getAttribute('data-condi');
-            let prix_consignation = selectedOption.getAttribute('data-consignation');
 
-            let quantite = achatUnite.checked ? document.getElementById('quantiteUnite').value : document.getElementById('quantiteCageot').value;
+            if (!selectedOption) {
+                alert("Veuillez sélectionner un article.");
+                return;
+            }
+
+            let articleId = selectedOption.value || "";
+            let articleNom = selectedOption.text || "";
+            let prix = parseInt(selectedOption.getAttribute('data-prix'), 10) || 0;
+            let conditionnement = parseInt(selectedOption.getAttribute('data-condi'), 10) || 1;
+            let prix_consignation = parseInt(selectedOption.getAttribute('data-consignation'), 10) || 0;
+
+            let quantite = achatUnite.checked 
+                ? parseInt(document.getElementById('quantiteUnite').value, 10) || 0
+                : parseInt(document.getElementById('quantiteCageot').value, 10) || 0;
             let types = achatUnite.checked ? '1' : '0';
-            let non = document.getElementById('non');
             let consignation = non.checked ? 'non consigné' : 'consigné';
+
             if (quantite <= 0) {
                 alert("Veuillez saisir une quantité valide.");
                 return;
             }
 
-            let total = (parseInt(prix, 10) + parseInt(prix_consignation)) * quantite;
-            let totalconsigne = parseInt(prix, 10) + parseInt(prix_consignation, 10);
-            let totalconsignecageot = (parseInt(prix_consignation, 10) + parseInt(prix, 10)) * conditionnement * quantite;
-            let totalcageot = non.checked ? prix * quantite * conditionnement : totalconsignecageot;
-            let final = document.getElementById('final');
-            final.innerHTML = parseInt(final.innerHTML, 10) + total;
-            // Ajout de la ligne dans le tableau d'affichage
-            let newRow = `<tr>
+            let total = avec.checked 
+                ? prix * quantite 
+                : (prix + prix_consignation) * quantite;
+
+            let totalconsignecageot = avec.checked
+                ? prix * conditionnement * quantite
+                : (prix_consignation + prix) * conditionnement * quantite;
+
+            let totalcageot = non.checked
+                ? prix * quantite * conditionnement
+                : totalconsignecageot;
+
+            let totalActuel = parseInt(final.innerHTML, 10) || 0;
+            final.innerHTML = totalActuel + (achatUnite.checked ? total : totalcageot);
+
+            let newRow = `<tr data-total="${achatUnite.checked ? total : totalcageot}">
                 <td>${articleNom}</td>
                 <td>${prix} Ar</td>
-                <td>${totalconsigne} Ar</td>
-                 <td>${quantite} ${achatUnite.checked ? 'bouteille' : 'cageot('+conditionnement+' bouteilles)'}</td>
-                <td>${consignation} ${non.checked ? '' : prix_consignation+' Ar'}</td>
+                <td>${prix + prix_consignation} Ar</td>
+                <td>${quantite} ${achatUnite.checked ? 'bouteille' : 'cageot (' + conditionnement + ' bouteilles)'}</td>
+                <td>${avec.checked ? 'oui' : 'non'}</td>
+                <td>${consignation} ${non.checked ? '' : prix_consignation + ' Ar/BTL'}</td>
                 <td>${achatUnite.checked ? total : totalconsignecageot} Ar</td>
                 <td><button type="button" class="btn btn-danger btn-sm removeArticle">X</button></td>
             </tr>`;
 
             document.getElementById('articlesTable').insertAdjacentHTML('beforeend', newRow);
 
-            // Ajout des inputs cachés dans le formulaire pour l'envoi en POST
             let hiddenInputs = document.getElementById('hiddenInputs');
             hiddenInputs.insertAdjacentHTML('beforeend', `
                 <input type="hidden" name="articles[]" value="${articleId}">
@@ -281,24 +345,30 @@
                 <input type="hidden" name="dateventes[]" value="${datevente}">
                 <input type="hidden" name="types[]" value="${types}">
                 <input type="hidden" name="consignations[]" value="${non.checked ? '1' : '0'}">
-
-
+                <input type="hidden" name="bouteilles[]" value="${avec.checked ? '1' : '0'}">
             `);
         });
 
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('removeArticle')) {
                 let row = e.target.closest('tr');
+                let totalRow = parseInt(row.getAttribute('data-total'), 10) || 0;
+
                 row.remove();
 
-                // Supprimer les inputs cachés correspondants
+                let totalActuel = parseInt(final.innerHTML, 10) || 0;
+                final.innerHTML = totalActuel - totalRow;
+
                 let hiddenInputs = document.getElementById('hiddenInputs').children;
-                for (let i = 0; i < 3; i++) {
-                    hiddenInputs[hiddenInputs.length - 1].remove(); // Supprime les inputs un par un
+                if (hiddenInputs.length >= 7) {
+                    for (let i = 0; i < 7; i++) {
+                        hiddenInputs[hiddenInputs.length - 1].remove();
+                    }
                 }
             }
         });
     });
 </script>
+
 
 @endsection

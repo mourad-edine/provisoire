@@ -47,5 +47,5 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
     Route::get('/stock-by-id/{id}', [StockController::class, 'stockbyCategorie'])->name('stock.liste.id');
 
 
-    Route::get('/download-pdf', [PdfController::class, 'generatePDF'])->name('pdf.download');
+    Route::get('/download-pdf/{id}', [PdfController::class, 'generatePDF'])->name('pdf.download');
 });

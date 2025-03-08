@@ -32,6 +32,9 @@ class VenteController extends Controller
                 'created_at' => Carbon::parse($vente->created_at)->format('d/m/Y H:i:s'),
                 'prix_consignation' => $vente->article ? $vente->article->prix_consignation : null,
                 'conditionnement' => $vente->article ? $vente->article->conditionnement : null,
+                'btl' => $vente->btl,
+                'cgt' => $vente->cgt,
+                'commande_id' => $vente->commande_id
 
             ];
         });
@@ -106,6 +109,7 @@ class VenteController extends Controller
             'prices' => 'required|array',
             'types' => 'required|array',
             'consignations' => 'required|array',
+            'bouteilles' => 'required|array',
         ]);
 
         $commande = Commande::create([
@@ -116,14 +120,16 @@ class VenteController extends Controller
         // Boucle pour enregistrer chaque achat
         foreach ($data['articles'] as $index => $article) {
             $type = (int) $data['types'][$index]; // Convertir en entier pour éviter les erreurs de type
-
+            $bouteilles = (int) $data['bouteilles'][$index]; // Convertir en entier pour éviter les erreurs de type
             $vente = Vente::create([
                 'article_id' => $article,
                 'commande_id' => $commande->id,
                 'quantite' => $data['quantites'][$index],
                 'date_sortie' => $data['dateventes'][$index],
                 'prix' => $data['prices'][$index],
-                'type_achat' => $type === 0 ? 'cageot' : 'bouteille'
+                'type_achat' => $type === 0 ? 'cageot' : 'bouteille',
+                'btl' => $bouteilles
+                
             ]);
 
             $this->updatearticle($article, $type, $data['quantites'][$index]);
@@ -175,6 +181,7 @@ class VenteController extends Controller
         //dd($ventes);
         return view('pages.vente.Detail', [
             'ventes' => $ventes,
+            'commande_id' => $id
         ]);
     }
 }

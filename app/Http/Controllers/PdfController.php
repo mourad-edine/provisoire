@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Vente;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PdfController extends Controller
@@ -10,35 +12,61 @@ class PdfController extends Controller
 
 
 
-    public function generatePDF()
+    public function generatePDF($id)
     {
-        $data = [
-            'invoice_number' => 'FACT-20240307',
+        $ventes = Vente::with('article', 'consignation')->where('commande_id', $id)->orderby('id', 'DESC')->get()->map(function ($vente) {
+            return [
+                'id' => $vente->id,
+                'article' => $vente->article ? $vente->article->nom : null,
+                'prix_unitaire' => $vente->article ? $vente->article->prix_unitaire : null,
+                'reference' => $vente->article ? $vente->article->reference : null,
+                'numero_commande' => $vente->commande_id,
+                'consignation' => $vente->consignation ? $vente->consignation->prix : null,
+                'etat' => $vente->consignation ? $vente->consignation->etat : null,
+                'quantite' => $vente->quantite,
+                'type_achat' => $vente->type_achat,
+                'created_at' => Carbon::parse($vente->created_at)->format('d/m/Y H:i:s'),
+                'prix_consignation' => $vente->article ? $vente->article->prix_consignation : 0,
+                'conditionnement' => $vente->article ? $vente->article->conditionnement : 1,
+            ];
+        });
+        
+        // Création des items pour la facture
+        $items = $ventes->map(function ($vente) {
+            $total = ($vente['prix_unitaire'] + $vente['prix_consignation']) * $vente['quantite'];
+            if ($vente['type_achat'] === 'cageot') {
+                $total *= $vente['conditionnement'];
+            }
+        
+            return [
+                'description' => $vente['article'],
+                'quantity' => $vente['quantite'],
+                'type_achat' => $vente['type_achat'],
+                'unit_price' => $vente['prix_unitaire'] + $vente['prix_consignation'],
+                'total' => $total
+            ];
+        })->toArray();
+        
+        // Création des données de la facture
+        $numero_facture = 'FAC-' . date('Ymd') . '-' . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
+
+        $vente = [
+            'invoice_number' => $numero_facture,
             'date' => date('d/m/Y'),
-            'company_name' => 'Boisson Express',
-            'company_address' => '123 Rue des Rafraîchissements, Antananarivo',
-            'company_phone' => '+261 34 12 345 67',
-            'company_email' => 'contact@boissonexpress.mg',
-            'client_name' => 'Rakoto Andrianina',
-            'client_address' => 'Lot II B 67, Antsirabe',
-            'client_phone' => '+261 33 45 678 90',
-            'client_email' => 'rakoto.andrianina@email.com',
-            'items' => [
-                ['description' => 'Coca-Cola 1L', 'quantity' => 2, 'unit_price' => 5000],
-                ['description' => 'Eau Vive 1.5L', 'quantity' => 3, 'unit_price' => 2000],
-                ['description' => 'Jus de Mangue 500ml', 'quantity' => 1, 'unit_price' => 7000],
-                ['description' => 'Boisson Energétique XXL 250ml', 'quantity' => 5, 'unit_price' => 4500],
-                ['description' => 'Café en bouteille 330ml', 'quantity' => 2, 'unit_price' => 8000],
-            ]
+            'company_name' => 'Reflet Boisson',
+            'company_address' => 'Mangarano || parcelle 11/47',
+            'company_phone' => '0349219223',
+            'company_email' => 'chamsedinemaulice@reflet.mg',
+            'client_name' => 'client passager',
+            'client_address' => "----pas d 'adresse----",
+            'client_phone' => "---pas de téléphone---",
+            'client_email' => "---pas d'email---",
+            'items' => $items,
+            'total' => array_sum(array_column($items, 'total')),
         ];
-
-        // Calcul du total en Ariary (MGA)
-        $data['total'] = array_reduce($data['items'], function ($sum, $item) {
-            return $sum + ($item['quantity'] * $item['unit_price']);
-        }, 0);
-
-        $pdf = Pdf::loadView('facture', $data);
-
-        return $pdf->stream('facture.pdf'); // Affiche la facture dans le navigateur
+        
+        $pdf = Pdf::loadView('facture', $vente);
+        return $pdf->stream('facture.pdf');
+         // Affiche la facture dans le navigateur
     }
 }

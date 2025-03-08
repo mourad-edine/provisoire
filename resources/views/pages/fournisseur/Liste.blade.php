@@ -35,17 +35,7 @@
 
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            <th>id</th>
-                            <th>nom</th>
-                            <th>numero</th>
-                            <th>reference</th>
-                            <th>date creation</th>
-                            <th>options</th>
 
-                        </tr>
-                    </tfoot>
                     <tbody>
                         @forelse($fournisseurs as $fournisseur)
 

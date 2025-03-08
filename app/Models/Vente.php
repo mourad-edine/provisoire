@@ -13,7 +13,9 @@ class Vente extends Model
         'quantite',
         'date_sortie',
         'prix',
-        'type_achat'
+        'type_achat',
+        'btl',
+        'cgt'
     ];
 
     public function article(){
