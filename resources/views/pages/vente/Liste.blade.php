@@ -37,10 +37,11 @@
                             <th>Désignation</th>
                             <th>commande</th>
                             <th>consignation</th>
+                            <th>état BTL</th>
                             <th>état</th>
                             <th>Quantité</th>
                             <!-- <th>(P.U)</th> -->
-                            <th>(P.Consigné)</th>
+                            <th>(Prix)</th>
                             <th>total</th>
                             <th>Date vente</th>
                             <th>Options</th>
@@ -55,7 +56,10 @@
                             <td>C-{{$vente['numero_commande']}}</td>
                             <td>{{$vente['consignation'] ? $vente['consignation'] .'Ar' : 'non consigné'}}</td>
                             <td>
-                                {!! $vente['etat'] ? $vente['etat'] : '<p class="text-success">payé</p>' !!}
+                                {{$vente['etat'] ? $vente['etat'] : 'non consigné'}}
+                            </td>
+                            <td>
+                                <p class="text-success">payé</p>
                             </td>
                             <td>{{$vente['quantite']}} {{$vente['type_achat']}}</td>
                             <!-- <td>{{$vente['prix_unitaire']}} Ar</td> -->
@@ -91,6 +95,9 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div class="d-flex justify-content-start mt-3">
+    {{ $ventes->links('pagination::bootstrap-4') }} <!-- ou 'pagination::bootstrap-5' -->
+</div>
             </div>
         </div>
     </div>

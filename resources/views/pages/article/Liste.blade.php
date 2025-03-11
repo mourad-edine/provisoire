@@ -59,6 +59,9 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div class="d-flex justify-content-start mt-3">
+                    {{ $articles->links('pagination::bootstrap-4') }} <!-- Ou 'pagination::bootstrap-5' -->
+                </div>
             </div>
         </div>
     </div>

@@ -17,35 +17,37 @@ class VenteController extends Controller
     //public $nombre =  10;
     public function show()
     {
-        //dd(Vente::with('consignation')->get()->toArray());
-        $ventes = Vente::with('article', 'consignation')->orderby('id', 'DESC')->get()->map(function ($vente) {
-            return [
-                'id' => $vente->id,
-                'article' => $vente->article ? $vente->article->nom : null,
-                'prix_unitaire' => $vente->article ? $vente->article->prix_unitaire : null,
-                'reference' => $vente->article ? $vente->article->reference : null,
-                'numero_commande' => $vente->commande_id,
-                'consignation' => $vente->consignation ? $vente->consignation->prix : null,
-                'etat' => $vente->consignation ? $vente->consignation->etat : null,
-                'quantite' => $vente->quantite,
-                'type_achat' => $vente->type_achat,
-                'created_at' => Carbon::parse($vente->created_at)->format('d/m/Y H:i:s'),
-                'prix_consignation' => $vente->article ? $vente->article->prix_consignation : null,
-                'conditionnement' => $vente->article ? $vente->article->conditionnement : null,
-                'btl' => $vente->btl,
-                'cgt' => $vente->cgt,
-                'commande_id' => $vente->commande_id
+        $ventes = Vente::with(['article', 'consignation'])
+        ->orderBy('id', 'DESC')
+        ->paginate(6); // La pagination doit être ici
 
-            ];
-        });
+    // Transformer chaque vente après la pagination
+    $ventes->getCollection()->transform(function ($vente) {
+        return [
+            'id' => $vente->id,
+            'article' => $vente->article ? $vente->article->nom : null,
+            'prix_unitaire' => $vente->article ? $vente->article->prix_unitaire : null,
+            'reference' => $vente->article ? $vente->article->reference : null,
+            'numero_commande' => $vente->commande_id,
+            'consignation' => $vente->consignation ? $vente->consignation->prix : null,
+            'etat' => $vente->consignation ? $vente->consignation->etat : null,
+            'quantite' => $vente->quantite,
+            'type_achat' => $vente->type_achat,
+            'created_at' => Carbon::parse($vente->created_at)->format('d/m/Y H:i:s'),
+            'prix_consignation' => $vente->article ? $vente->article->prix_consignation : null,
+            'conditionnement' => $vente->article ? $vente->article->conditionnement : null,
+            'btl' => $vente->btl,
+            'cgt' => $vente->cgt,
+            'commande_id' => $vente->commande_id
+        ];
+    });
 
-        //dd($ventes);
-        return view('pages.vente.Liste', [
-            'ventes' => $ventes->take(6),
-            'articles' => Article::all(),
-            'clients' => Client::all(),
-            'dernier' => Commande::latest()->first()
-        ]);
+    return view('pages.vente.Liste', [
+        'ventes' => $ventes,
+        'articles' => Article::all(),
+        'clients' => Client::all(),
+        'dernier' => Commande::latest()->first()
+    ]);
     }
 
 
@@ -151,8 +153,7 @@ class VenteController extends Controller
             'commandes' => Commande::withCount('ventes')
                 ->having('ventes_count', '>', 0)
                 ->orderBy('id', 'DESC')
-                ->take(6)
-                ->get(),
+                ->paginate(6),
             'articles' => Article::all(),
             'clients' => Client::all(),
             'dernier' => Commande::latest()->first()

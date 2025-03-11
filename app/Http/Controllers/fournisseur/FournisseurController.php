@@ -11,7 +11,7 @@ class FournisseurController extends Controller
     public function show(){
         //dd(Fournisseur::all());
         return view('pages.fournisseur.Liste' ,[
-            'fournisseurs' => Fournisseur::all()
+            'fournisseurs' => Fournisseur::paginate(6)
         ]);
     }
 

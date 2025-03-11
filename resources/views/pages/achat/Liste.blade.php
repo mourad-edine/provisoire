@@ -57,6 +57,9 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div class="d-flex justify-content-start mt-3">
+                    {{ $achats->links('pagination::bootstrap-4') }} <!-- Ou 'pagination::bootstrap-5' -->
+                </div>
             </div>
         </div>
     </div>
@@ -150,7 +153,7 @@
                     </table>
 
                     <div class="modal-footer">
-                        <p id="final" class="ml-5">0</p><span>Ar</span><button type="submit" class="btn btn-primary">Valider</button>
+                        <button type="submit" class="btn btn-primary">Valider</button>
                     </div>
                 </form>
             </div>

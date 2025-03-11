@@ -63,6 +63,9 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div class="d-flex justify-start-center mt-3">
+    {{ $commandes->links('pagination::bootstrap-4') }} <!-- ou 'pagination::bootstrap-5' -->
+</div>
             </div>
         </div>
     </div>

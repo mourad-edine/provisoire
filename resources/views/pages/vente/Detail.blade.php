@@ -11,24 +11,17 @@
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center bg-light border-bottom shadow-sm">
-            <div class="d-flex">
-                <a href="{{route('vente.liste')}}" class="btn btn-outline-primary btn-sm font-weight-bold mr-2 px-3 shadow-sm">Listes ventes</a>
-                <a href="{{route('commande.liste.vente')}}" class="btn btn-outline-success btn-sm font-weight-bold px-3 shadow-sm">Listes par commandes</a>
-            </div>
-            <div class="d-flex">
-                <a href="{{route('pdf.download',['id' => $commande_id])}}" class="btn btn-secondary btn-sm rounded shadow-sm d-flex align-items-center mr-3">
-                    <i class="fas fa-print text-white mr-2"></i> Facture
-                </a>
-                <a href="{{route('commande.liste.vente')}}" class="btn btn-primary btn-sm rounded shadow-sm d-flex align-items-center">
-                    Retour
-                </a>
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary"><a href="{{route('vente.liste')}}">Listes ventes</a> --- <a href="{{route('commande.liste.vente')}}">Listes par commandes</a></h6>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-secondary btn-sm mr-3"> <a class="text-white" href="{{route('pdf.download',['id' => $commande_id])}}"><i class="fas fa-print text-white mr-2"></i>facture</a></button>
+                <button class="btn btn-primary btn-sm"><a class="text-white" href="{{route('commande.liste.vente')}}">retour</a></button>
+
             </div>
         </div>
-
         <div class="card-body">
 
-            <div class="table-responsive">
+        <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
@@ -68,7 +61,7 @@
                             <td>
                                 <!-- Icônes d'options -->
                                 <a href="{{route('pdf.download' , ['id'=>$commande_id])}}"><i class="fas fa-print text-warning"></i></a>
-
+                               
                             </td>
                         </tr>
                         @empty

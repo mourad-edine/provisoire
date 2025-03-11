@@ -11,7 +11,7 @@ class ClientController extends Controller
     public function show(){
         //dd(Client::all()->toArray());
         return view('pages.clients.Liste' ,[
-            'clients' => Client::all()
+            'clients' => Client::paginate(6)
         ]);
     }
 

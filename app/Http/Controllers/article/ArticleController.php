@@ -12,23 +12,27 @@ class ArticleController extends Controller
 {
     public function show()
     {
-        $articles = Article::with('categorie')->get()->map(function ($article) {
-            return [
-                'id' => $article->id,
-                'nom' => $article->nom,
-                'categorie' => $article->categorie ? $article->categorie->nom : null,
-                'prix_unitaire' => $article->prix_unitaire,
-                'prix_conditionne' => $article->prix_conditionne,
-                'quantite' => $article->quantite,
-                'created_at' => Carbon::parse($article->created_at)->format('d/m/Y H:i:s'),
-            ];
-        });
+        $articles = Article::with('categorie')
+    ->orderBy('id', 'DESC') // Facultatif : Tri par ID descendant
+    ->paginate(6);
 
-        //dd($articles);
-        return view('pages.article.Liste', [
-            'articles' => $articles,
-            'categories' => Categorie::all(),
-        ]);
+$articles->getCollection()->transform(function ($article) {
+    return [
+        'id' => $article->id,
+        'nom' => $article->nom,
+        'categorie' => $article->categorie ? $article->categorie->nom : null,
+        'prix_unitaire' => $article->prix_unitaire,
+        'prix_conditionne' => $article->prix_conditionne,
+        'quantite' => $article->quantite,
+        'created_at' => Carbon::parse($article->created_at)->format('d/m/Y H:i:s'),
+    ];
+});
+
+return view('pages.article.Liste', [
+    'articles' => $articles,
+    'categories' => Categorie::all(),
+]);
+
     }
 
     public function store(Request $request)

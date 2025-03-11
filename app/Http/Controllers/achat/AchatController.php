@@ -15,21 +15,27 @@ class AchatController extends Controller
 {
     public function show(){
         //dd(Auth::user()->id);
-        $achats = Achat::with('articles')->orderby('id' , 'DESC')->get()->map(function ($achat) {
-            return [
-                'id' => $achat->id,
-                'prix' => $achat->prix,
-                'article' => $achat->articles ? $achat->articles->nom : null,
-                'numero_commande' => $achat->commande_id,
-                'quantite' => $achat->quantite,
-                'created_at' => Carbon::parse($achat->created_at)->format('d/m/Y H:i:s'),
-            ];
-        });
-        return view('pages.achat.Liste' ,[
-            'achats' => $achats->take(6),
-            'articles' => Article::all(),
-            'fournisseurs' => Fournisseur::all()
-        ]);
+        $achats = Achat::with('articles')
+    ->orderBy('id', 'DESC')
+    ->paginate(6);
+
+$achats->getCollection()->transform(function ($achat) {
+    return [
+        'id' => $achat->id,
+        'prix' => $achat->prix,
+        'article' => $achat->articles ? $achat->articles->nom : null,
+        'numero_commande' => $achat->commande_id,
+        'quantite' => $achat->quantite,
+        'created_at' => Carbon::parse($achat->created_at)->format('d/m/Y H:i:s'),
+    ];
+});
+
+return view('pages.achat.Liste', [
+    'achats' => $achats,
+    'articles' => Article::all(),
+    'fournisseurs' => Fournisseur::all(),
+]);
+
     }
 
     public function store(Request $request){

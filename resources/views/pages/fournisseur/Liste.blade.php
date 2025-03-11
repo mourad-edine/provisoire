@@ -69,6 +69,9 @@
 
                     </tbody>
                 </table>
+                <div class="d-flex justify-content-start mt-3">
+    {{ $fournisseurs->links('pagination::bootstrap-4') }} <!-- Ou 'pagination::bootstrap-5' -->
+</div>
             </div>
         </div>
     </div>

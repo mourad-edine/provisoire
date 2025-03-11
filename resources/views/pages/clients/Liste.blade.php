@@ -35,17 +35,7 @@
 
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            <th>id</th>
-                            <th>nom</th>
-                            <th>numero</th>
-                            <th>reference</th>
-                            <th>date creation</th>
-                            <th>options</th>
 
-                        </tr>
-                    </tfoot>
                     <tbody>
                         @forelse($clients as $client)
 
@@ -79,6 +69,9 @@
 
                     </tbody>
                 </table>
+                <div class="d-flex justify-content-start mt-3">
+                    {{ $clients->links('pagination::bootstrap-4') }} <!-- Ou 'pagination::bootstrap-5' -->
+                </div>
             </div>
         </div>
     </div>
