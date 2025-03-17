@@ -259,7 +259,7 @@
                             <td>{{ optional($conditionnement->conditionnement)->created_at  ?? 'non conditionné' }}</td>
                             <td>
                                 <!-- Icônes d'options -->
-                                <a href="{{route('pdf.download' , ['id'=>$commande_id])}}"><i class="fas fa-edit text-warning"></i></a>
+                                <a href="#"><i class="fas fa-edit text-warning"></i></a>
 
                             </td>
                         </tr>

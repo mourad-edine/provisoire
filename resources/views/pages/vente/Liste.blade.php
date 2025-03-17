@@ -135,8 +135,8 @@
                             <td>{{ \Carbon\Carbon::createFromTimestamp($vente['created_at'])->format('d-m-Y') }}</td>
                             <td>
                                 <!-- Icônes d'options -->
-                                <a href="#"><i class="fas fa-eye text-secondary"></i></a>
-                                <a href="#" data-toggle="modal" data-target="#venteModal2{{$vente['id']}}"><i class="fas fa-edit text-warning"></i></a>
+                                <a href="{{route('commande.liste.vente.detail' ,['id' => $vente['numero_commande']] )}}"><i class="fas fa-eye text-secondary"></i></a>
+                                <a class="ml-3" href="#" data-toggle="modal" data-target="#venteModal2{{$vente['id']}}"><i class="fas fa-edit text-warning"></i></a>
 
                             </td>
                         </tr>
