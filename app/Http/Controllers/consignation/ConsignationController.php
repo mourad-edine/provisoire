@@ -14,4 +14,8 @@ class ConsignationController extends Controller
             'categorie' => Consignation::all()
         ]);
     }
+
+    public function payer(Request $request){
+        dd($request->all());
+    }
 }

@@ -17,8 +17,9 @@
                 <a href="{{route('commande.liste.vente')}}" class="btn btn-outline-success btn-sm font-weight-bold px-3 shadow-sm">Listes par commandes</a>
             </div>
             <div class="d-flex">
-                
-                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#venteModal">Nouvelle vente</button>
+
+                <!-- <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#venteModal2">Nouvelle vente</button> -->
+                <button class="btn btn-primary btn-sm"><a class="text-white text-decoration-none" href="{{route('vente.page')}}">Nouvelle vente</a></button>
 
             </div>
         </div>
@@ -34,10 +35,11 @@
                     <thead>
                         <tr>
                             <th>id</th>
-                            <th>Désignation</th>
+                            <th>Art.</th>
                             <th>commande</th>
-                            <th>consignation</th>
+                            <th>consi(CGT/BTL)</th>
                             <th>état BTL</th>
+                            <th>état CGT</th>
                             <th>état</th>
                             <th>Quantité</th>
                             <!-- <th>(P.U)</th> -->
@@ -54,9 +56,26 @@
                             <td>{{$vente['id']}}</td>
                             <td>{{$vente['article']}}</td>
                             <td>C-{{$vente['numero_commande']}}</td>
-                            <td>{{$vente['consignation'] ? $vente['consignation'] .'Ar' : 'non consigné'}}</td>
                             <td>
-                                {{$vente['etat'] ? $vente['etat'] : 'non consigné'}}
+                                @if($vente['consignation'] && $vente['prix_cgt'])
+                                {{$vente['consignation'] + $vente['prix_cgt']}} Ar
+                                @elseif($vente['consignation'])
+                                {{$vente['consignation']}} Ar
+                                @elseif($vente['prix_cgt'])
+                                {{$vente['prix_cgt']}} Ar
+                                @else
+                                non consi°
+                                @endif
+                            </td>
+                            <td>
+                                <span class="{{ $vente['etat'] == 'non rendu' ? 'text-danger' : '' }}">
+                                    {{ $vente['etat'] ?? 'non consi°' }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="{{ $vente['etat_cgt'] == 'non rendu' ? 'text-danger' : '' }}">
+                                    {{ $vente['etat_cgt'] ?? 'non consi°' }}
+                                </span>
                             </td>
                             <td>
                                 <p class="text-success">payé</p>
@@ -64,30 +83,149 @@
                             <td>{{$vente['quantite']}} {{$vente['type_achat']}}</td>
                             <!-- <td>{{$vente['prix_unitaire']}} Ar</td> -->
                             <td>{{$vente['btl'] == 0 ? $vente['prix_unitaire'] + $vente['prix_consignation'] : $vente['prix_unitaire']}} Ar</td>
-                            <td>
+                            <!-- <td>
                                 @php
-                                $prix_total = $vente['prix_unitaire'] * $vente['quantite'];
-
-                                if ($vente['btl'] == 0) {
-                                $prix_total += $vente['prix_consignation'] * $vente['quantite'];
-                                }
-
-                                if ($vente['type_achat'] === 'cageot') {
-                                $prix_total *= $vente['conditionnement'];
+                                if($vente['type_achat'] == 'bouteille'){
+                                    $prix_total = $vente['prix_unitaire'] * $vente['quantite'];
+                                    if($vente['cgt'] == 0 && $vente['btl'] == 0){
+                                        $prix_total += $vente['consignation'] + $vente['prix_cgt'];
+                                    }else if($vente['cgt'] == 1 && $vente['btl'] == 0){
+                                        $prix_total += $vente['consignation'];
+                                    }else if($vente['cgt']== 0 && $vente['btl'] == 1){
+                                        $prix_total += $vente['prix_cgt'];
+                                    }else{
+                                        $prix_total += 0;
+                                    }
+                                }else if ($vente['type_achat'] === 'cageot') {
+                                    $prix_total = $vente['prix_unitaire'] * $vente['quantite'] * $vente['conditionnement'];
+                                    if($vente['cgt'] == 0 && $vente['btl'] == 0){
+                                        $prix_total += $vente['consignation'] + $vente['prix_cgt'];
+                                    }else if($vente['cgt'] == 1 && $vente['btl'] == 0){
+                                        $prix_total += $vente['consignation'];
+                                    }else if($vente['cgt']== 0 && $vente['btl'] == 1){
+                                        $prix_total += $vente['prix_cgt'];
+                                    }else{
+                                        $prix_total += 0;
+                                    }
                                 }
                                 @endphp
 
                                 {{ $prix_total }} Ar
+                            </td> -->
+                            <td>
+                                @php
+                                $prix_total = $vente['prix_unitaire'] * $vente['quantite'];
+
+                                if ($vente['type_achat'] === 'cageot') {
+                                $prix_total *= $vente['conditionnement'];
+                                }
+
+                                // Gestion des frais supplémentaires en fonction de cgt et btl
+                                $prix_total += match (true) {
+                                $vente['cgt'] == 0 && $vente['btl'] == 0 => $vente['consignation'] + $vente['prix_cgt'],
+                                $vente['cgt'] == 1 && $vente['btl'] == 0 => $vente['consignation'],
+                                $vente['cgt'] == 0 && $vente['btl'] == 1 => $vente['prix_cgt'],
+                                default => 0,
+                                };
+                                @endphp
+
+                                {{ number_format($prix_total, 0, ',', ' ') }} Ar
                             </td>
-                            <td>{{$vente['created_at']}}</td>
+
+                            <td>{{ \Carbon\Carbon::createFromTimestamp($vente['created_at'])->format('d-m-Y') }}</td>
                             <td>
                                 <!-- Icônes d'options -->
-                                <a href="#"><i class="fas fa-eye"></i></a>
-                                <a href="#"><i class="fas fa-edit"></i></a>
-                                <a target="_blank" href="{{ route('pdf.download', $vente['commande_id']) }}"><i class="fas fa-print text-warning"></i></a>
+                                <a href="#"><i class="fas fa-eye text-secondary"></i></a>
+                                <a href="#" data-toggle="modal" data-target="#venteModal2{{$vente['id']}}"><i class="fas fa-edit text-warning"></i></a>
 
                             </td>
                         </tr>
+                        <!-- modal commencement -->
+                        <!-- Modal pour le paiement de la consignation -->
+                        <div class="modal fade" id="venteModal2{{$vente['id']}}" tabindex="-1" role="dialog" aria-labelledby="venteModal2Label" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <!-- En-tête du modal -->
+                                    <div class="modal-header bg-light">
+                                        <h5 class="modal-title" id="venteModal2Label">Payer consignation</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+
+                                    <!-- Formulaire de paiement -->
+                                    <form action="{{route('payer.consignation')}}" method="POST">
+                                        @csrf
+                                        <!-- Corps du modal -->
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <!-- Section Bouteille -->
+                                                <div class="col-md-12 mb-3">
+                                                    <div class="form-group d-flex align-items-center">
+                                                        @if($vente['etat'] == 'non rendu')
+                                                        <input type="checkbox" name="check_bouteille" id="check_bouteille{{$vente['id']}}" class="mr-2">
+                                                        <label for="check_bouteille{{$vente['id']}}" class="mb-0 cursor-pointer">
+                                                            Bouteille----------------------<span>{{$vente['consignation']}} Ar</span>
+                                                        </label>
+                                                        <input type="hidden" value="{{$vente['id']}}" name="vente_id_bouteille">
+                                                        @elseif($vente['etat'] == 'avec BTL')
+                                                        <label class="mb-0 cursor-pointer">
+                                                            Bouteille----------------------<span class="text-success">non consigné</span>
+                                                        </label>
+                                                        @else
+                                                        <label class="mb-0 cursor-pointer">
+                                                            bouteille----------------------<span class="text-success">payé</span>
+                                                        </label>
+                                                        @endif
+                                                    </div>
+                                                </div>
+
+                                                <!-- Section Cageot -->
+                                                <div class="col-md-12 mb-3">
+                                                    <div class="form-group d-flex align-items-center">
+                                                        @if($vente['etat_cgt'] == 'non rendu')
+                                                        <input type="checkbox" name="check_cageot" id="check_cageot{{$vente['id']}}" class="mr-2">
+                                                        <label for="check_cageot{{$vente['id']}}" class="mb-0 cursor-pointer">
+                                                            Cageot----------------------<span>{{$vente['prix_cgt']}} Ar</span>
+                                                        </label>
+                                                        <input type="hidden" value="{{$vente['id']}}" name="vente_id_cageot">
+                                                        @elseif($vente['etat_cgt'] == 'avec CGT' || $vente['etat_cgt'] == 'non condi°')
+                                                        <label class="mb-0 cursor-pointer">
+                                                            Cageot----------------------<span class="text-success">non consigné</span>
+                                                        </label>
+                                                        @elseif($vente['etat_cgt'] == 'conditionné')
+                                                        <label class="mb-0 cursor-pointer">
+                                                            Cageot----------------------<span class="text-success">conditionné (payer au commande liée)</span>
+                                                        </label>
+                                                        @else
+                                                        <label class="mb-0 cursor-pointer">
+                                                            Cageot----------------------<span class="text-success">payé</span>
+                                                        </label>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Pied du modal -->
+                                        <div class="modal-footer bg-light">
+                                            <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+
+                                            @if($vente['etat'] == 'non rendu' || $vente['etat_cgt'] == 'non rendu')
+                                            <!-- Afficher le bouton "Payer" si la bouteille ou le cageot est "non rendu" -->
+                                            <button type="submit" class="btn btn-primary">Payer</button>
+                                            @else
+                                            <!-- Désactiver ou masquer le bouton "Payer" si aucun paiement n'est nécessaire -->
+                                            <button type="button" class="btn btn-primary" disabled>Payer</button>
+                                            <!-- Ou pour masquer complètement le bouton : -->
+                                            <!-- <button type="submit" class="btn btn-primary d-none">Payer</button> -->
+                                            @endif
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- modal fin -->
                         @empty
                         <tr>
                             <td colspan="8" class="text-warning">Pas encore de données insérées pour le moment</td>
@@ -96,13 +234,15 @@
                     </tbody>
                 </table>
                 <div class="d-flex justify-content-start mt-3">
-    {{ $ventes->links('pagination::bootstrap-4') }} <!-- ou 'pagination::bootstrap-5' -->
-</div>
+                    {{ $ventes->links('pagination::bootstrap-4') }} <!-- ou 'pagination::bootstrap-5' -->
+                </div>
             </div>
         </div>
     </div>
 
 </div>
+<!-- Button trigger modal -->
+
 
 <!-- Modal Nouvelle vente -->
 <div class="modal fade" id="venteModal" tabindex="-1" role="dialog" aria-labelledby="venteModalLabel" aria-hidden="true">
@@ -115,267 +255,21 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="venteForm" method="POST" action="{{ route('vente.store') }}">
-                    @csrf
-                    <div class="row">
-                        <!-- Première ligne : Clients et Numéro de commande -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="client">Clients</label>
-                                <select class="form-control select-search" id="client" name="client_id">
-                                    <option value="">--client passager--</option>
-                                    @foreach($clients as $client)
-                                    <option value="{{ $client->id }}">{{ $client->nom }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="cm">Numéro commande</label>
-                                <input type="text" value="C-{{ $dernier->id + 1}}" class="form-control" id="cm" disabled>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <!-- Deuxième ligne : Article et Date -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="article">Article</label>
-                                <select class="form-control select-search" id="article">
-                                    @foreach($articles as $article)
-                                    <option value="{{ $article->id }}" data-prix="{{ $article->prix_unitaire }}" data-condi="{{ $article->conditionnement }}" data-consignation="{{ $article->prix_consignation }}">{{ $article->nom }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="dateachat">Date</label>
-                                <input type="date" class="form-control" id="datevente" value="today" disabled>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <!-- Troisième ligne : Achat par unité ou cageot -->
-                        <div class="col-md-6">
-                            <div class="unitecontainer">
-                                <div class="col-md-12 mb-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="achatUnite">
-                                        <label class="form-check-label" for="achatUnite">Achat par unité</label>
-                                    </div>
-                                </div>
-                                <div id="quantiteCageotContainer">
-                                    <div class="form-group">
-                                        <label for="quantiteCageot">Quantité en cageot</label>
-                                        <input type="number" class="form-control" id="quantiteCageot" min="1" value="1">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="cageotcontainer">
-                                <div class="col-md-12 mb-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="achatCageot" checked>
-                                        <label class="form-check-label" for="achatCageot">Achat par cageot</label>
-                                    </div>
-                                </div>
-                                <div id="quantiteUniteContainer" style="display: none;">
-                                    <div class="form-group">
-                                        <label for="quantiteUnite">Quantité en unité</label>
-                                        <input type="number" class="form-control" id="quantiteUnite" min="1" value="1">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-12 mb-3 d-flex justify-content-start">
-                            <div class="form-check mr-3">
-                                <input class="form-check-input" type="checkbox" id="non">
-                                <label class="form-check-label" for="non">non consingé</label>
-                            </div>
-                            <div class="form-check mr-3">
-                                <input class="form-check-input" type="checkbox" id="avec" disabled>
-                                <label class="form-check-label" for="avec">Avec bouteille</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="cgt" disabled>
-                                <label class="form-check-label" for="cgt">avec cageot</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="button" class="btn btn-success" id="ajouterArticle">Ajouter</button>
-
-                    <!-- Conteneur caché pour stocker les valeurs envoyées en POST -->
-                    <div id="hiddenInputs"></div>
-
-                    <table class="table mt-3">
-                        <thead>
-                            <tr>
-                                <th>Article</th>
-                                <th>P.U</th>
-                                <th>Prix consigné</th>
-                                <th>Quantité</th>
-                                <th>BTL</th>
-                                <th>état</th>
-                                <th>Total</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="articlesTable"></tbody>
-                    </table>
-
-                    <div class="modal-footer">
-                        <p id="final" class="ml-5">0</p><span>Ar</span><button type="submit" class="btn btn-primary">Valider</button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
 </div>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const achatUnite = document.getElementById("achatUnite");
-        const achatCageot = document.getElementById("achatCageot");
-        const quantiteCageotContainer = document.getElementById("quantiteCageotContainer");
-        const quantiteUniteContainer = document.getElementById("quantiteUniteContainer");
-        const non = document.getElementById('non');
-        const avec = document.getElementById('avec');
-        const final = document.getElementById('final'); // Assurez-vous que cet élément existe
-
-        function toggleDisplay() {
-            if (achatUnite.checked) {
-                quantiteUniteContainer.style.display = "block";
-                quantiteCageotContainer.style.display = "none";
-                achatCageot.checked = false;
-            } else {
-                quantiteUniteContainer.style.display = "none";
-                quantiteCageotContainer.style.display = "block";
-                achatCageot.checked = true;
-            }
-        }
-
-        if (non) {
-            non.addEventListener("change", function() {
-                if (!non.checked) {
-                    avec.checked = false; // Désactive "Avec"
-                    avec.disabled = true;
-                } else {
-                    avec.disabled = false;
-                }
-            });
-        }
-
-        if (avec) {
-            avec.addEventListener("change", function() {
-                if (!avec.checked && !non.checked) {
-                    avec.checked = false;
-                }
-            });
-        }
-
-        if (achatUnite) achatUnite.addEventListener("change", toggleDisplay);
-        if (achatCageot) {
-            achatCageot.addEventListener("change", function() {
-                achatUnite.checked = !achatCageot.checked;
-                toggleDisplay();
-            });
-        }
-
-        document.getElementById('datevente').value = new Date().toISOString().split('T')[0];
-
-        document.getElementById('ajouterArticle').addEventListener('click', function() {
-            let articleSelect = document.getElementById('article');
-            let datevente = document.getElementById('datevente').value;
-            let selectedOption = articleSelect.options[articleSelect.selectedIndex];
-
-            if (!selectedOption) {
-                alert("Veuillez sélectionner un article.");
-                return;
-            }
-
-            let articleId = selectedOption.value || "";
-            let articleNom = selectedOption.text || "";
-            let prix = parseInt(selectedOption.getAttribute('data-prix'), 10) || 0;
-            let conditionnement = parseInt(selectedOption.getAttribute('data-condi'), 10) || 1;
-            let prix_consignation = parseInt(selectedOption.getAttribute('data-consignation'), 10) || 0;
-
-            let quantite = achatUnite.checked 
-                ? parseInt(document.getElementById('quantiteUnite').value, 10) || 0
-                : parseInt(document.getElementById('quantiteCageot').value, 10) || 0;
-            let types = achatUnite.checked ? '1' : '0';
-            let consignation = non.checked ? 'non consigné' : 'consigné';
-
-            if (quantite <= 0) {
-                alert("Veuillez saisir une quantité valide.");
-                return;
-            }
-
-            let total = avec.checked 
-                ? prix * quantite 
-                : (prix + prix_consignation) * quantite;
-
-            let totalconsignecageot = avec.checked
-                ? prix * conditionnement * quantite
-                : (prix_consignation + prix) * conditionnement * quantite;
-
-            let totalcageot = non.checked
-                ? prix * quantite * conditionnement
-                : totalconsignecageot;
-
-            let totalActuel = parseInt(final.innerHTML, 10) || 0;
-            final.innerHTML = totalActuel + (achatUnite.checked ? total : totalcageot);
-
-            let newRow = `<tr data-total="${achatUnite.checked ? total : totalcageot}">
-                <td>${articleNom}</td>
-                <td>${prix} Ar</td>
-                <td>${prix + prix_consignation} Ar</td>
-                <td>${quantite} ${achatUnite.checked ? 'bouteille' : 'cageot (' + conditionnement + ' bouteilles)'}</td>
-                <td>${avec.checked ? 'oui' : 'non'}</td>
-                <td>${consignation} ${non.checked ? '' : prix_consignation + ' Ar/BTL'}</td>
-                <td>${achatUnite.checked ? total : totalconsignecageot} Ar</td>
-                <td><button type="button" class="btn btn-danger btn-sm removeArticle">X</button></td>
-            </tr>`;
-
-            document.getElementById('articlesTable').insertAdjacentHTML('beforeend', newRow);
-
-            let hiddenInputs = document.getElementById('hiddenInputs');
-            hiddenInputs.insertAdjacentHTML('beforeend', `
-                <input type="hidden" name="articles[]" value="${articleId}">
-                <input type="hidden" name="quantites[]" value="${quantite}">
-                <input type="hidden" name="prices[]" value="${prix}">
-                <input type="hidden" name="dateventes[]" value="${datevente}">
-                <input type="hidden" name="types[]" value="${types}">
-                <input type="hidden" name="consignations[]" value="${non.checked ? '1' : '0'}">
-                <input type="hidden" name="bouteilles[]" value="${avec.checked ? '1' : '0'}">
-            `);
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('check_bouteille').addEventListener('change', function() {
+            document.getElementById('embale').disabled = !this.checked;
         });
 
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('removeArticle')) {
-                let row = e.target.closest('tr');
-                let totalRow = parseInt(row.getAttribute('data-total'), 10) || 0;
-
-                row.remove();
-
-                let totalActuel = parseInt(final.innerHTML, 10) || 0;
-                final.innerHTML = totalActuel - totalRow;
-
-                let hiddenInputs = document.getElementById('hiddenInputs').children;
-                if (hiddenInputs.length >= 7) {
-                    for (let i = 0; i < 7; i++) {
-                        hiddenInputs[hiddenInputs.length - 1].remove();
-                    }
-                }
-            }
+        document.getElementById('check_cageot').addEventListener('change', function() {
+            document.getElementById('embale').disabled = !this.checked;
         });
     });
 </script>
-
-
 @endsection

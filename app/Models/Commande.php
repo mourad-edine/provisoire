@@ -22,4 +22,8 @@ class Commande extends Model
     public function ventes(){
         return $this->hasMany(Vente::class , 'commande_id');
     }
+
+    public function conditionnement(){
+        return $this->hasOne(Conditionnement::class , 'commande_id');
+    }
 }

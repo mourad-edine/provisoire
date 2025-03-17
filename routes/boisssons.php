@@ -6,6 +6,7 @@ use App\Http\Controllers\article\ArticleController;
 use App\Http\Controllers\caregorie\CategorieController;
 use App\Http\Controllers\client\ClientController;
 use App\Http\Controllers\commande\CommandeController;
+use App\Http\Controllers\consignation\ConsignationController;
 use App\Http\Controllers\fournisseur\FournisseurController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\stock\StockController;
@@ -25,6 +26,7 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
     Route::post('/ventes', [VenteController::class, 'store'])->name('vente.store');
     Route::get('/commandes-vente', [VenteController::class, 'showcommande'])->name('commande.liste.vente');
     Route::get('/commandes-vente-detail/{id}', [VenteController::class, 'DetailCommande'])->name('commande.liste.vente.detail');
+    Route::get('/ventes-page', [VenteController::class, 'Vente'])->name('vente.page');
 
     Route::get('/achats', [AchatController::class, 'show'])->name('achat.liste');
     Route::post('/achats', [AchatController::class, 'store'])->name('achat.store');
@@ -48,4 +50,7 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
 
 
     Route::get('/download-pdf/{id}', [PdfController::class, 'generatePDF'])->name('pdf.download');
+
+    Route::post('/consignation-payer', [ConsignationController::class, 'payer'])->name('payer.consignation');
+
 });

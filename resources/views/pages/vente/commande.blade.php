@@ -12,13 +12,14 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center bg-light border-bottom shadow-sm">
-            <div class="d-flex">
+        <div class="d-flex">
                 <a href="{{route('vente.liste')}}" class="btn btn-outline-primary btn-sm font-weight-bold mr-2 px-3 shadow-sm">Listes ventes</a>
                 <a href="{{route('commande.liste.vente')}}" class="btn btn-outline-success btn-sm font-weight-bold px-3 shadow-sm">Listes par commandes</a>
             </div>
             <div class="d-flex">
               
-                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#venteModal">Nouvelle vente</button>
+                <!-- <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#venteModal">Nouvelle vente</button> -->
+                <button class="btn btn-primary btn-sm"><a class="text-white text-decoration-none" href="{{route('vente.page')}}">Nouvelle vente</a></button>
 
             </div>
         </div>

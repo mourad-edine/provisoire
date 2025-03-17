@@ -17,7 +17,7 @@ class Article extends Model
         'prix_unitaire',
         'prix_consignation',
         'prix_conditionne',
-        'prix_vente',
+        'prix_achat',
         'quantite',
     ];
 

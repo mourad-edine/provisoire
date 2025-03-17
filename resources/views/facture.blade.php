@@ -127,3 +127,34 @@
 </body>
 
 </html>
+<!-- 
+<div class="modal fade" id="venteModal2" tabindex="-1" role="dialog" aria-labelledby="venteModal2Label" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="venteModalLabel">Nouvelle vente</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="venteForm" method="POST" action="{{ route('vente.store') }}">
+                    @csrf
+                    <div class="row">
+
+                        <div id="quantiteCageotContainer">
+                            <div class="form-group">
+                                <label for="quantiteCageot">Quantité en cageot</label>
+                                <input type="number" class="form-control" id="quantiteCageot" min="1" value="1">
+                            </div>
+                        </div>
+
+
+                        <div class="modal-footer">
+                            <p id="final" class="ml-5">0</p><span>Ar</span><button type="submit" class="btn btn-primary">Valider</button>
+                        </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> -->

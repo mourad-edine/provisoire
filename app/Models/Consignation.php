@@ -11,7 +11,9 @@ class Consignation extends Model
     protected $fillable = [
         'vente_id',
         'prix',
+        'prix_cgt',
         'etat',
+        'etat_cgt',
         'date_consignation'
     ];
 

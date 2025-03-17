@@ -94,7 +94,7 @@
         </div>
 
         <div class="col-xl-3 col-md-6 mb-4">
-            <a href="{{route('vente.liste')}}">
+            <a href="{{route('vente.page')}}">
             <div class="card  shadow h-100 py-2" style="background : rgb(22 163 74 / var(--tw-bg-opacity, 1));">
 
                     <div class="card-body bg-blue-600">

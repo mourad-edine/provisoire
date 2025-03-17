@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Client;
 use App\Models\Commande;
+use App\Models\Conditionnement;
 use App\Models\Consignation;
 use App\Models\Vente;
 use Carbon\Carbon;
@@ -18,36 +19,38 @@ class VenteController extends Controller
     public function show()
     {
         $ventes = Vente::with(['article', 'consignation'])
-        ->orderBy('id', 'DESC')
-        ->paginate(6); // La pagination doit être ici
+            ->orderBy('id', 'DESC')
+            ->paginate(6); // La pagination doit être ici
 
-    // Transformer chaque vente après la pagination
-    $ventes->getCollection()->transform(function ($vente) {
-        return [
-            'id' => $vente->id,
-            'article' => $vente->article ? $vente->article->nom : null,
-            'prix_unitaire' => $vente->article ? $vente->article->prix_unitaire : null,
-            'reference' => $vente->article ? $vente->article->reference : null,
-            'numero_commande' => $vente->commande_id,
-            'consignation' => $vente->consignation ? $vente->consignation->prix : null,
-            'etat' => $vente->consignation ? $vente->consignation->etat : null,
-            'quantite' => $vente->quantite,
-            'type_achat' => $vente->type_achat,
-            'created_at' => Carbon::parse($vente->created_at)->format('d/m/Y H:i:s'),
-            'prix_consignation' => $vente->article ? $vente->article->prix_consignation : null,
-            'conditionnement' => $vente->article ? $vente->article->conditionnement : null,
-            'btl' => $vente->btl,
-            'cgt' => $vente->cgt,
-            'commande_id' => $vente->commande_id
-        ];
-    });
+        // Transformer chaque vente après la pagination
+        $ventes->getCollection()->transform(function ($vente) {
+            return [
+                'id' => $vente->id,
+                'article' => $vente->article ? $vente->article->nom : null,
+                'prix_unitaire' => $vente->article ? $vente->article->prix_unitaire : null,
+                'reference' => $vente->article ? $vente->article->reference : null,
+                'numero_commande' => $vente->commande_id,
+                'consignation' => $vente->consignation ? $vente->consignation->prix : null,
+                'etat' => $vente->consignation ? $vente->consignation->etat : null,
+                'etat_cgt' => $vente->consignation ? $vente->consignation->etat_cgt : null,
+                'quantite' => $vente->quantite,
+                'type_achat' => $vente->type_achat,
+                'created_at' => Carbon::parse($vente->created_at)->format('d/m/Y H:i:s'),
+                'prix_consignation' => $vente->article ? $vente->article->prix_consignation : null,
+                'prix_cgt' => $vente->consignation ? $vente->consignation->prix_cgt : null,
+                'conditionnement' => $vente->article ? $vente->article->conditionnement : null,
+                'btl' => $vente->btl,
+                'cgt' => $vente->cgt,
+                'commande_id' => $vente->commande_id
+            ];
+        });
 
-    return view('pages.vente.Liste', [
-        'ventes' => $ventes,
-        'articles' => Article::all(),
-        'clients' => Client::all(),
-        'dernier' => Commande::latest()->first()
-    ]);
+        return view('pages.vente.Liste', [
+            'ventes' => $ventes,
+            'articles' => Article::all(),
+            'clients' => Client::all(),
+            'dernier' => Commande::latest()->first()
+        ]);
     }
 
 
@@ -73,36 +76,60 @@ class VenteController extends Controller
         return Article::find($id);
     }
 
-    public function consignation(int $type, int $idvente, int $article, int $quantite)
+    public function consignation(int $type, int $idvente, int $article, int $quantite, int $cageot, int $bouteille, int $conditionnement)
     {
         $articleObj = $this->getArticle($article);
-
+        //dd($prix_cons);
         if ($type === 0) {  // Type cageot
-            $prix_consignation = $articleObj->prix_consignation
+            //sans bouteille
+            $prix_consignation = ($bouteille === 0)
                 ? $articleObj->prix_consignation * $quantite * ($articleObj->conditionnement ?? 1)
-                : 500;
-
+                : 0;
+            //sans cageot donc on consigne les 2 parceque cageot = 0 et bouteille = 0 mais on devrait mettre aussi une conditon si cageot = 0 et bouteille = 1 ou cageot = 1 et bouteille = 0    
+            $prix_consignation_cgt = ($cageot === 0)
+                ? $articleObj->prix_cgt * $quantite
+                : 0;
+            // dd([
+            //     'prix_consignation_boutelle' => $prix_consignation,
+            //     'prix_consignation_cgt' => $prix_consignation_cgt
+            // ]);
+            //eto 
+            //dd($prix_consignation_cgt);    
             Consignation::create([
                 'vente_id' => $idvente,
-                'etat' => 'non rendu',
+                'etat' => $bouteille == 0 ? 'non rendu' : 'avec BTL',
+                'etat_cgt' => $cageot == 0 ? 'non rendu' : 'avec CGT',
                 'prix' => $prix_consignation,
+                'prix_cgt' => $prix_consignation_cgt,
                 'date_consignation' => now(),
                 'type_consignation' => false
             ]);
-        } elseif ($type === 1) {  // Type bouteille
-            Consignation::create([
-                'vente_id' => $idvente,
-                'etat' => 'non rendu',
-                'prix' => 700 * $quantite, // Prix fixe par bouteille
-                'date_consignation' => now(),
-                'type_consignation' => true
-            ]);
+        } elseif ($type === 1) {
+            //dd($articleObj->prix_consignation * $quantite);
+            if ($bouteille == 0) {
+                Consignation::create([
+                    'vente_id' => $idvente,
+                    'etat' => 'non rendu',
+                    'etat_cgt' => $conditionnement == 1 ? 'conditionné' : 'non condit°',
+                    'prix' => $articleObj->prix_consignation * $quantite,
+                    'prix_cgt' => 0, // Prix fixe par bouteille
+                    'date_consignation' => now(),
+                    'type_consignation' => true
+                ]);
+            }  // Type bouteille
         }
     }
 
 
+
+
     public function store(Request $request)
     {
+
+
+
+        //$test = floatToInt(18,5);
+
         //dd($request->all());
         $data = $request->validate([
             'articles' => 'required|array',
@@ -112,12 +139,22 @@ class VenteController extends Controller
             'types' => 'required|array',
             'consignations' => 'required|array',
             'bouteilles' => 'required|array',
+            'cageots' => 'required|array',
         ]);
 
         $commande = Commande::create([
             'user_id' => Auth::user()->id,
             'client_id' => $request->client_id
         ]);
+        $conditionnement = $request->has('unites') ? 1 : 0;
+        if ($conditionnement == 1) {
+            Conditionnement::create([
+                'commande_id' => $commande->id,
+                'nombre_cageot' => $request->embale ?? $request->quantite_embale,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
 
         // Boucle pour enregistrer chaque achat
         foreach ($data['articles'] as $index => $article) {
@@ -130,19 +167,21 @@ class VenteController extends Controller
                 'date_sortie' => $data['dateventes'][$index],
                 'prix' => $data['prices'][$index],
                 'type_achat' => $type === 0 ? 'cageot' : 'bouteille',
-                'btl' => $bouteilles
-                
+                'btl' => $bouteilles,
+                'cgt' => (int) $data['cageots'][$index],
+
             ]);
 
             $this->updatearticle($article, $type, $data['quantites'][$index]);
-
+            $cageot = $data['cageots'][$index];
+            $bouteille = $data['bouteilles'][$index];
             // Correction : Passer $type au lieu de $data['consignations'][$index]
-            if($data['consignations'][$index] == '0'){
-                $this->consignation($type, $vente->id, $article, $data['quantites'][$index]);
+            if ($data['consignations'][$index] == '0') {
+                $this->consignation($type, $vente->id, $article, $data['quantites'][$index], $cageot, $bouteille, $conditionnement);
             }
         }
 
-        return redirect()->back()->with('success', 'Ventes enregistrées avec succès.');
+        return redirect()->route('vente.liste')->with('success', 'Ventes enregistrées avec succès.');
     }
 
 
@@ -161,8 +200,15 @@ class VenteController extends Controller
     }
 
     public function DetailCommande($id)
+    
     {
-        $ventes = Vente::with('article', 'consignation')->where('commande_id',$id)->orderby('id', 'DESC')->get()->map(function ($vente) {
+        $ventes = Vente::with(['article', 'consignation'])
+            ->where('commande_id',$id)
+            ->orderBy('id', 'DESC')
+            ->paginate(4); // La pagination doit être ici
+
+        // Transformer chaque vente après la pagination
+        $ventes->getCollection()->transform(function ($vente) {
             return [
                 'id' => $vente->id,
                 'article' => $vente->article ? $vente->article->nom : null,
@@ -171,18 +217,35 @@ class VenteController extends Controller
                 'numero_commande' => $vente->commande_id,
                 'consignation' => $vente->consignation ? $vente->consignation->prix : null,
                 'etat' => $vente->consignation ? $vente->consignation->etat : null,
+                'etat_cgt' => $vente->consignation ? $vente->consignation->etat_cgt : null,
                 'quantite' => $vente->quantite,
                 'type_achat' => $vente->type_achat,
                 'created_at' => Carbon::parse($vente->created_at)->format('d/m/Y H:i:s'),
                 'prix_consignation' => $vente->article ? $vente->article->prix_consignation : null,
+                'prix_cgt' => $vente->consignation ? $vente->consignation->prix_cgt : null,
                 'conditionnement' => $vente->article ? $vente->article->conditionnement : null,
-
+                'btl' => $vente->btl,
+                'cgt' => $vente->cgt,
+                'commande_id' => $vente->commande_id
             ];
         });
-        //dd($ventes);
+        
+        $conditionnement = Commande::with('conditionnement')->where('id', $id)->first();
+
+        //dd($conditionnement->toArray());
         return view('pages.vente.Detail', [
             'ventes' => $ventes,
-            'commande_id' => $id
+            'commande_id' => $id,
+            'conditionnement' => $conditionnement
+        ]);
+    }
+
+    public function Vente()
+    {
+        return view('pages.vente.Vente', [
+            'articles' => Article::all(),
+            'clients' => Client::all(),
+            'dernier' => Commande::latest()->first()
         ]);
     }
 }
