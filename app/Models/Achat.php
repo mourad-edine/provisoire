@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Achat extends Model
 {
+    public $timestamps = false;
     protected $tables = 'achats';
     protected $fillable = [
         'article_id',
@@ -22,6 +23,10 @@ class Achat extends Model
 
     public function commandes(){
         return $this->belongsTo(Commande::class ,'commande_id');
+    }
+
+    public function consignation_achat(){
+        return $this->hasOne(ConsignationAchat::class ,'achat_id');
     }
 
 }

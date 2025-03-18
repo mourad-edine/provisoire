@@ -10,7 +10,7 @@ class CategorieController extends Controller
 {
     public function show(){
 
-        $Categories = Categorie::withCount('articles')->paginate(6);
+        $Categories = Categorie::withCount('articles')->paginate(4);
         //dd($Categories);
         return view('pages.categorie.Liste' ,[
             'categories' => $Categories

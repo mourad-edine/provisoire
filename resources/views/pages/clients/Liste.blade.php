@@ -17,7 +17,7 @@
             <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addArticleModal">Ajouter client</button>
         </div>
         <div class="card-body">
-        @if(session('success'))
+            @if(session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
             </div>
@@ -46,16 +46,35 @@
                             <td>{{$client->reference ? $client->reference  :'pas de reference'}}
                             <td>{{$client->created_at}}
                             <td>
-                                <!-- Icônes d'options -->
-                                <a href="#"><i class="fas fa-eye"></i></a>
-                                <a href="#"><i class="fas fa-edit"></i></a>
-                                <form action="#" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" style="background:none; border:none; color:red;"><i class="fas fa-trash-alt"></i></button>
-                                </form>
+                                <a href="#" data-toggle="modal" data-target="#supprimerArticleModal{{$client->id}}"><i class="fas fa-trash-alt text-danger"></i></button>
                             </td>
                         </tr>
+                        <div class="modal fade" id="supprimerArticleModal{{$client->id}}" tabindex="-1" aria-labelledby="supprimerArticleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addArticleModalLabel">suppression </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="#" method="POST">
+                                            @csrf
+                                            <div class="form-group">
+                                                <p>voulez-vous vraiment supprimer ce client ?</p>
+                                                <input value="{{$client->nom}}" type="hidden" class="form-control" id="nom" name="nom" required>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                                <button type="submit" class="btn btn-danger">supprimer</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @empty
                         <tr>
                             <td></td>
@@ -100,7 +119,7 @@
                         <label for="categorie">numero</label>
                         <input type="text" class="form-control" id="numero" name="numero" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <input type="checkbox" id="ref" name="ref">
                         <label for="ref">Ajouter une reference</label>
@@ -109,7 +128,7 @@
                         <label for="reference">reference</label>
                         <input type="text" class="form-control" id="reference" name="reference">
                     </div>
-                   
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
                         <button type="submit" class="btn btn-primary">Ajouter</button>

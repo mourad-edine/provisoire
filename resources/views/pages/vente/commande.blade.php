@@ -12,12 +12,12 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center bg-light border-bottom shadow-sm">
-        <div class="d-flex">
+            <div class="d-flex">
                 <a href="{{route('vente.liste')}}" class="btn btn-outline-primary btn-sm font-weight-bold mr-2 px-3 shadow-sm">Listes ventes</a>
                 <a href="{{route('commande.liste.vente')}}" class="btn btn-outline-success btn-sm font-weight-bold px-3 shadow-sm">Listes par commandes</a>
             </div>
             <div class="d-flex">
-              
+
                 <!-- <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#venteModal">Nouvelle vente</button> -->
                 <button class="btn btn-primary btn-sm"><a class="text-white text-decoration-none" href="{{route('vente.page')}}">Nouvelle vente</a></button>
 
@@ -40,7 +40,7 @@
                             <th>Options</th>
                         </tr>
                     </thead>
-                  
+
                     <tbody>
                         @forelse($commandes as $commande)
                         <tr>
@@ -53,7 +53,7 @@
                                 <a href="{{route('commande.liste.vente.detail', ['id' => $commande->id]) }}" class="mr-3"><i class="fas fa-eye"></i></a>
                                 <a href="{{route('pdf.download' , ['id'=>$commande->id])}}"><i class="fas fa-print text-warning"></i></a>
                                 <form action="#" method="POST" style="display:inline;">
-                                 
+
                                 </form>
                             </td>
                         </tr>
@@ -65,8 +65,8 @@
                     </tbody>
                 </table>
                 <div class="d-flex justify-start-center mt-3">
-    {{ $commandes->links('pagination::bootstrap-4') }} <!-- ou 'pagination::bootstrap-5' -->
-</div>
+                    {{ $commandes->links('pagination::bootstrap-4') }} <!-- ou 'pagination::bootstrap-5' -->
+                </div>
             </div>
         </div>
     </div>
@@ -274,9 +274,9 @@
             let conditionnement = parseInt(selectedOption.getAttribute('data-condi'), 10) || 1;
             let prix_consignation = parseInt(selectedOption.getAttribute('data-consignation'), 10) || 0;
 
-            let quantite = achatUnite.checked 
-                ? parseInt(document.getElementById('quantiteUnite').value, 10) || 0
-                : parseInt(document.getElementById('quantiteCageot').value, 10) || 0;
+            let quantite = achatUnite.checked ?
+                parseInt(document.getElementById('quantiteUnite').value, 10) || 0 :
+                parseInt(document.getElementById('quantiteCageot').value, 10) || 0;
             let types = achatUnite.checked ? '1' : '0';
             let consignation = non.checked ? 'non consigné' : 'consigné';
 
@@ -285,17 +285,17 @@
                 return;
             }
 
-            let total = avec.checked 
-                ? prix * quantite 
-                : (prix + prix_consignation) * quantite;
+            let total = avec.checked ?
+                prix * quantite :
+                (prix + prix_consignation) * quantite;
 
-            let totalconsignecageot = avec.checked
-                ? prix * conditionnement * quantite
-                : (prix_consignation + prix) * conditionnement * quantite;
+            let totalconsignecageot = avec.checked ?
+                prix * conditionnement * quantite :
+                (prix_consignation + prix) * conditionnement * quantite;
 
-            let totalcageot = non.checked
-                ? prix * quantite * conditionnement
-                : totalconsignecageot;
+            let totalcageot = non.checked ?
+                prix * quantite * conditionnement :
+                totalconsignecageot;
 
             let totalActuel = parseInt(final.innerHTML, 10) || 0;
             final.innerHTML = totalActuel + (achatUnite.checked ? total : totalcageot);

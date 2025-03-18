@@ -6,7 +6,7 @@
 <div class="container-fluid">
     <h1 class="h3 mb-2 text-gray-800">BOISSON</h1>
     <p class="mb-4">Ajouter votre article.</p>
-    
+
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold text-primary">Liste des boissons</h6>
@@ -14,9 +14,9 @@
         </div>
         <div class="card-body">
             @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
             @endif
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -25,8 +25,9 @@
                             <th>ID</th>
                             <th>Nom</th>
                             <th>Catégorie</th>
-                            <th>Prix Unitaire (PU)</th>
-                            <th>Prix Cageot (P.C)</th>
+                            <th>P.Vente</th>
+                            <th>P.Achat</th>
+                            <th>P.cageot</th>
                             <th>Quantité</th>
                             <th>Date de Création</th>
                             <th>Options</th>
@@ -39,19 +40,100 @@
                             <td>{{ $article['nom'] }}</td>
                             <td>{{ $article['categorie'] }}</td>
                             <td>{{ $article['prix_unitaire'] }} Ar</td>
-                            <td>{{ $article['prix_conditionne'] ? $article['prix_conditionne'] : 'pas encore de prix' }}</td>
-                            <td>{{ $article['quantite'] }}</td>
-                            <td>{{ $article['created_at'] }}</td>
+
+                            <td>{{ $article['prix_achat'] }} Ar</td>
+                            <td>{{ $article['prix_conditionne'] ? $article['prix_conditionne'] : 'pas encore de prix' }} Ar</td>
                             <td>
-                                <a href="#"><i class="fas fa-eye"></i></a>
-                                <a href="#"><i class="fas fa-edit"></i></a>
-                                <form action="#" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" style="background:none; border:none; color:red;"><i class="fas fa-trash-alt"></i></button>
-                                </form>
+                                @php
+                                $quotient = intdiv($article['quantite'], $article['conditionnement']); // Division entière
+                                $reste = $article['quantite'] % $article['conditionnement']; // Reste de la division
+                                $affichage = $quotient;
+                                    @endphp
+                                    {{ $affichage }} cageot{{ $affichage > 1 ? 's' : '' }} @if($reste> 0) et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}@endif
+                            </td>
+                            <td>{{ \Carbon\Carbon::parse($article['created_at'])->format('Y-m-d') }}</td>
+                            <td>
+                                <a href="#" data-toggle="modal" data-target="#editArticleModal{{$article['id']}}"><i class="fas fa-edit text-secondary"></i></a>
+                                <a class="text-danger ml-3" href="#" data-toggle="modal" data-target="#supprimerModal{{ $article['id'] }}">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
                             </td>
                         </tr>
+                        <div class="modal fade" id="supprimerModal{{$article['id']}}" tabindex="-1" role="dialog" aria-labelledby="supprimerModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="supprimerModalLabel">suppression</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>voulez-vous vraiment supprimer cette article <span class="text-warning">{{$article['nom']}} </span> ?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                        <button type="submit" class="btn btn-danger">supprimer</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="editArticleModal{{$article['id']}}" tabindex="-1" aria-labelledby="editArticleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addArticleModalLabel">Ajouter un article</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{ route('articles.store') }}" method="POST">
+                                            @csrf
+                                            <div class="form-group">
+                                                <label for="nom">Nom</label>
+                                                <input value="{{$article['nom']}}" type="text" class="form-control" id="nom" name="nom" required>
+                                            </div>
+                                            <div class="">
+                                                <div class="form-group">
+                                                    <label for="categorie">categorie</label>
+                                                    <select class="form-control" id="categorie" name="categorie_id">
+                                                        <option value="{{$article['categorie']}}">{{$article['categorie']}}</option>
+                                                        @foreach($categories as $categorie)
+                                                        <option value="{{ $categorie->id }}">{{ $categorie->nom }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="">
+                                                <div class="form-group">
+                                                    <label for="conditionnement">conditionnement</label>
+                                                    <select class="form-control" id="conditionnement" name="conditionnement">
+                                                        <option value="{{$article['conditionnement']}}">---choisir---</option>
+                                                        <option value="20">cageot de 20</option>
+                                                        <option value="24">cageot de 24</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="prix_unitaire">Prix d'achat</label>
+                                                <input value="{{$article['prix_achat']}}" type="number" class="form-control" id="prix_achat" name="prix_achat" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="prix_unitaire">Prix de vente</label>
+                                                <input value="{{$article['prix_unitaire']}}" type="number" class="form-control" id="prix_unitaire" name="prix_unitaire" required>
+                                            </div>
+
+                                            
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                                <button type="submit" class="btn btn-primary">enregistrer modification</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @empty
                         <tr>
                             <td colspan="8" class="text-center text-warning">Pas encore de données insérées pour le moment</td>
@@ -98,7 +180,7 @@
                     <div class="">
                         <div class="form-group">
                             <label for="conditionnement">conditionnement</label>
-                            <select class="form-control" id="conditionnement" name="conditionnement" >
+                            <select class="form-control" id="conditionnement" name="conditionnement">
                                 <option value="20">---selectionner--</option>
                                 <option value="20">cageot de 20</option>
                                 <option value="24">cageot de 24</option>
@@ -113,7 +195,7 @@
                         <label for="prix_unitaire">Prix de vente</label>
                         <input type="number" class="form-control" id="prix_unitaire" name="prix_unitaire" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <input type="checkbox" id="checkCageot" name="checkCageot">
                         <label for="checkCageot">Ajouter un prix en cageot</label>

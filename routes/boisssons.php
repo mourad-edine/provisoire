@@ -29,6 +29,8 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
     Route::get('/ventes-page', [VenteController::class, 'Vente'])->name('vente.page');
 
     Route::get('/achats', [AchatController::class, 'show'])->name('achat.liste');
+    Route::get('/commande-achats', [AchatController::class, 'commande'])->name('achat.commande');
+    Route::get('/commande-achats/{id}', [AchatController::class, 'detailcommande'])->name('achat.commande.detail');
     Route::post('/achats', [AchatController::class, 'store'])->name('achat.store');
 
     Route::get('/commandes', [CommandeController::class, 'show'])->name('commande.liste');

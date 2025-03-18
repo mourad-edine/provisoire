@@ -36,7 +36,7 @@
                         <div class="form-group">
                             <label for="client">Clients</label>
                             <select class="form-control select-search" id="client" name="client_id">
-                                <option value="">--client passager--</option>
+                                <option value="">--client occasionnel--</option>
                                 @foreach($clients as $client)
                                 <option value="{{ $client->id }}">{{ $client->nom }}</option>
                                 @endforeach

@@ -21,42 +21,53 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                        <th>id</th>
+                            <th>id</th>
                             <th>nom</th>
                             <th>categorie</th>
-                            <th>P.U</th>
-                            <th>P.C</th>
+                            <th>P.Vente</th>
+                            <th>P.Cageot</th>
                             <th>quantite</th>
                             <th>image</th>
                             <th>consignation</th>
                             <th>mise à jour</th>
                             <th>date</th>
-                            <th>options</th>
+                            <th>ajouter</th>
                         </tr>
                     </thead>
-                    
+
                     <tbody>
                         @forelse($articles as $article)
                         <tr>
                             <td>{{$article->id }}</td>
                             <td>{{$article->nom}}</td>
                             <td>{{$article->categorie_id}}</td>
-                            <td>{{$article->prix_unitaire}}</td>
-                            <td>{{$article->prix_conditionne  ? $article->prix_conditionne :'pas de prix'}}</td>
-                            <td>{{$article->quantite}}</td>
-                            <td><img src="{{asset('assets/images/bouteille.jpg')}}" alt="" width="40" height="40"></td>
-                            <td>{{$article->prix_consignation ? $article->prix_consignation :'pas de prix'}}</td>
+                            <td>{{$article->prix_unitaire}} Ar</td>
+                            <td>{{$article->prix_conditionne ? $article->prix_conditionne :'pas de prix'}} Ar</td>
+                            <td>
+                                @php
+                                $quotient = intdiv($article->quantite, $article->conditionnement); // Division entière
+                                $reste = $article->quantite % $article->conditionnement; // Reste de la division
+                                $affichage = $quotient;
+                                @endphp
+
+                                @if($quotient > 0)
+                                <span class="text-success">{{ $affichage }} cageot{{ $affichage > 1 ? 's' : '' }}</span>
+                                @else
+                                <span class="text-danger"> {{ $affichage }} cageot{{ $affichage > 1 ? 's' : '' }}
+                                </span>
+                                @endif
+
+                                @if($reste > 0)
+                                et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}
+                                @endif
+                            </td>
+                            <td><img src="{{asset('assets/images/bouteille.png')}}" alt="" width="20" height="20"></td>
+                            <td>{{$article->prix_consignation ? $article->prix_consignation . ' Ar':'pas de prix'}}</td>
                             <td>{{ \Carbon\Carbon::parse($article->created_at)->format('Y-m-d') }}</td>
                             <td>{{ \Carbon\Carbon::parse($article->updated_at)->format('Y-m-d') }}</td>
                             <td>
                                 <!-- Icônes d'options -->
-                                <a href="#"><i class="fas fa-eye"></i></a>
-                                <a href="#"><i class="fas fa-edit"></i></a>
-                                <form action="#" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" style="background:none; border:none; color:red;"><i class="fas fa-trash-alt"></i></button>
-                                </form>
+                                <a href="{{route('achat.liste')}}"><i class="fas fa-edit text-secondary"></i></a>
                             </td>
                         </tr>
 
@@ -75,8 +86,8 @@
                     </tbody>
                 </table>
                 <div class="d-flex justify-content-start mt-3">
-    {{ $articles->links('pagination::bootstrap-4') }} <!-- Ou 'pagination::bootstrap-5' -->
-</div>
+                    {{ $articles->links('pagination::bootstrap-4') }} <!-- Ou 'pagination::bootstrap-5' -->
+                </div>
             </div>
         </div>
     </div>

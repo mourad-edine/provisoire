@@ -35,18 +35,7 @@
                             <th>options</th>
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            <th>id</th>
-                            <th>nom</th>
-                            <th>reference</th>
-                            <th>nombre articles</th>
-                            <th>image</th>
-                            <th>date création</th>
-                            <th>mise à jour</th>
-                            <th>options</th>
-                        </tr>
-                    </tfoot>
+
                     <tbody>
                         @forelse($categories as $categorie)
                         <tr>
@@ -59,15 +48,68 @@
                             <td>{{$categorie->updated_at}}</td>
                             <td>
                                 <!-- Icônes d'options -->
-                                <a href="#"><i class="fas fa-eye"></i></a>
-                                <a href="#"><i class="fas fa-edit"></i></a>
-                                <form action="#" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" style="background:none; border:none; color:red;"><i class="fas fa-trash-alt"></i></button>
-                                </form>
+                                <a href="#" data-toggle="modal" data-target="#editArticleModal{{$categorie->id}}"><i class="fas fa-edit text-secondary"></i></a>
+                                <a class="ml-3" href="#" data-toggle="modal" data-target="#supprimerArticleModal{{$categorie->id}}"><i class="fas fa-trash-alt text-danger" ></i></a>
                             </td>
                         </tr>
+                        <div class="modal fade" id="editArticleModal{{$categorie->id}}" tabindex="-1" aria-labelledby="editArticleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addArticleModalLabel">Modifier categorie </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="#" method="POST">
+                                            @csrf
+                                            <div class="form-group">
+                                                <label for="nom">Nom categorie</label>
+                                                <input value="{{$categorie->nom}}" type="text" class="form-control" id="nom" name="nom" required>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                                <button type="submit" class="btn btn-primary">enregistrer les modification</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- supprimer modal begin-->
+
+                        <div class="modal fade" id="supprimerArticleModal{{$categorie->id}}" tabindex="-1" aria-labelledby="supprimerArticleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addArticleModalLabel">suppression </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="#" method="POST">
+                                            @csrf
+                                            <div class="form-group">
+                                                <p>voulez-vous vraiment supprimer cette categorie ?</p>
+                                                <input value="{{$categorie->nom}}" type="hidden" class="form-control" id="nom" name="nom" required>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                                <button type="submit" class="btn btn-danger">supprimer</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- supprimer modal fin -->
+
                         @empty
                         <tr>
                             <td colspan="8" class="text-warning">Pas encore de données insérées pour le moment</td>
@@ -75,7 +117,7 @@
                         @endforelse
                     </tbody>
                 </table>
-                <div class="d-flex justify-content-center mt-3">
+                <div class="d-flex justify-content-start mt-3">
                     {{ $categories->links('pagination::bootstrap-4') }} <!-- Ou 'pagination::bootstrap-5' -->
                 </div>
             </div>

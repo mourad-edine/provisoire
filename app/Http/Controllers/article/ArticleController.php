@@ -13,26 +13,31 @@ class ArticleController extends Controller
     public function show()
     {
         $articles = Article::with('categorie')
-    ->orderBy('id', 'DESC') // Facultatif : Tri par ID descendant
-    ->paginate(6);
+            ->orderBy('id', 'DESC') // Facultatif : Tri par ID descendant
+            ->paginate(6);
 
-$articles->getCollection()->transform(function ($article) {
-    return [
-        'id' => $article->id,
-        'nom' => $article->nom,
-        'categorie' => $article->categorie ? $article->categorie->nom : null,
-        'prix_unitaire' => $article->prix_unitaire,
-        'prix_conditionne' => $article->prix_conditionne,
-        'quantite' => $article->quantite,
-        'created_at' => Carbon::parse($article->created_at)->format('d/m/Y H:i:s'),
-    ];
-});
+        $articles->getCollection()->transform(function ($article) {
+            return [
+                'id' => $article->id,
+                'nom' => $article->nom,
+                'categorie' => $article->categorie ? $article->categorie->nom : null,
+                'reference' => $article->reference,
+                'imagep' => $article->imagep,
+                'conditionnement' => $article->conditionnement,
+                'prix_consignation' => $article->prix_consignation,
+                'prix_achat' => $article->prix_achat,
+                'prix_cgt' => $article->prix_cgt,
+                'prix_unitaire' => $article->prix_unitaire,
+                'prix_conditionne' => $article->prix_conditionne,
+                'quantite' => $article->quantite,
+                'created_at' => Carbon::parse($article->created_at)->format('d/m/Y H:i:s'),
+            ];
+        });
 
-return view('pages.article.Liste', [
-    'articles' => $articles,
-    'categories' => Categorie::all(),
-]);
-
+        return view('pages.article.Liste', [
+            'articles' => $articles,
+            'categories' => Categorie::all(),
+        ]);
     }
 
     public function store(Request $request)
@@ -60,5 +65,9 @@ return view('pages.article.Liste', [
         }
 
         //return redirect()->route('categorie.liste')->withErrors('Error', 'veuillez réessayer !!');
+    }
+
+    public function consignation(){
+        
     }
 }

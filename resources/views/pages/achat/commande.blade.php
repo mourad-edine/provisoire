@@ -4,16 +4,24 @@
 
 @section('content')
 <div class="container-fluid">
-    <h1 class="h3 mb-2 text-gray-800">ACHAT</h1>
-    <p class="mb-4">Ajouter votre achat.</p>
 
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">ACHATS</h1>
+    <p class="mb-4">liste par commande.</p>
+
+    <!-- DataTales Example -->
     <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center bg-light border-bottom shadow-sm">
             <div class="d-flex">
                 <a href="{{route('achat.liste')}}" class="btn btn-outline-primary btn-sm font-weight-bold mr-2 px-3 shadow-sm">Listes Achats</a>
                 <a href="{{route('achat.commande')}}" class="btn btn-outline-success btn-sm font-weight-bold px-3 shadow-sm">Listes par commandes</a>
             </div>
-            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#achatModal">Nouvel Achat</button>
+            <div class="d-flex">
+
+                <!-- <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#venteModal">Nouvelle vente</button> -->
+                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#achatModal">Nouvel Achat</button>
+
+            </div>
         </div>
         <div class="card-body">
             @if(session('success'))
@@ -26,156 +34,46 @@
                     <thead>
                         <tr>
                             <th>id</th>
-                            <th>article</th>
-                            <th>P.Achat</th>
-                            <th>commande</th>
-                            <th>Tot consi°</th>
-                            <th>etat CGT</th>
-                            <th>etat BTL</th>
-                            <th>quantite</th>
-                            <th>état</th>
-                            <th>total</th>
-                            <th>date creation</th>
-                            <th>options</th>
+                            <th>id client</th>
+                            <th>date commande</th>
+                            <th>nombre d'achat</th>
+                            <th>Options</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @forelse($achats as $achat)
-                        <tr>
-                            <td>{{$achat['id']}}</td>
-                            <td>{{$achat['article']}}</td>
-                            <td>{{$achat['prix_achat']}} Ar</td>
-                            <td>C-{{$achat['numero_commande']}}</td>
-                            <td>{{$achat['prix'] + $achat['prix_cgt']. ' Ar'}}</td>
-                            <td>
-                                @if($achat['etat_cgt'] == 'non rendu')
-                                <span class="text-danger">{{$achat['etat_cgt']}}</span>
-                                @elseif($achat['etat_cgt'] == 'non consigné')
-                                <span class="text-success">{{$achat['etat_cgt']}}</span>
-                                @else
-                                <span class="text-success">non consigné</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($achat['etat'] == 'non rendu')
-                                <span class="text-danger">{{$achat['etat']}}</span>
-                                @elseif($achat['etat'] == 'non consigné')
-                                <span class="text-success">{{$achat['etat']}}</span>
-                                @else
-                                <span class="text-success">non consigné</span>
-                                @endif
-                            </td>
 
-                            <td>{{$achat['quantite']}} - cageot</td>
-                            <td><span class="text-success">payé</span></td>
-                            <td>{{ ($achat['prix_achat'] *  $achat['quantite'] * $achat['conditionnement']) + $achat['prix'] + $achat['prix_cgt'] .' Ar' }}</td>
-                            <td>{{ \Carbon\Carbon::createFromFormat('d/m/Y H:i:s', $achat['created_at'])->format('Y-m-d') }}</td>
+                    <tbody>
+                        @forelse($commandes as $commande)
+                        <tr>
+                            <td>C-{{$commande->id}}</td>
+                            <td>{{$commande->client_id ? $commande->client_id : 'Nom fournisseur'}}</td>
+                            <td>{{$commande->created_at}}</td>
+                            <td>{{$commande->achats_count}} </td>
                             <td>
-                                <a href="{{ route('achat.commande.detail', ['id' => $achat['numero_commande']]) }}">
-                                    <i class="fas fa-eye text-secondary"></i>
-                                </a>
-                                <a href="#" class="ml-3" data-toggle="modal" data-target="#venteModal2{{$achat['id']}}"><i class="fas fa-edit text-warning"></i></button>
+                                <!-- Icônes d'options -->
+                                <a href="{{route('achat.commande.detail', ['id' => $commande->id]) }}" class="mr-3"><i class="fas fa-eye"></i></a>
+                                <a href="#"><i class="fas fa-print text-warning"></i></a>
+                                <form action="#" method="POST" style="display:inline;">
+
+                                </form>
                             </td>
                         </tr>
-                        <div class="modal fade" id="venteModal2{{$achat['id']}}" tabindex="-1" role="dialog" aria-labelledby="venteModal2Label" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <!-- En-tête du modal -->
-                                    <div class="modal-header bg-light">
-                                        <h5 class="modal-title" id="venteModal2Label">Payer consignation</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-
-                                    <!-- Formulaire de paiement -->
-                                    <form action="{{route('payer.consignation')}}" method="POST">
-                                        @csrf
-                                        <!-- Corps du modal -->
-                                        <div class="modal-body">
-                                            <div class="row">
-                                                <!-- Section Bouteille -->
-                                                <div class="col-md-12 mb-3">
-                                                    <div class="form-group d-flex align-items-center">
-                                                        @if($achat['etat'] == 'non rendu')
-                                                        <input type="checkbox" name="check_bouteille" id="check_bouteille{{$achat['id']}}" class="mr-2">
-                                                        <label for="check_bouteille{{$achat['id']}}" class="mb-0 cursor-pointer">
-                                                            Bouteille----------------------<span>{{$achat['prix']}} Ar</span>
-                                                        </label>
-                                                        <input type="hidden" value="{{$achat['id']}}" name="vente_id_bouteille">
-                                                        @elseif($achat['etat'] == 'non consigné')
-                                                        <label class="mb-0 cursor-pointer">
-                                                            Bouteille----------------------<span class="text-success">non consigné</span>
-                                                        </label>
-                                                        @else
-                                                        <label class="mb-0 cursor-pointer">
-                                                            bouteille----------------------<span class="text-success">payé</span>
-                                                        </label>
-                                                        @endif
-                                                    </div>
-                                                </div>
-
-                                                <!-- Section Cageot -->
-                                                <div class="col-md-12 mb-3">
-                                                    <div class="form-group d-flex align-items-center">
-                                                        @if($achat['etat_cgt'] == 'non rendu')
-                                                        <input type="checkbox" name="check_cageot" id="check_cageot{{$achat['id']}}" class="mr-2">
-                                                        <label for="check_cageot{{$achat['id']}}" class="mb-0 cursor-pointer">
-                                                            Cageot----------------------<span>{{$achat['prix_cgt']}} Ar</span>
-                                                        </label>
-                                                        <input type="hidden" value="{{$achat['id']}}" name="vente_id_cageot">
-                                                        @elseif($achat['etat_cgt'] == 'non consigné')
-                                                        <label class="mb-0 cursor-pointer">
-                                                            Cageot----------------------<span class="text-success">non consigné</span>
-                                                        </label>
-                                                        @else
-                                                        <label class="mb-0 cursor-pointer">
-                                                            Cageot----------------------<span class="text-success">payé</span>
-                                                        </label>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Pied du modal -->
-                                        <div class="modal-footer bg-light">
-                                            <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-
-                                            @if($achat['etat'] == 'non rendu' || $achat['etat_cgt'] == 'non rendu')
-                                            <!-- Afficher le bouton "Payer" si la bouteille ou le cageot est "non rendu" -->
-                                            <button type="submit" class="btn btn-primary">Payer</button>
-                                            @else
-                                            <!-- Désactiver ou masquer le bouton "Payer" si aucun paiement n'est nécessaire -->
-                                            <button type="button" class="btn btn-primary" disabled>Payer</button>
-                                            <!-- Ou pour masquer complètement le bouton : -->
-                                            <!-- <button type="submit" class="btn btn-primary d-none">Payer</button> -->
-                                            @endif
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-warning text-center">Pas encore de données insérées pour le moment</td>
+                            <td colspan="8" class="text-warning">Pas encore de données insérées pour le moment</td>
                         </tr>
-
-                        <!-- payer consignation modal -->
-
-                       
-                        <!-- payer consination fin -->
                         @endforelse
                     </tbody>
                 </table>
-                <div class="d-flex justify-content-start mt-3">
-                    {{ $achats->links('pagination::bootstrap-4') }} <!-- Ou 'pagination::bootstrap-5' -->
+                <div class="d-flex justify-start-center mt-3">
+                    {{ $commandes->links('pagination::bootstrap-4') }} <!-- ou 'pagination::bootstrap-5' -->
                 </div>
             </div>
         </div>
     </div>
+
 </div>
 
+<!-- Modal Nouvel Achat -->
 <!-- Modal Nouvel Achat -->
 <div class="modal fade" id="achatModal" tabindex="-1" role="dialog" aria-labelledby="achatModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
@@ -266,7 +164,7 @@
                         <thead>
                             <tr>
                                 <th>Article</th>
-                                <th>Prix d'achat</th>
+                                <th>Prix Unitaire</th>
                                 <th>Quantité</th>
                                 <th>CGT</th>
                                 <th>BTL</th>
