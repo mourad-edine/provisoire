@@ -89,7 +89,7 @@
                                     </div>
 
                                     <!-- Formulaire de paiement -->
-                                    <form action="{{route('payer.consignation')}}" method="POST">
+                                    <form action="{{route('payer.consignation.achat')}}" method="POST">
                                         @csrf
                                         <!-- Corps du modal -->
                                         <div class="modal-body">
@@ -97,12 +97,13 @@
                                                 <!-- Section Bouteille -->
                                                 <div class="col-md-12 mb-3">
                                                     <div class="form-group d-flex align-items-center">
+                                                    <input type="hidden" value="{{$achat['id']}}" name="vente_id">
+
                                                         @if($achat['etat'] == 'non rendu')
                                                         <input type="checkbox" name="check_bouteille" id="check_bouteille{{$achat['id']}}" class="mr-2">
                                                         <label for="check_bouteille{{$achat['id']}}" class="mb-0 cursor-pointer">
                                                             Bouteille----------------------<span>{{$achat['prix']}} Ar</span>
                                                         </label>
-                                                        <input type="hidden" value="{{$achat['id']}}" name="vente_id_bouteille">
                                                         @elseif($achat['etat'] == 'non consigné')
                                                         <label class="mb-0 cursor-pointer">
                                                             Bouteille----------------------<span class="text-success">non consigné</span>
@@ -118,12 +119,13 @@
                                                 <!-- Section Cageot -->
                                                 <div class="col-md-12 mb-3">
                                                     <div class="form-group d-flex align-items-center">
+                                                    <input type="hidden" value="{{$achat['id']}}" name="consignation_id">
+
                                                         @if($achat['etat_cgt'] == 'non rendu')
                                                         <input type="checkbox" name="check_cageot" id="check_cageot{{$achat['id']}}" class="mr-2">
                                                         <label for="check_cageot{{$achat['id']}}" class="mb-0 cursor-pointer">
                                                             Cageot----------------------<span>{{$achat['prix_cgt']}} Ar</span>
                                                         </label>
-                                                        <input type="hidden" value="{{$achat['id']}}" name="vente_id_cageot">
                                                         @elseif($achat['etat_cgt'] == 'non consigné')
                                                         <label class="mb-0 cursor-pointer">
                                                             Cageot----------------------<span class="text-success">non consigné</span>
@@ -326,47 +328,53 @@
             return;
         }
 
-
-
-        // Ajout de la ligne dans le tableau d'affichage
+        // Ajout de la ligne dans le tableau
         let newRow = `<tr>
-        <td>${articleNom}</td>
-        <td>${price  ? price : prix} Ar</td>
-        <td>${quantite + 'cageot (' + condi + 'bouteilles/CGT)'} </td>
-        <td>${cageot.checked ? '<span class="text-success">Oui</span>' : prix_cgt + 'Ar / CGT'}</td>
-        <td>${bouteilles.checked ? '<span class="text-success">Oui</span>' : prix_consignation + 'Ar / BTL'}</td>
-        <td>${total}Ar</td>
-        <td><button type="button" class="btn btn-danger btn-sm removeArticle">X</button></td>
-    </tr>`;
+            <td>${articleNom}</td>
+            <td>${price ? price : prix} Ar</td>
+            <td>${quantite + ' cageot (' + condi + ' bouteilles/CGT)'}</td>
+            <td>${cageot.checked ? '<span class="text-success">Oui</span>' : prix_cgt + ' Ar / CGT'}</td>
+            <td>${bouteilles.checked ? '<span class="text-success">Oui</span>' : prix_consignation + ' Ar / BTL'}</td>
+            <td>${total} Ar</td>
+            <td><button type="button" class="btn btn-danger btn-sm removeArticle">X</button></td>
+        </tr>`;
 
         document.getElementById('articlesTable').insertAdjacentHTML('beforeend', newRow);
 
-        // Ajout des inputs cachés dans le formulaire pour l'envoi en POST
+        // Ajout des inputs cachés dans un wrapper div spécifique
         let hiddenInputs = document.getElementById('hiddenInputs');
-        hiddenInputs.insertAdjacentHTML('beforeend', `
-        <input type="hidden" name="articles[]" value="${articleId}">
-        <input type="hidden" name="quantites[]" value="${quantite}">
-        <input type="hidden" name="dateachat[]" value="${dateachat}">
-        <input type="hidden" name="prices[]" value="${price ? price : prix}">
-        <input type="hidden" name="fournisseurs[]" value="${fnrsId}">
-        <input type="hidden" name="bouteilles[]" value="${bouteilles.checked ? 1 : 0}">
-        <input type="hidden" name="cageots[]" value="${cageot.checked  ? 1 : 0}">
-        <input type="hidden" name="consignations[]" value="${cageot.checked && bouteilles.checked ? 0 : 1}">
-    `);
+
+        let wrapper = document.createElement('div'); // Création d'un wrapper pour grouper les inputs liés à un article
+        wrapper.classList.add('articleInputs'); // Pour repérer facilement
+        wrapper.innerHTML = `
+            <input type="hidden" name="articles[]" value="${articleId}">
+            <input type="hidden" name="quantites[]" value="${quantite}">
+            <input type="hidden" name="dateachat[]" value="${dateachat}">
+            <input type="hidden" name="prices[]" value="${price ? price : prix}">
+            <input type="hidden" name="fournisseurs[]" value="${fnrsId}">
+            <input type="hidden" name="bouteilles[]" value="${bouteilles.checked ? 1 : 0}">
+            <input type="hidden" name="cageots[]" value="${cageot.checked ? 1 : 0}">
+            <input type="hidden" name="consignations[]" value="${cageot.checked && bouteilles.checked ? 0 : 1}">
+        `;
+
+        hiddenInputs.appendChild(wrapper);
     });
 
     // Suppression d'un article du tableau et des inputs cachés
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('removeArticle')) {
             let row = e.target.closest('tr');
+            let rowIndex = Array.from(row.parentNode.children).indexOf(row);
             row.remove();
 
-            // Supprimer les inputs cachés correspondants
-            let hiddenInputs = document.getElementById('hiddenInputs').children;
-            for (let i = 0; i < 5; i++) {
-                hiddenInputs[hiddenInputs.length - 1].remove(); // Supprime les inputs un par un
+            // Supprimer le wrapper div correspondant aux inputs cachés
+            let hiddenInputs = document.getElementById('hiddenInputs');
+            let wrappers = hiddenInputs.getElementsByClassName('articleInputs');
+            if (wrappers[rowIndex]) {
+                wrappers[rowIndex].remove();
             }
         }
     });
 </script>
+
 @endsection

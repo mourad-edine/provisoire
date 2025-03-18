@@ -28,6 +28,7 @@ class AchatController extends Controller
                 'prix_achat' => $achat->articles ? $achat->articles->prix_achat : null,
                 'prix' => $achat->prix,
                 'conditionnement' => $achat->articles ? $achat->articles->conditionnement : null,
+                'consignation_id' => $achat->consignation_achat ? $achat->consignation_achat->id : null,
                 'article' => $achat->articles ? $achat->articles->nom : null,
                 'numero_commande' => $achat->commande_id,
                 'etat' => $achat->consignation_achat ? $achat->consignation_achat->etat : null,

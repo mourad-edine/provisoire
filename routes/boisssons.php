@@ -54,5 +54,6 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
     Route::get('/download-pdf/{id}', [PdfController::class, 'generatePDF'])->name('pdf.download');
 
     Route::post('/consignation-payer', [ConsignationController::class, 'payer'])->name('payer.consignation');
+    Route::post('/consignation-payer-achats', [ConsignationController::class, 'payerAchat'])->name('payer.consignation.achat');
 
 });
