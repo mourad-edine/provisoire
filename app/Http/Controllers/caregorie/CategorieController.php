@@ -33,4 +33,26 @@ class CategorieController extends Controller
             }
         }
     }
+
+    public function update(Request $request){
+        dd($request->all());
+        $categories = Categorie::find($request->id);
+        if ($Categories) {
+            $Categories->nom = $request->nom ? $request->nom : $categories->nom;
+            $Categories->imagep = $request->imagep ? $request->imagep : null;
+            $Categories->reference = $request->reference ? $request->reference : null;
+            $Categories->save();
+            return redirect()->back()->withSuccess('Success', 'success');
+        }
+    }
+
+    public function delete($id)
+    {
+        $article = Categorie::find($id);
+        if ($article) {
+            $article->delete();
+            return redirect()->back()->withSuccess('Success', 'categorie supprimé avec success success');
+        }
+
+    }
 }

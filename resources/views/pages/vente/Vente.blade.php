@@ -173,10 +173,10 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <div>
-                                                <label for="dateachat">Cageot de 24 : <span class="text-warning" id="c24">0</span></label> &nbsp;-----------&nbsp;<label for="dateachat">débordement : <span class="text-warning" id="reste1">0</span> &nbsp;BTL</label><input class="form-check-input" type="checkbox" id="choix1" name="choix1">
+                                                <label for="dateachat">Cageot de 24 : <span class="text-warning" id="c24">0</span></label> &nbsp;-----------&nbsp;<label for="dateachat">débordement : <span class="text-warning" id="reste1">0</span> &nbsp;BTL</label>
 
                                                 <br>
-                                                <label for="dateachat">Cageot de 20 : <span class="text-warning" id="c20">0</span></label> &nbsp;-----------&nbsp;<label for="dateachat">debordement : <span class="text-warning" id="reste2">0</span> &nbsp;BTL</label><input class="form-check-input" type="checkbox" id="choix1" name="choix2"><br>
+                                                <label for="dateachat">Cageot de 20 : <span class="text-warning" id="c20">0</span></label> &nbsp;-----------&nbsp;<label for="dateachat">debordement : <span class="text-warning" id="reste2">0</span> &nbsp;BTL</label><br>
 
                                             </div>
 

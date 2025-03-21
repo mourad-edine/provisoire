@@ -18,9 +18,14 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
 
     Route::get('/categories', [CategorieController::class, 'show'])->name('categorie.liste');
     Route::post('/categories', [CategorieController::class, 'store'])->name('categorie.store');
+    Route::post('/categories-update', [CategorieController::class, 'update'])->name('categorie.update');
+    Route::get('/categories/{id}', [CategorieController::class, 'delete'])->name('delete.categorie');
 
+    Route::post('/articles-update', [ArticleController::class, 'update'])->name('articles.update');
     Route::get('/articles', [ArticleController::class, 'show'])->name('article.liste');
     Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
+    Route::get('/articles/{id}', [ArticleController::class, 'delete'])->name('delete.article');
+
 
     Route::get('/ventes', [VenteController::class, 'show'])->name('vente.liste');
     Route::post('/ventes', [VenteController::class, 'store'])->name('vente.store');

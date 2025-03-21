@@ -251,10 +251,10 @@
 
                     <tbody>
                         <tr>
-                            <td>{{ $conditionnement->id }}</td>
-                            <td>3000 Ar/CGT</td>
-                            <td>{{ optional($conditionnement->conditionnement)->nombre_cageot. ' CGT' ?? 'non conditionné'}}</td>
-                            <td>{{ optional($conditionnement->conditionnement)->nombre_cageot * 3000  ?? 'non conditionné' }} Ar</td>
+                            <td>{{ $conditionnement->id ? $conditionnement->id : 'non conditionné'}}</td>
+                            <td>{{optional($conditionnement->conditionnement)->nombre_cageot ? '3000 Ar/CGT' : 'non conditionné' }}</td>
+                            <td>{{optional($conditionnement->conditionnement)->nombre_cageot  ?  optional($conditionnement->conditionnement)->nombre_cageot. ' CGT' : 'non conditionné'}}</td>
+                            <td>{{ optional($conditionnement->conditionnement)->nombre_cageot ? optional($conditionnement->conditionnement)->nombre_cageot * 3000 .'Ar':'non conditionné' }} </td>
                             <td>{{ optional($conditionnement->conditionnement)->etat ?? 'non conditionné' }}</td>
                             <td>{{ optional($conditionnement->conditionnement)->created_at  ?? 'non conditionné' }}</td>
                             <td>

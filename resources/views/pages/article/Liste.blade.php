@@ -48,10 +48,16 @@
                                 $quotient = intdiv($article['quantite'], $article['conditionnement']); // Division entière
                                 $reste = $article['quantite'] % $article['conditionnement']; // Reste de la division
                                 $affichage = $quotient;
-                                    @endphp
-                                    {{ $affichage }} cageot{{ $affichage > 1 ? 's' : '' }} @if($reste> 0) et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}@endif
+                                @endphp
+                                {{ $affichage }} cageot{{ $affichage > 1 ? 's' : '' }} @if($reste> 0) et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}@endif
                             </td>
-                            <td>{{ \Carbon\Carbon::parse($article['created_at'])->format('Y-m-d') }}</td>
+                            <td>
+                                @if (!empty($article['created_at']))
+                                {{ \Carbon\Carbon::createFromFormat('d/m/Y H:i:s', $article['created_at'])->format('Y-m-d') }}
+                                @else
+                                -
+                                @endif
+                            </td>
                             <td>
                                 <a href="#" data-toggle="modal" data-target="#editArticleModal{{$article['id']}}"><i class="fas fa-edit text-secondary"></i></a>
                                 <a class="text-danger ml-3" href="#" data-toggle="modal" data-target="#supprimerModal{{ $article['id'] }}">
@@ -88,17 +94,18 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="{{ route('articles.store') }}" method="POST">
+                                        <form action="{{ route('articles.update') }}" method="POST">
                                             @csrf
                                             <div class="form-group">
                                                 <label for="nom">Nom</label>
                                                 <input value="{{$article['nom']}}" type="text" class="form-control" id="nom" name="nom" required>
+                                                <input type="hidden" name="id" value="{{$article['id']}}">
                                             </div>
                                             <div class="">
                                                 <div class="form-group">
                                                     <label for="categorie">categorie</label>
                                                     <select class="form-control" id="categorie" name="categorie_id">
-                                                        <option value="{{$article['categorie']}}">{{$article['categorie']}}</option>
+                                                        <option value="{{$article['categorie_id']}}">{{$article['categorie']}}</option>
                                                         @foreach($categories as $categorie)
                                                         <option value="{{ $categorie->id }}">{{ $categorie->nom }}</option>
                                                         @endforeach
@@ -124,7 +131,7 @@
                                                 <input value="{{$article['prix_unitaire']}}" type="number" class="form-control" id="prix_unitaire" name="prix_unitaire" required>
                                             </div>
 
-                                            
+
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
                                                 <button type="submit" class="btn btn-primary">enregistrer modification</button>

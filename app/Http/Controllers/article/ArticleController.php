@@ -21,6 +21,7 @@ class ArticleController extends Controller
                 'id' => $article->id,
                 'nom' => $article->nom,
                 'categorie' => $article->categorie ? $article->categorie->nom : null,
+                'categorie_id' => $article->categorie ? $article->categorie->id : null,
                 'reference' => $article->reference,
                 'imagep' => $article->imagep,
                 'conditionnement' => $article->conditionnement,
@@ -54,7 +55,7 @@ class ArticleController extends Controller
                 'prix_consignation' => $request->prix_consignationn ? $request->prix_consignation : null,
                 'prix_conditionne' =>   $request->prix_conditionne ? $request->prix_conditionne : null,
                 'quantite' => $request->quantite ?  (int)$request->quantite : 0,
-                'prix_vente' => $request->prix_vente ?  (int)$request->prix_vente : 0,
+                'prix_achat' => $request->prix_achat ?  (int)$request->prix_achat : 0,
 
             ];
 
@@ -67,7 +68,32 @@ class ArticleController extends Controller
         //return redirect()->route('categorie.liste')->withErrors('Error', 'veuillez réessayer !!');
     }
 
-    public function consignation(){
-        
+    public function consignation() {}
+
+    public function update(Request $request)
+    {
+        $article = Article::find($request->id);
+        //dd($request->all() ,$article);
+        //dd($article);
+        if ($article) {
+            $article->categorie_id = (int)$request->categorie_id ? (int)$request->categorie_id : $article->categorie_id;
+            $article->nom = $request->nom ? $request->nom : $article->nom;
+            $article->prix_unitaire = (int)$request->prix_unitaire  ? (int)$request->prix_unitaire : $article->prix_unitaire;
+            $article->conditionnement = $request->conditionnement ? $request->conditionnement : $article->conditionnement;
+            $article->prix_achat = $request->prix_achat ?  (int)$request->prix_achat : $article->prix_vente;
+
+            $article->save();
+            return redirect()->route('article.liste')->withSuccess('Success', 'success');
+        }
+    }
+
+    public function delete($id)
+    {
+        $article = Article::find($id);
+        if ($article) {
+            $article->delete();
+            return redirect()->back()->withSuccess('Success', 'article supprimé avec success success');
+        }
+
     }
 }

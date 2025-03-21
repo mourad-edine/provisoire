@@ -71,7 +71,8 @@ class AchatController extends Controller
                 'commande_id' => $commande->id,
                 'quantite' => $data['quantites'][$index],
                 'date_entre' => $data['dateachat'][$index],
-                'prix' => $data['prices'][$index],
+                'prix_achat' => $data['prices'][$index],
+                'prix' => $data['prices'][$index] + 100,
                 'fournisseur_id' => $data['fournisseurs'][$index],
             ]);
             // Mise à jour de la quantité d'article

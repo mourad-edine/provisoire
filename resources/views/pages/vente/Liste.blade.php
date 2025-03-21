@@ -147,7 +147,7 @@
                                 <div class="modal-content">
                                     <!-- En-tête du modal -->
                                     <div class="modal-header bg-light">
-                                        <h5 class="modal-title" id="venteModal2Label">Payer consignation</h5>
+                                        <h5 class="modal-title" id="venteModal2Label">Rendre consignation</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
