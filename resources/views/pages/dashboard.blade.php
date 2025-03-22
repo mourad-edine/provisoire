@@ -242,52 +242,7 @@
 
     </div>
     <div class="row">
-        <div class="col-lg-3">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-secondary">Revenus</h6>
-                </div>
-                <div class="card-body">
-                    <canvas id="revenuChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Ventes -->
-        <div class="col-lg-3">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-secondary">Ventes</h6>
-                </div>
-                <div class="card-body">
-                    <canvas id="venteChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Ventes par Catégorie -->
-        <div class="col-lg-3">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-secondary">Répartition des Ventes</h6>
-                </div>
-                <div class="card-body">
-                    <canvas id="categorieChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Profits -->
-        <div class="col-lg-3">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-secondary">Profits</h6>
-                </div>
-                <div class="card-body">
-                    <canvas id="profitChart"></canvas>
-                </div>
-            </div>
-        </div>
+        
     </div>
 </div>
 

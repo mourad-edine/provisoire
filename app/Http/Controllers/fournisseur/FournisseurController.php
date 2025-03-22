@@ -33,4 +33,15 @@ class FournisseurController extends Controller
     public function performance(){
         return view('pages.fournisseur.performance');
     }
+
+    public function delete($id)
+    {
+        //dd($id);
+        $fournisseur = Fournisseur::find($id);
+        if ($fournisseur) {
+            $fournisseur->delete();
+            return redirect()->back()->withSuccess('Success', 'fournisseur supprimé avec success success');
+        }
+
+    }
 }

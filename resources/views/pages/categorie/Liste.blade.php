@@ -7,7 +7,6 @@
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">CATEGORIE</h1>
-    <p class="mb-4">Ajouter votre categorie</p>
 
     <!-- DataTables Example -->
     <div class="card shadow mb-4">
@@ -49,7 +48,7 @@
                             <td>
                                 <!-- Icônes d'options -->
                                 <a href="#" data-toggle="modal" data-target="#editArticleModal{{$categorie->id}}"><i class="fas fa-edit text-secondary"></i></a>
-                                <a class="ml-3" href="#" data-toggle="modal" data-target="#supprimerArticleModal{{$categorie->id}}"><i class="fas fa-trash-alt text-danger" ></i></a>
+                                <a class="ml-3" href="#" data-toggle="modal" data-target="#supprimerArticleModal{{$categorie->id}}"><i class="fas fa-trash-alt text-danger"></i></a>
                             </td>
                         </tr>
                         <div class="modal fade" id="editArticleModal{{$categorie->id}}" tabindex="-1" aria-labelledby="editArticleModalLabel" aria-hidden="true">
@@ -62,7 +61,7 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="#" method="POST">
+                                        <form action="{{route('categorie.update' , ['id'=> $categorie->id])}}" method="POST">
                                             @csrf
                                             <div class="form-group">
                                                 <label for="nom">Nom categorie</label>
@@ -91,18 +90,14 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="#" method="POST">
-                                            @csrf
-                                            <div class="form-group">
-                                                <p>voulez-vous vraiment supprimer cette categorie ?</p>
-                                                <input value="{{$categorie->nom}}" type="hidden" class="form-control" id="nom" name="nom" required>
-                                            </div>
+                                        <div class="form-group">
+                                            <p>voulez-vous vraiment supprimer cette categorie ?</p>
+                                        </div>
 
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                                                <button type="submit" class="btn btn-danger">supprimer</button>
-                                            </div>
-                                        </form>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                            <a href="{{route('delete.categorie', ['id' => $categorie->id])}}"><button type="button" class="btn btn-danger">supprimer</button></a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

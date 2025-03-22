@@ -33,4 +33,15 @@ class ClientController extends Controller
     public function performance(){
         return view('pages.clients.Performance');
     }
+
+    public function delete($id)
+    {
+        //dd($id);
+        $client = Client::find($id);
+        if ($client) {
+            $client->delete();
+            return redirect()->back()->withSuccess('Success', 'client supprimé avec success success');
+        }
+
+    }
 }

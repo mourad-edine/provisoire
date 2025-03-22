@@ -156,12 +156,12 @@
                                                 <!-- Section Bouteille -->
                                                 <div class="col-md-12 mb-3">
                                                     <div class="form-group d-flex align-items-center">
+                                                        <input type="hidden" value="{{$vente['id']}}" name="vente_id">
                                                         @if($vente['etat'] == 'non rendu')
                                                         <input type="checkbox" name="check_bouteille" id="check_bouteille{{$vente['id']}}" class="mr-2">
                                                         <label for="check_bouteille{{$vente['id']}}" class="mb-0 cursor-pointer">
                                                             Bouteille----------------------<span>{{$vente['consignation']}} Ar</span>
                                                         </label>
-                                                        <input type="hidden" value="{{$vente['id']}}" name="vente_id_bouteille">
                                                         @elseif($vente['etat'] == 'avec BTL')
                                                         <label class="mb-0 cursor-pointer">
                                                             Bouteille----------------------<span class="text-success">non consigné</span>
@@ -177,12 +177,12 @@
                                                 <!-- Section Cageot -->
                                                 <div class="col-md-12 mb-3">
                                                     <div class="form-group d-flex align-items-center">
-                                                        @if($vente['etat_cgt'] == 'non rendu')
+                                                    <input type="hidden" value="{{$vente['consignation_id']}}" name="consignation_id">
+                                                    @if($vente['etat_cgt'] == 'non rendu')
                                                         <input type="checkbox" name="check_cageot" id="check_cageot{{$vente['id']}}" class="mr-2">
                                                         <label for="check_cageot{{$vente['id']}}" class="mb-0 cursor-pointer">
                                                             Cageot----------------------<span>{{$vente['prix_cgt']}} Ar</span>
                                                         </label>
-                                                        <input type="hidden" value="{{$vente['id']}}" name="vente_id_cageot">
                                                         @elseif($vente['etat_cgt'] == 'avec CGT' || $vente['etat_cgt'] == 'non condi°')
                                                         <label class="mb-0 cursor-pointer">
                                                             Cageot----------------------<span class="text-success">non consigné</span>

@@ -9,7 +9,10 @@
 
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Listes achats</h6>
+        <div class="d-flex">
+                <a href="{{route('achat.liste')}}" class="btn btn-outline-primary btn-sm font-weight-bold mr-2 px-3 shadow-sm">Listes Achats</a>
+                <a href="{{route('achat.commande')}}" class="btn btn-outline-success btn-sm font-weight-bold px-3 shadow-sm">Listes par commandes</a>
+            </div>
             <div class="d-flex justify-content-end">
                 <button class="btn btn-secondary btn-sm mr-3"> <a class="text-white" href="#"><i class="fas fa-print text-white mr-2"></i>facture</a></button>
                 <button class="btn btn-primary btn-sm"><a class="text-white" href="{{route('achat.commande')}}">retour</a></button>
@@ -84,7 +87,7 @@
                                     </div>
 
                                     <!-- Formulaire de paiement -->
-                                    <form action="{{route('payer.consignation')}}" method="POST">
+                                    <form action="{{route('payer.consignation.achat')}}" method="POST">
                                         @csrf
                                         <!-- Corps du modal -->
                                         <div class="modal-body">
@@ -92,12 +95,13 @@
                                                 <!-- Section Bouteille -->
                                                 <div class="col-md-12 mb-3">
                                                     <div class="form-group d-flex align-items-center">
+                                                    <input type="hidden" value="{{$achat['id']}}" name="vente_id">
+
                                                         @if($achat['etat'] == 'non rendu')
                                                         <input type="checkbox" name="check_bouteille" id="check_bouteille{{$achat['id']}}" class="mr-2">
                                                         <label for="check_bouteille{{$achat['id']}}" class="mb-0 cursor-pointer">
                                                             Bouteille----------------------<span>{{$achat['prix']}} Ar</span>
                                                         </label>
-                                                        <input type="hidden" value="{{$achat['id']}}" name="vente_id_bouteille">
                                                         @elseif($achat['etat'] == 'non consigné')
                                                         <label class="mb-0 cursor-pointer">
                                                             Bouteille----------------------<span class="text-success">non consigné</span>
@@ -113,12 +117,13 @@
                                                 <!-- Section Cageot -->
                                                 <div class="col-md-12 mb-3">
                                                     <div class="form-group d-flex align-items-center">
+                                                       <input type="hidden" value="{{$achat['consignation_id']}}" name="consignation_id">
+
                                                         @if($achat['etat_cgt'] == 'non rendu')
                                                         <input type="checkbox" name="check_cageot" id="check_cageot{{$achat['id']}}" class="mr-2">
                                                         <label for="check_cageot{{$achat['id']}}" class="mb-0 cursor-pointer">
                                                             Cageot----------------------<span>{{$achat['prix_cgt']}} Ar</span>
                                                         </label>
-                                                        <input type="hidden" value="{{$achat['id']}}" name="vente_id_cageot">
                                                         @elseif($achat['etat_cgt'] == 'non consigné')
                                                         <label class="mb-0 cursor-pointer">
                                                             Cageot----------------------<span class="text-success">non consigné</span>

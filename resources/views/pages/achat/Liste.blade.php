@@ -97,7 +97,7 @@
                                                 <!-- Section Bouteille -->
                                                 <div class="col-md-12 mb-3">
                                                     <div class="form-group d-flex align-items-center">
-                                                    <input type="hidden" value="{{$achat['id']}}" name="vente_id">
+                                                        <input type="hidden" value="{{$achat['id']}}" name="vente_id">
 
                                                         @if($achat['etat'] == 'non rendu')
                                                         <input type="checkbox" name="check_bouteille" id="check_bouteille{{$achat['id']}}" class="mr-2">
@@ -119,7 +119,7 @@
                                                 <!-- Section Cageot -->
                                                 <div class="col-md-12 mb-3">
                                                     <div class="form-group d-flex align-items-center">
-                                                    <input type="hidden" value="{{$achat['id']}}" name="consignation_id">
+                                                        <input type="hidden" value="{{$achat['consignation_id']}}" name="consignation_id">
 
                                                         @if($achat['etat_cgt'] == 'non rendu')
                                                         <input type="checkbox" name="check_cageot" id="check_cageot{{$achat['id']}}" class="mr-2">
@@ -165,7 +165,7 @@
 
                         <!-- payer consignation modal -->
 
-                       
+
                         <!-- payer consination fin -->
                         @endforelse
                     </tbody>

@@ -45,10 +45,13 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
     Route::get('/clients', [ClientController::class, 'show'])->name('client.liste');
     Route::get('/clients-performance', [ClientController::class, 'performance'])->name('client.performance');
     Route::post('/clients', [ClientController::class, 'store'])->name('client.store');
+    Route::get('/clients/{id}', [ClientController::class, 'delete'])->name('delete.client');
 
     Route::get('/fournisseurs', [FournisseurController::class, 'show'])->name('fournisseur.liste');
     Route::get('/fournisseurs-performance', [FournisseurController::class, 'performance'])->name('fournisseur.performance');
     Route::post('/fournisseurs', [FournisseurController::class, 'store'])->name('fournisseur.store');
+    Route::get('/fournisseurs/{id}', [FournisseurController::class, 'delete'])->name('delete.fournisseur');
+
 
     Route::get('/stock-categorie', [StockController::class, 'categorie'])->name('stock.categorie.liste');
     Route::get('/stock-globale', [StockController::class, 'show'])->name('stock.liste');

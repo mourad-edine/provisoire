@@ -241,7 +241,7 @@
         </div>
 
     </div>
-    <div class="row">
+    <!-- <div class="row">
         <div class="col-lg-3">
             <div class="card shadow-sm mb-4">
                 <div class="card-header py-3">
@@ -253,7 +253,6 @@
             </div>
         </div>
 
-        <!-- Ventes -->
         <div class="col-lg-3">
             <div class="card shadow-sm mb-4">
                 <div class="card-header py-3">
@@ -265,7 +264,7 @@
             </div>
         </div>
 
-        <!-- Ventes par Catégorie -->
+         Ventes par Catégorie 
         <div class="col-lg-3">
             <div class="card shadow-sm mb-4">
                 <div class="card-header py-3">
@@ -277,7 +276,7 @@
             </div>
         </div>
 
-        <!-- Profits -->
+  
         <div class="col-lg-3">
             <div class="card shadow-sm mb-4">
                 <div class="card-header py-3">
@@ -288,7 +287,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

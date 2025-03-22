@@ -49,7 +49,7 @@ class AchatController extends Controller
 
     public function store(Request $request)
     {
-        //dd($request->all());
+    //dd($request->all());
         $data = $request->validate([
             'articles' => 'required|array',
             'quantites' => 'required|array',
@@ -71,14 +71,14 @@ class AchatController extends Controller
                 'commande_id' => $commande->id,
                 'quantite' => $data['quantites'][$index],
                 'date_entre' => $data['dateachat'][$index],
-                'prix_achat' => $data['prices'][$index],
-                'prix' => $data['prices'][$index] + 100,
+                'prix' => $data['prices'][$index],
                 'fournisseur_id' => $data['fournisseurs'][$index],
             ]);
             // Mise à jour de la quantité d'article
             $article = Article::find($article);
             $article->quantite = $article->quantite + ($data['quantites'][$index] * (int)$article->conditionnement);
-            $article->prix_unitaire = $data['prices'][$index];
+            $article->prix_achat = $data['prices'][$index];
+            $article->prix_unitaire = $data['prices'][$index] + 100;
             $article->save();
             if($data['consignations'][$index] == 1){
                 $this->consignation($achat->id , $data['quantites'][$index] , $article->id , $data['bouteilles'][$index] , $data['cageots'][$index]);
@@ -137,6 +137,7 @@ class AchatController extends Controller
                 'prix' => $achat->prix,
                 'article' => $achat->articles ? $achat->articles->nom : null,
                 'numero_commande' => $achat->commande_id,
+                'consignation_id' => $achat->consignation_achat ? $achat->consignation_achat->id : null,
                 'etat' => $achat->consignation_achat ? $achat->consignation_achat->etat : null,
                 'etat_cgt' => $achat->consignation_achat ? $achat->consignation_achat->etat_cgt : null,
                 'prix_cgt' => $achat->consignation_achat ? $achat->consignation_achat->prix_cgt : null,

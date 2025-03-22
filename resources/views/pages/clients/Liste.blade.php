@@ -6,14 +6,13 @@
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Tables</h1>
-    <p class="mb-4">Ajouter votre client
-        .</p>
+    <h1 class="h3 mb-2 text-gray-800">Clients</h1>
+
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Listes catégorie</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Listes des clients</h6>
             <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addArticleModal">Ajouter client</button>
         </div>
         <div class="card-body">
@@ -59,16 +58,14 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="#" method="POST">
-                                            @csrf
                                             <div class="form-group">
                                                 <p>voulez-vous vraiment supprimer ce client ?</p>
-                                                <input value="{{$client->nom}}" type="hidden" class="form-control" id="nom" name="nom" required>
                                             </div>
 
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                                                <button type="submit" class="btn btn-danger">supprimer</button>
+                                                <a href="{{route('delete.client' , ['id' => $client->id ] )}}"><button type="button" class="btn btn-danger">supprimer</button></a>
+                                                
                                             </div>
                                         </form>
                                     </div>

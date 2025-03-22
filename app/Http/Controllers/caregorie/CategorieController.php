@@ -10,7 +10,7 @@ class CategorieController extends Controller
 {
     public function show(){
 
-        $Categories = Categorie::withCount('articles')->paginate(4);
+        $Categories = Categorie::withCount('articles')->orderby('id','DESC')->paginate(4);
         //dd($Categories);
         return view('pages.categorie.Liste' ,[
             'categories' => $Categories
@@ -35,19 +35,20 @@ class CategorieController extends Controller
     }
 
     public function update(Request $request){
-        dd($request->all());
+        //dd($request->all());
         $categories = Categorie::find($request->id);
-        if ($Categories) {
-            $Categories->nom = $request->nom ? $request->nom : $categories->nom;
-            $Categories->imagep = $request->imagep ? $request->imagep : null;
-            $Categories->reference = $request->reference ? $request->reference : null;
-            $Categories->save();
+        if ($categories) {
+            $categories->nom = $request->nom ? $request->nom : $categories->nom;
+            $categories->imagep = $request->imagep ? $request->imagep : null;
+            $categories->reference = $request->reference ? $request->reference : null;
+            $categories->save();
             return redirect()->back()->withSuccess('Success', 'success');
         }
     }
 
     public function delete($id)
     {
+        //dd($id);
         $article = Categorie::find($id);
         if ($article) {
             $article->delete();

@@ -17,6 +17,7 @@ class ConsignationController extends Controller
     }
 
     public function payer(Request $request){
+        //dd($request->all());
         if($request){
             $bouteille = $request->has('check_bouteille') ? 1 : 0;
             $cageot = $request->has('check_cageot') ? 1 : 0;
@@ -41,6 +42,7 @@ class ConsignationController extends Controller
     }
 
     public function payerAchat(Request $request){
+        //dd($request->all());
         if($request){
             $bouteille = $request->has('check_bouteille') ? 1 : 0;
             $cageot = $request->has('check_cageot') ? 1 : 0;

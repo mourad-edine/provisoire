@@ -79,7 +79,7 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                                        <button type="submit" class="btn btn-danger">supprimer</button>
+                                        <a href="{{route('delete.article', ['id' => $article['id']])}}"><button type="submit" class="btn btn-danger">supprimer</button></a>
                                     </div>
                                 </div>
                             </div>
@@ -88,7 +88,7 @@
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="addArticleModalLabel">Ajouter un article</h5>
+                                        <h5 class="modal-title" id="addArticleModalLabel">Modifier articles</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
@@ -159,7 +159,7 @@
 
 <!-- Modal d'ajout d'article -->
 <div class="modal fade" id="addArticleModal" tabindex="-1" aria-labelledby="addArticleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addArticleModalLabel">Ajouter un article</h5>
@@ -171,7 +171,7 @@
                 <form action="{{ route('articles.store') }}" method="POST">
                     @csrf
                     <div class="form-group">
-                        <label for="nom">Nom</label>
+                        <label for="nom">Nom du boisson</label>
                         <input type="text" class="form-control" id="nom" name="nom" required>
                     </div>
                     <div class="">
@@ -196,7 +196,7 @@
                     </div>
                     <div class="form-group">
                         <label for="prix_unitaire">Prix d'achat</label>
-                        <input type="number" class="form-control" id="prix_vente" name="prix_vente" required>
+                        <input type="number" class="form-control" id="prix_achat" name="prix_achat" required>
                     </div>
                     <div class="form-group">
                         <label for="prix_unitaire">Prix de vente</label>
@@ -207,13 +207,11 @@
                         <input type="checkbox" id="checkCageot" name="checkCageot">
                         <label for="checkCageot">Ajouter un prix en cageot</label>
                     </div>
-                    <div class="form-group" id="prixCageotContainer" style="display:none;">
-                        <label for="prix_conditionne">Prix en Cageot</label>
-                        <input type="number" class="form-control" id="prix_conditionne" name="prix_conditionne">
-                    </div>
-                    <div class="form-group">
-                        <label for="quantite">Quantité en cageot (facultatif <span style="color: red;">*</span> )</label>
-                        <input type="number" class="form-control" id="quantite" name="quantite">
+                    <div id="prixCageotContainer" style="display:none;">
+                        <div class="form-group">
+                            <label for="quantite">prix en cageot (facultatif <span style="color: red;">*</span> )</label>
+                            <input type="number" class="form-control" id="prix_conditionne" name="prix_conditionne">
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
