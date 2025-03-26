@@ -9,7 +9,15 @@
 
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Liste des boissons</h6>
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <form action="{{ route('articles.search') }}" method="POST" class="form-inline">
+                    @csrf
+                    <div class="form-group mx-sm-3 mb-2">
+                        <input type="text" class="form-control" name="search" placeholder="Rechercher...">
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2">Rechercher</button>
+                </form>
+            </div>
             <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addArticleModal">Ajouter Boisson</button>
         </div>
         <div class="card-body">
@@ -103,9 +111,8 @@
                                             </div>
                                             <div class="">
                                                 <div class="form-group">
-                                                    <label for="categorie">categorie</label>
-                                                    <select class="form-control" id="categorie" name="categorie_id">
-                                                        <option value="{{$article['categorie_id']}}">{{$article['categorie']}}</option>
+                                                    <label for="categorie">Catégorie</label>
+                                                    <select class="form-control select2" id="categorie" name="categorie_id">
                                                         @foreach($categories as $categorie)
                                                         <option value="{{ $categorie->id }}">{{ $categorie->nom }}</option>
                                                         @endforeach
@@ -119,15 +126,18 @@
                                                         <option value="{{$article['conditionnement']}}">---choisir---</option>
                                                         <option value="20">cageot de 20</option>
                                                         <option value="24">cageot de 24</option>
+                                                        <option value="6">Pack de 6</option>
+                                                        <option value="8">Pack de 8</option>
+                                                        <option value="12">Pack de 12</option>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label for="prix_unitaire">Prix d'achat</label>
+                                                <label for="prix_unitaire">Prix d'achat unité</label>
                                                 <input value="{{$article['prix_achat']}}" type="number" class="form-control" id="prix_achat" name="prix_achat" required>
                                             </div>
                                             <div class="form-group">
-                                                <label for="prix_unitaire">Prix de vente</label>
+                                                <label for="prix_unitaire">Prix de vente unité</label>
                                                 <input value="{{$article['prix_unitaire']}}" type="number" class="form-control" id="prix_unitaire" name="prix_unitaire" required>
                                             </div>
 
@@ -175,41 +185,41 @@
                         <input type="text" class="form-control" id="nom" name="nom" required>
                     </div>
                     <div class="">
-                        <div class="form-group">
-                            <label for="categorie">categorie</label>
-                            <select class="form-control" id="categorie" name="categorie_id">
-                                @foreach($categories as $categorie)
-                                <option value="{{ $categorie->id }}">{{ $categorie->nom }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="">
-                        <div class="form-group">
-                            <label for="conditionnement">conditionnement</label>
-                            <select class="form-control" id="conditionnement" name="conditionnement">
-                                <option value="20">---selectionner--</option>
-                                <option value="20">cageot de 20</option>
-                                <option value="24">cageot de 24</option>
-                            </select>
-                        </div>
+                        <label for="categorie">Catégorie</label>
+                        <select class="form-control select2" id="categorie" name="categorie_id" required>
+                            <option value=""></option> <!-- Option vide pour le placeholder -->
+                            @foreach($categories as $categorie)
+                            <option value="{{ $categorie->id }}">{{ $categorie->nom }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label for="prix_unitaire">Prix d'achat</label>
-                        <input type="number" class="form-control" id="prix_achat" name="prix_achat" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="prix_unitaire">Prix de vente</label>
-                        <input type="number" class="form-control" id="prix_unitaire" name="prix_unitaire" required>
-                    </div>
+                        <label for="conditionnement">Conditionnement</label>
+                        <select class="select2" id="conditionnement" name="conditionnement">
+                            <option value="20">---Sélectionner---</option>
+                            <option value="20">Cageot de 20</option>
+                            <option value="24">Cageot de 24</option>
+                            <option value="6">Pack de 6</option>
+                            <option value="8">Pack de 8</option>
+                            <option value="12">Pack de 12</option>
 
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="prix_unitaire">Prix d'achat unité</label>
+                        <input type="number" class="form-control" id="prix_achat" name="prix_achat">
+                    </div>
+                    <div class="form-group">
+                        <label for="prix_unitaire">Prix de vente unité</label>
+                        <input type="number" class="form-control" id="prix_unitaire" name="prix_unitaire">
+                    </div>
                     <div class="form-group">
                         <input type="checkbox" id="checkCageot" name="checkCageot">
                         <label for="checkCageot">Ajouter un prix en cageot</label>
                     </div>
                     <div id="prixCageotContainer" style="display:none;">
                         <div class="form-group">
-                            <label for="quantite">prix en cageot (facultatif <span style="color: red;">*</span> )</label>
+                            <label for="quantite">Prix d'achat cageot (facultatif <span style="color: red;">*</span>)</label>
                             <input type="number" class="form-control" id="prix_conditionne" name="prix_conditionne">
                         </div>
                     </div>
@@ -222,7 +232,6 @@
         </div>
     </div>
 </div>
-
 <script>
     document.getElementById('checkCageot').addEventListener('change', function() {
         document.getElementById('prixCageotContainer').style.display = this.checked ? 'block' : 'none';

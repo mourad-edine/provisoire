@@ -62,12 +62,12 @@
                                 @endif
                             </td>
                             <td>
-                                <span class="{{ $vente['etat'] == 'non rendu' ? 'text-danger' : '' }}">
+                                <span class="text-white badge {{ $vente['etat'] == 'non rendu' ? 'bg-danger' : 'bg-success' }}">
                                     {{ $vente['etat'] ?? 'non consi°' }}
                                 </span>
                             </td>
                             <td>
-                                <span class="{{ $vente['etat_cgt'] == 'non rendu' ? 'text-danger' : '' }}">
+                                <span class="text-white badge {{ $vente['etat_cgt'] == 'non rendu' || $vente['etat_cgt'] == 'conditionné'  ? 'bg-danger' : 'bg-success' }}">
                                     {{ $vente['etat_cgt'] ?? 'non consi°' }}
                                 </span>
                             </td>
@@ -129,8 +129,7 @@
                             <td>{{ \Carbon\Carbon::createFromTimestamp($vente['created_at'])->format('d-m-Y') }}</td>
                             <td>
                                 <!-- Icônes d'options -->
-                                <a href="#"><i class="fas fa-eye text-secondary"></i></a>
-                                <a href="#" data-toggle="modal" data-target="#venteModal2{{$vente['id']}}"><i class="fas fa-edit text-warning"></i></a>
+                                <a class="ml-3" href="#" data-toggle="modal" data-target="#venteModal2{{$vente['id']}}"><i class="fas fa-edit text-warning"></i></a>
 
                             </td>
                         </tr>
@@ -141,7 +140,7 @@
                                 <div class="modal-content">
                                     <!-- En-tête du modal -->
                                     <div class="modal-header bg-light">
-                                        <h5 class="modal-title" id="venteModal2Label">Payer consignation</h5>
+                                        <h5 class="modal-title" id="venteModal2Label">Rendre consignation</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
@@ -160,15 +159,15 @@
                                                         @if($vente['etat'] == 'non rendu')
                                                         <input type="checkbox" name="check_bouteille" id="check_bouteille{{$vente['id']}}" class="mr-2">
                                                         <label for="check_bouteille{{$vente['id']}}" class="mb-0 cursor-pointer">
-                                                            Bouteille----------------------<span>{{$vente['consignation']}} Ar</span>
+                                                            Bouteille - <span>{{$vente['consignation']}} Ar</span>
                                                         </label>
                                                         @elseif($vente['etat'] == 'avec BTL')
                                                         <label class="mb-0 cursor-pointer">
-                                                            Bouteille----------------------<span class="text-success">non consigné</span>
+                                                            Bouteille <span class="text-success">non consigné</span>
                                                         </label>
                                                         @else
                                                         <label class="mb-0 cursor-pointer">
-                                                            bouteille----------------------<span class="text-success">payé</span>
+                                                             <span class="text-success">Bouteille rendu</span>
                                                         </label>
                                                         @endif
                                                     </div>
@@ -181,19 +180,19 @@
                                                     @if($vente['etat_cgt'] == 'non rendu')
                                                         <input type="checkbox" name="check_cageot" id="check_cageot{{$vente['id']}}" class="mr-2">
                                                         <label for="check_cageot{{$vente['id']}}" class="mb-0 cursor-pointer">
-                                                            Cageot----------------------<span>{{$vente['prix_cgt']}} Ar</span>
+                                                            <span>Cageot {{$vente['prix_cgt']}} Ar</span>
                                                         </label>
                                                         @elseif($vente['etat_cgt'] == 'avec CGT' || $vente['etat_cgt'] == 'non condi°')
                                                         <label class="mb-0 cursor-pointer">
-                                                            Cageot----------------------<span class="text-success">non consigné</span>
+                                                            <span class="text-success">Cageot non consigné</span>
                                                         </label>
                                                         @elseif($vente['etat_cgt'] == 'conditionné')
                                                         <label class="mb-0 cursor-pointer">
-                                                            Cageot----------------------<span class="text-success">conditionné (payer au commande liée)</span>
+                                                            <span class="text-danger">Bouteilles conditionné en cageot (cliquer en bas pour rendre)</span>
                                                         </label>
                                                         @else
                                                         <label class="mb-0 cursor-pointer">
-                                                            Cageot----------------------<span class="text-success">payé</span>
+                                                            <span class="text-success">Cageot payé</span>
                                                         </label>
                                                         @endif
                                                     </div>
@@ -234,7 +233,7 @@
             <div class="table-responsive">
                 <p>Conditionnement</p>
                 <hr>
-                <img src="{{asset('assets/images/enter.png')}}" alt="" width="40" height="40">
+                <img src="{{asset('assets/images/enter.png')}}" alt="" width="20" height="20">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     @if($conditionnement != null)
                     <thead>
@@ -251,7 +250,7 @@
 
                     <tbody>
                         <tr>
-                            <td>{{ $conditionnement->id ? $conditionnement->id : 'non conditionné'}}</td>
+                            <td>{{ optional($conditionnement->conditionnement)->id ? optional($conditionnement->conditionnement)->id : 'non conditionné'}}</td>
                             <td>{{optional($conditionnement->conditionnement)->nombre_cageot ? '3000 Ar/CGT' : 'non conditionné' }}</td>
                             <td>{{optional($conditionnement->conditionnement)->nombre_cageot  ?  optional($conditionnement->conditionnement)->nombre_cageot. ' CGT' : 'non conditionné'}}</td>
                             <td>{{ optional($conditionnement->conditionnement)->nombre_cageot ? optional($conditionnement->conditionnement)->nombre_cageot * 3000 .'Ar':'non conditionné' }} </td>

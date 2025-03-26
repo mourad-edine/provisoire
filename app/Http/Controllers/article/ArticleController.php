@@ -10,12 +10,18 @@ use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
-    public function show()
-    {
-        $articles = Article::with('categorie')
-            ->orderBy('id', 'DESC') // Facultatif : Tri par ID descendant
-            ->paginate(6);
 
+    public function search(Request $request)
+    {
+        
+        $search = $request->input('search');
+        $articles = Article::with('categorie')
+            ->where('nom', 'like', "%{$search}%")
+            ->orWhereHas('categorie', function ($query) use ($search) {
+                $query->where('nom', 'like', "%{$search}%");
+            })
+            ->orderBy('id', 'DESC')
+            ->paginate(10);
         $articles->getCollection()->transform(function ($article) {
             return [
                 'id' => $article->id,
@@ -35,6 +41,44 @@ class ArticleController extends Controller
             ];
         });
 
+        return view('pages.article.Liste', [
+            'articles' => $articles,
+            'categories' => Categorie::all(),
+        ]);
+    }
+    public function show(Request $request)
+    {
+        $search = $request->input('search');
+
+        $articles = Article::with('categorie')
+            ->when($search, function ($query, $search) {
+                return $query->where('nom', 'like', "%{$search}%")
+                    ->orWhereHas('categorie', function ($query) use ($search) {
+                        $query->where('nom', 'like', "%{$search}%");
+                    });
+            })
+            ->orderBy('id', 'DESC')
+            ->paginate(6);
+        
+        $articles->getCollection()->transform(function ($article) {
+            return [
+                'id' => $article->id,
+                'nom' => $article->nom,
+                'categorie' => $article->categorie ? $article->categorie->nom : null,
+                'categorie_id' => $article->categorie ? $article->categorie->id : null,
+                'reference' => $article->reference,
+                'imagep' => $article->imagep,
+                'conditionnement' => $article->conditionnement,
+                'prix_consignation' => $article->prix_consignation,
+                'prix_achat' => $article->prix_achat,
+                'prix_cgt' => $article->prix_cgt,
+                'prix_unitaire' => $article->prix_unitaire,
+                'prix_conditionne' => $article->prix_conditionne,
+                'quantite' => $article->quantite,
+                'created_at' => Carbon::parse($article->created_at)->format('d/m/Y H:i:s'),
+            ];
+        });
+        //dd($articles);
         return view('pages.article.Liste', [
             'articles' => $articles,
             'categories' => Categorie::all(),
@@ -94,6 +138,5 @@ class ArticleController extends Controller
             $article->delete();
             return redirect()->back()->withSuccess('Success', 'article supprimé avec success success');
         }
-
     }
 }

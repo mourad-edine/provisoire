@@ -21,6 +21,9 @@ class ConsignationController extends Controller
         if($request){
             $bouteille = $request->has('check_bouteille') ? 1 : 0;
             $cageot = $request->has('check_cageot') ? 1 : 0;
+            $id = $request->vente_id;
+            //dd($id);
+
             // dd([
             //     'bouteille' => $bouteille,
             //     'cageot' => $cageot,
@@ -30,14 +33,15 @@ class ConsignationController extends Controller
 
             $consignation = Consignation::find($request->consignation_id);
             if($consignation){
-                $consignation->etat = ($bouteille == 1) ? 'non consigné' : $consignation->etat;
-                $consignation->etat_cgt = ($cageot == 1) ? 'non consigné' : $consignation->etat_cgt;
+                $consignation->etat = ($bouteille == 1) ? 'rendu' : $consignation->etat;
+                $consignation->etat_cgt = ($cageot == 1) ? 'rendu' : $consignation->etat_cgt;
                 $consignation->prix = ($bouteille == 1) ? 0 : $consignation->prix;
                 $consignation->prix_cgt = ($cageot == 1) ? 0 : $consignation->prix_cgt;
                 $consignation->save();
             }
-            return redirect()->back()->with('success', 'payement enregistrés avec succès.');
-
+            return redirect()->back()
+            ->with('success', 'Paiement enregistré avec succès.')
+            ->with('highlighted_id', $id);
         }
     }
 
@@ -46,6 +50,7 @@ class ConsignationController extends Controller
         if($request){
             $bouteille = $request->has('check_bouteille') ? 1 : 0;
             $cageot = $request->has('check_cageot') ? 1 : 0;
+            $id = $request->vente_id;
             // dd([
             //     'bouteille' => $bouteille,
             //     'cageot' => $cageot,
@@ -55,14 +60,15 @@ class ConsignationController extends Controller
 
             $consignation = ConsignationAchat::find($request->consignation_id);
             if($consignation){
-                $consignation->etat = ($bouteille == 1) ? 'non consigné' : $consignation->etat;
-                $consignation->etat_cgt = ($cageot == 1) ? 'non consigné' : $consignation->etat_cgt;
+                $consignation->etat = ($bouteille == 1) ? 'rendu' : $consignation->etat;
+                $consignation->etat_cgt = ($cageot == 1) ? 'rendu' : $consignation->etat_cgt;
                 $consignation->prix = ($bouteille == 1) ? 0 : $consignation->prix;
                 $consignation->prix_cgt = ($cageot == 1) ? 0 : $consignation->prix_cgt;
                 $consignation->save();
             }
-            return redirect()->back()->with('success', 'payement enregistrés avec succès.');
-
+            return redirect()->back()
+            ->with('success', 'Paiement enregistré avec succès.')
+            ->with('highlighted_id', $id);
         }
     }
 }

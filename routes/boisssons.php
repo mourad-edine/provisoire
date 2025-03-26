@@ -25,6 +25,7 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
     Route::get('/articles', [ArticleController::class, 'show'])->name('article.liste');
     Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
     Route::get('/articles/{id}', [ArticleController::class, 'delete'])->name('delete.article');
+    Route::post('/articles/search', [ArticleController::class, 'search'])->name('articles.search');
 
 
     Route::get('/ventes', [VenteController::class, 'show'])->name('vente.liste');
