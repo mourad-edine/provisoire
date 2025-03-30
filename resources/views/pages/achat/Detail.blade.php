@@ -4,20 +4,30 @@
 
 @section('content')
 <div class="container-fluid">
-    <h1 class="h3 mb-2 text-gray-800">ACHAT - DETAILS</h1>
-    <p class="mb-4">details de la commande</p>
-
+<ul class="nav nav-tabs" id="parametresTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a style="text-decoration: none;" href="{{route('achat.liste')}}">
+                <button class="nav-link active" id="consignation-tab" data-bs-toggle="tab" data-bs-target="#consignation" type="button" role="tab" aria-controls="consignation" aria-selected="true">
+                    <i class="fas fa-wine-bottle me-2"></i>Listes achats
+                </button>
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a style="text-decoration: none;" href="{{route('achat.commande')}}">
+                <button class="nav-link" id="utilisateur-tab" data-bs-toggle="tab" data-bs-target="#utilisateur" type="button" role="tab" aria-controls="utilisateur" aria-selected="false">
+                    <i class="fas fa-user me-2"></i>Listes par commandes
+                </button>
+            </a>
+        </li>
+    </ul>
     <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <div class="d-flex">
-                <a href="{{route('achat.liste')}}" class="btn btn-outline-primary btn-sm font-weight-bold mr-2 px-3 shadow-sm">Listes Achats</a>
-                <a href="{{route('achat.commande')}}" class="btn btn-outline-success btn-sm font-weight-bold px-3 shadow-sm">Listes par commandes</a>
-            </div>
-            <div class="d-flex justify-content-end">
-                <button class="btn btn-secondary btn-sm mr-3"> <a class="text-white" href="#"><i class="fas fa-print text-white mr-2"></i>facture</a></button>
-                <button class="btn btn-primary btn-sm"><a class="text-white" href="{{route('achat.commande')}}">retour</a></button>
-            </div>
-        </div>
+        <div class="card-header d-flex justify-content-between align-items-center bg-secondary">
+            <h5 class="mb-2 text-white">ACHAT - DETAILS</h5>
+
+            <div>
+                <button class="btn btn-outline-warning btn-sm mr-3"> <a class="text-white" href="{{route('pdf.achat' , ['id' => $id])}}"><i class="fas fa-print text-white mr-2"></i>facture</a></button>
+                <a href="#"><button class="btn btn-primary btn-sm">retour</button></a>
+            </div>        </div>
         <div class="card-body">
             @if(session('success'))
             <div class="alert alert-success">
@@ -30,16 +40,12 @@
                         <tr>
                             <th>id</th>
                             <th>article</th>
-                            <th>P.Achat</th>
+                            <th>Prix / cageot</th>
                             <th>commande</th>
-                            <th>Tot consi°</th>
-                            <th>etat CGT</th>
-                            <th>etat BTL</th>
                             <th>quantite</th>
                             <th>état</th>
                             <th>total</th>
                             <th>date</th>
-                            <th>options</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -47,39 +53,16 @@
                         <tr>
                             <td>{{$achat['id']}}</td>
                             <td>{{$achat['article']}}</td>
-                            <td>{{$achat['prix_achat']}} Ar</td>
+                            <td>{{$achat['prix'] / $achat['quantite']}} Ar</td>
                             <td>C-{{$achat['numero_commande']}}</td>
-                            <td>{{$achat['prix'] + $achat['prix_cgt']. 'Ar'}}</td>
-                            <td>
-                                @if($achat['etat_cgt'] == 'non rendu')
-                                <span class="badge bg-danger text-white">{{$achat['etat_cgt']}}</span>
-                                @elseif($achat['etat_cgt'] == 'non consigné')
-                                <span class="badge bg-success text-white">{{$achat['etat_cgt']}}</span>
-                                @elseif($achat['etat_cgt'] == 'rendu')
-                                <span class="badge bg-success text-white">{{$achat['etat_cgt']}}</span>
-                                @else
-                                <span class="badge bg-success text-white">non consigné</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($achat['etat'] == 'non rendu')
-                                <span class="badge bg-danger text-white">{{$achat['etat']}}</span>
-                                @elseif($achat['etat'] == 'non consigné')
-                                <span class="badge bg-success text-white">{{$achat['etat']}}</span>
-                                @elseif($achat['etat'] == 'rendu')
-                                <span class="badge bg-success text-white">{{$achat['etat']}}</span>
-                                @else
-                                <span class="badge bg-success text-white">non consigné</span>
-                                @endif
-                            </td>
-
+                            
                             <td>{{$achat['quantite']}} - cageot</td>
                             <td><span class="text-success">payé</span></td>
-                            <td>{{ ($achat['prix_achat'] *  $achat['quantite'] * $achat['conditionnement']) + $achat['prix'] + $achat['prix_cgt'] .' Ar' }}</td>
+                            <td>{{ $achat['prix']  .' Ar' }}</td>
                             <td>{{$achat['created_at']}}</td>
-                            <td>
+                            <!-- <td>
                                 <a href="#" class="ml-3" data-toggle="modal" data-target="#venteModal2{{$achat['id']}}"><i class="fas fa-edit text-warning"></i></button>
-                            </td>
+                            </td> -->
                         </tr>
                         <div class="modal fade" id="venteModal2{{$achat['id']}}" tabindex="-1" role="dialog" aria-labelledby="venteModal2Label" aria-hidden="true">
                             <div class="modal-dialog" role="document">

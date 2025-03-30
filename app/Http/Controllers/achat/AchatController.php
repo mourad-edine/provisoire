@@ -34,9 +34,9 @@ class AchatController extends Controller
                 'etat' => $achat->consignation_achat ? $achat->consignation_achat->etat : null,
                 'etat_cgt' => $achat->consignation_achat ? $achat->consignation_achat->etat_cgt : null,
                 'prix_cgt' => $achat->consignation_achat ? $achat->consignation_achat->prix_cgt : null,
-                'prix' => $achat->consignation_achat ? $achat->consignation_achat->prix : null,
                 'quantite' => $achat->quantite,
                 'created_at' => Carbon::parse($achat->created_at)->format('d/m/Y H:i:s'),
+                'etat_payement' => $achat->etat,
             ];
         });
 
@@ -49,40 +49,36 @@ class AchatController extends Controller
 
     public function store(Request $request)
     {
-    //dd($request->all());
+     //dd($request->all());
         $data = $request->validate([
             'articles' => 'required|array',
             'quantites' => 'required|array',
             'dateachat' => 'required|array',
             'prices' => 'required|array',
-            'fournisseurs' => 'required|array',
-            'cageots' => 'required|array',
-            'bouteilles' => 'required|array',
-            'consignations' => 'required|array',
         ]);
 
         $commande = Commande::create([
-            'user_id' => Auth::user()->id
+            'user_id' => Auth::user()->id,
+            'fournisseur_id' => $request->fournisseur_id
         ]);
         // Boucle pour enregistrer chaque achat
         foreach ($data['articles'] as $index => $article) {
-            $achat = Achat::create([
+            Achat::create([
                 'article_id' => $article,
                 'commande_id' => $commande->id,
                 'quantite' => $data['quantites'][$index],
                 'date_entre' => $data['dateachat'][$index],
                 'prix' => $data['prices'][$index],
-                'fournisseur_id' => $data['fournisseurs'][$index],
+                'fournisseur_id' => $request->fournisseur_id,
             ]);
             // Mise à jour de la quantité d'article
             $article = Article::find($article);
             $article->quantite = $article->quantite + ($data['quantites'][$index] * (int)$article->conditionnement);
-            $article->prix_achat = $data['prices'][$index];
-            $article->prix_unitaire = $data['prices'][$index] + 100;
+            $article->prix_conditionne = $data['prices'][$index]  / $data['quantites'][$index];
             $article->save();
-            if($data['consignations'][$index] == 1){
-                $this->consignation($achat->id , $data['quantites'][$index] , $article->id , $data['bouteilles'][$index] , $data['cageots'][$index]);
-            }
+            // if($data['consignations'][$index] == 1){
+            //     $this->consignation($achat->id , $data['quantites'][$index] , $article->id , $data['bouteilles'][$index] , $data['cageots'][$index]);
+            // }
         }
 
         return redirect()->back()->with('success', 'Achats enregistrés avec succès.');
@@ -113,9 +109,15 @@ class AchatController extends Controller
     }
 
     public function commande(){
-        
+        $commande = Commande::withCount('achats','fournisseur')
+        ->withSum('achats', 'prix') // Assure-toi que 'prix' est bien la colonne des prix dans 'achats'
+        ->having('achats_count', '>', 0)
+        ->orderBy('id', 'DESC')
+        ->paginate(6);
+        //dd($commande);
         return view('pages.achat.commande', [
-                'commandes' => Commande::withcount('achats')
+                'commandes' => Commande::withCount('achats')
+                ->withSum('achats', 'prix') // Assure-toi que 'prix' est bien la colonne des prix dans 'achats'
                 ->having('achats_count', '>', 0)
                 ->orderBy('id', 'DESC')
                 ->paginate(6),
@@ -142,7 +144,6 @@ class AchatController extends Controller
                 'etat' => $achat->consignation_achat ? $achat->consignation_achat->etat : null,
                 'etat_cgt' => $achat->consignation_achat ? $achat->consignation_achat->etat_cgt : null,
                 'prix_cgt' => $achat->consignation_achat ? $achat->consignation_achat->prix_cgt : null,
-                'prix' => $achat->consignation_achat ? $achat->consignation_achat->prix : null,
                 'quantite' => $achat->quantite,
                 'created_at' => Carbon::parse($achat->created_at)->format('d/m/Y H:i:s'),
             ];
@@ -152,6 +153,7 @@ class AchatController extends Controller
             'achats' => $achats,
             'articles' => Article::all(),
             'fournisseurs' => Fournisseur::all(),
+            'id' => $id
         ]);
     }
 }

@@ -11,14 +11,28 @@
 </style>
 
 <div class="container-fluid">
-    <h1 class="h3 mb-2 text-gray-800">VENTE</h1>
+    <ul class="nav nav-tabs" id="parametresTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+            <a style="text-decoration: none;" href="{{route('commande.liste.vente')}}">
+                <button class="nav-link" id="utilisateur-tab" data-bs-toggle="tab" data-bs-target="#utilisateur" type="button" role="tab" aria-controls="utilisateur" aria-selected="false">
+                    <i class="fas fa-user me-2"></i>Listes par commandes
+                </button>
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a style="text-decoration: none;" href="{{route('vente.liste')}}">
+                <button class="nav-link active" id="consignation-tab" data-bs-toggle="tab" data-bs-target="#consignation" type="button" role="tab" aria-controls="consignation" aria-selected="true">
+                    <i class="fas fa-wine-bottle me-2"></i>Listes ventes
+                </button>
+            </a>
+        </li>
+        
+    </ul>
 
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center bg-light border-bottom shadow-sm">
-            <div class="d-flex">
-                <a href="{{route('vente.liste')}}" class="btn btn-outline-primary btn-sm font-weight-bold mr-2 px-3 shadow-sm">Listes ventes</a>
-                <a href="{{route('commande.liste.vente')}}" class="btn btn-outline-success btn-sm font-weight-bold px-3 shadow-sm">Listes par commandes</a>
-            </div>
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center bg-secondary border-bottom">
+            <h5 class="mb-2 text-white">VENTE</h5>
+
             <div>
                 <a href="{{route('vente.page')}}" class="btn btn-primary btn-sm text-white text-decoration-none">Nouvelle vente</a>
             </div>
@@ -33,20 +47,20 @@
             @endif
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
+                    <thead class="table-secondary">
                         <tr>
-                            <th>ID</th>
+                            <th class="bg-light">ID</th>
                             <th>Article</th>
                             <th>Commande</th>
                             <th>Consi(CGT/BTL)</th>
                             <th>État BTL</th>
                             <th>État CGT</th>
-                            <th>État</th>
+                            <th>Statut</th>
                             <th>Quantité</th>
-                            <th>Prix</th>
+                            <th>prix</th>
                             <th>Total</th>
                             <th>Date</th>
-                            <th>Options</th>
+                            <th class="text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -56,30 +70,50 @@
                         $bouteilleNonRendu = $vente['etat'] == 'non rendu';
                         $cageotNonRendu = $vente['etat_cgt'] == 'non rendu';
                         @endphp
-                        <tr id="row-{{$vente['id']}}" class="{{ $highlightedId == $vente['id'] ? 'highlighted' : '' }}">
-                            <td>{{$vente['id']}}</td>
+                        <tr id="row-{{$vente['id']}}" class="{{ $highlightedId == $vente['id'] ? 'table-info' : '' }}">
+                            <td class="fw-semibold">{{$vente['id']}}</td>
                             <td>{{$vente['article']}}</td>
-                            <td>C-{{$vente['numero_commande']}}</td>
+                            <td class="text-primary fw-semibold">C-{{$vente['numero_commande']}}</td>
                             <td>
-                                @if($vente['consignation'] || $vente['prix_cgt'])
-                                {{ number_format(($vente['consignation'] ?? 0) + ($vente['prix_cgt'] ?? 0), 0, ',', ' ') }} Ar
+                                @if(($vente['consignation'] ?? 0) + ($vente['prix_cgt'] ?? 0) > 0)
+                                @if($vente['etat_client'] == 1)
+                                <span class="badge bg-danger text-white border">à rendre</span>
+                                @elseif($vente['etat_client'] == 0)
+                                <span class="badge bg-light text-dark border">
+                                    {{ number_format(($vente['consignation'] ?? 0) + ($vente['prix_cgt'] ?? 0), 0, ',', ' ') }} Ar
+                                </span>
+                                @endif
                                 @else
-                                Non consigné
+                                <span class="badge bg-light text-muted border">Non consigné</span>
                                 @endif
                             </td>
+
+
                             <td>
-                                <span class="badge text-white {{ $vente['etat'] == 'non rendu' ? 'bg-danger' : 'bg-success' }}">
+                                <span class="badge {{ $vente['etat'] == 'non rendu' ? 'bg-danger text-white' : 'bg-success text-white' }}">
                                     {{ $vente['etat'] ?? 'Non consigné' }}
                                 </span>
                             </td>
                             <td>
-                                <span class="badge text-white {{ $vente['etat_cgt'] == 'non rendu' || $vente['etat_cgt'] == 'conditionné' ? 'bg-danger' : 'bg-success' }}">
+                                <span class="badge {{ $vente['etat_cgt'] == 'non rendu' || $vente['etat_cgt'] == 'conditionné' ? 'bg-danger text-white' : 'bg-success text-white' }}">
                                     {{ $vente['etat_cgt'] ?? 'Non consigné' }}
                                 </span>
                             </td>
-                            <td><span class="text-success">Payé</span></td>
-                            <td>{{$vente['quantite']}} {{$vente['type_achat']}}</td>
-                            <td>{{ number_format($vente['btl'] == 0 ? $vente['prix_unitaire'] + $vente['prix_consignation'] : $vente['prix_unitaire'], 0, ',', ' ') }} Ar</td>
+                            <td>
+                                <span class="badge {{ $vente['etat_payement'] == 0 ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success' }}">
+                                    <i class="fas {{ $vente['etat_payement'] == 0 ? 'fa-times-circle text-danger' : 'fa-check-circle text-success' }} me-1"></i>
+                                    {{ $vente['etat_payement'] == 0 ? 'Non payé' : 'Payé' }}
+                                </span>
+                            </td>
+
+                            <td class="fw-semibold">{{$vente['quantite']}} {{$vente['type_achat']}}</td>
+                            <td>
+                                @if($vente['etat_client'] == 1)
+                                {{ number_format($vente['prix_unitaire'], 0, ',', ' ') }} Ar
+                                @else
+                                {{ number_format($vente['btl'] == 0 ? $vente['prix_unitaire'] + $vente['prix_consignation'] : $vente['prix_unitaire'], 0, ',', ' ') }} Ar
+                                @endif
+                            </td>
                             <td>
                                 @php
                                 $prix_total = $vente['prix_unitaire'] * $vente['quantite'];
@@ -100,16 +134,27 @@
                                 break;
                                 }
                                 @endphp
-                                {{ number_format($prix_total, 0, ',', ' ') }} Ar
+                                @if($vente['etat_client'] == 1)
+                                <span>
+                                    {{$vente['prix_unitaire'] * $vente['quantite']}} Ar
+                                </span>
+                                @else
+                                <span> {{ number_format($prix_total, 0, ',', ' ') }} Ar</span>
+                                @endif
+
                             </td>
-                            <td></td>
+                            <td class="text-muted">{{ optional($vente['created_at'])->format('d/m/Y') }}</td>
                             <td>
-                                <a href="{{route('commande.liste.vente.detail', ['id' => $vente['numero_commande']])}}">
-                                    <i class="fas fa-eye text-secondary"></i>
-                                </a>
-                                <a class="ml-3" href="#" data-toggle="modal" data-target="#venteModal2{{$vente['id']}}">
-                                    <i class="fas fa-edit text-warning"></i>
-                                </a>
+                                <div class="d-flex justify-content-end gap-2">
+
+                                    <a href="{{route('commande.liste.vente.detail', ['id' => $vente['numero_commande']])}}" class="btn btn-sm btn-outline-secondary" title="Voir détails">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    </a>
+                                    <a class="btn btn-sm btn-outline-primary ml-2" href="#" data-toggle="modal" data-target="#venteModal2{{$vente['id']}}">
+                                        <i class="fas fa-edit text-warning"></i>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
 
@@ -143,9 +188,9 @@
                                                 <input type="checkbox" name="check_cageot" id="check_cageot{{$vente['id']}}" class="mr-2">
                                                 <label for="check_cageot{{$vente['id']}}">Cageot - {{ number_format($vente['prix_cgt'], 0, ',', ' ') }} Ar</label>
                                                 @elseif($vente['etat_cgt'] == 'conditionné')
-                                                        <label class="mb-0 cursor-pointer">
-                                                            <span class="text-danger">Bouteilles conditionné en cageot (payer au commande liée)</span>
-                                                        </label>
+                                                <label class="mb-0 cursor-pointer">
+                                                    <span class="text-danger">Bouteilles conditionné en cageot (payer au commande liée)</span>
+                                                </label>
                                                 @else
                                                 <span class="text-success">Cageot rendu</span>
                                                 @endif

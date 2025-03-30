@@ -5,25 +5,42 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Mon Site')</title>
+    
+    <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/sb-admin-2.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-5-theme/1.3.0/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 
+    <style>
+        * {
+            font-weight: 700;
+            color: #000;
+        }
+        .sidebar .nav-item .nav-link span {
+            color: #fff;
+        }
+        .sidebar .sidebar-brand .sidebar-brand-text {
+            color: white;
+        }
+        /* Correction pour Select2 dans les modals */
+        .select2-container {
+            z-index: 99999 !important;
+        }
+        .modal-open .select2-container {
+            z-index: 999999 !important;
+        }
+        .select2-dropdown {
+            z-index: 999999 !important;
+        }
+        .sidebar {
+        width: 10rem !important;
+        background-color: #000;
+        }
+    </style>
 </head>
-<style>
-    *{
-        font-weight: 700;
-        color: #000;
-    }
-    .sidebar .nav-item .nav-link span {
-        color: #fff;
-    }
-    .sidebar .sidebar-brand .sidebar-brand-text {
-        color: white;
-    }
-</style>
+
 <body id="page-top">
     <div id="wrapper">
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
@@ -53,11 +70,11 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link collapsed" href="{{route('vente.liste')}}">
+                <a class="nav-link collapsed" href="{{route('commande.liste.vente')}}">
                     <i class="fas fa-cash-register"></i>
                     <span>Ventes</span>
                 </a>
-                <a class="nav-link collapsed" href="{{route('achat.liste')}}">
+                <a class="nav-link collapsed" href="{{route('achat.commande')}}">
                     <i class="fas fa-shopping-cart"></i>
                     <span>Achats</span>
                 </a>
@@ -75,24 +92,17 @@
                     <i class="fas fa-truck"></i>
                     <span>Fournisseurs</span>
                 </a>
-                <a class="nav-link collapsed" href="{{route('achat.liste')}}">
+                <a class="nav-link collapsed" href="{{route('parametre')}}">
                     <i class="fas fa-cog"></i> <!-- Icône de paramètres -->
                     <span>Paramètres</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseStock" aria-expanded="true" aria-controls="collapseStock">
+                <a class="nav-link collapsed" href="{{route('stock.liste')}}">
                     <i class="fas fa-fw fa-folder"></i>
                     <span>Gestion de stock</span>
                 </a>
-                <div id="collapseStock" class="collapse" aria-labelledby="headingStock" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Options:</h6>
-                        <a class="collapse-item" href="{{route('stock.liste')}}">Listes globale</a>
-                        <a class="collapse-item" href="{{route('stock.faible.liste')}}">Stock faible</a>
-                        <a class="collapse-item" href="{{route('stock.categorie.liste')}}">Catégorie</a>
-                    </div>
-                </div>
+
             </li>
             <hr class="sidebar-divider d-none d-md-block">
             <div class="text-center d-none d-md-inline">
@@ -136,15 +146,33 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('.select2').select2({
-                placeholder: "Sélectionner une option",
-                allowClear: true,
-                width: '100%',
-                theme: "bootstrap-5"
+            // Initialisation de Select2 avec configuration pour les modals
+            function initSelect2() {
+                $('.select2').select2({
+                    theme: 'bootstrap-5',
+                    width: '100%',
+                    placeholder: "Sélectionner...",
+                    allowClear: true,
+                    dropdownParent: $('.modal') // Important pour les modals
+                });
+            }
+
+            // Initialiser au chargement
+            initSelect2();
+
+            // Réinitialiser quand un modal est ouvert
+            $('.modal').on('shown.bs.modal', function() {
+                $(this).find('.select2').select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: $(this),
+                    width: '100%'
+                });
             });
         });
     </script>

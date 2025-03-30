@@ -12,6 +12,8 @@ use App\Models\Vente;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class VenteController extends Controller
 {
@@ -42,7 +44,10 @@ class VenteController extends Controller
                 'conditionnement' => $vente->article ? $vente->article->conditionnement : null,
                 'btl' => $vente->btl,
                 'cgt' => $vente->cgt,
-                'commande_id' => $vente->commande_id
+                'commande_id' => $vente->commande_id,
+                'etat_payement' => $vente->etat,
+                'etat_client' => $vente->client
+
             ];
         });
 
@@ -120,7 +125,7 @@ class VenteController extends Controller
             }  // Type bouteille
         }
     }
-    
+
 
 
 
@@ -146,13 +151,15 @@ class VenteController extends Controller
 
         $commande = Commande::create([
             'user_id' => Auth::user()->id,
-            'client_id' => $request->client_id
+            'client_id' => $request->client_id,
+            'etat_client' => $request->has('fidele') ? 1 : 0,
+            'etat_commande' => $request->has('payer') ? 'payé' : 'non payé'
         ]);
-        $conditionnement = $request->has('unites') ? 1 : 0;
+        $conditionnement = $request->has('choix') ? 1 : 0;
         if ($conditionnement == 1) {
             Conditionnement::create([
                 'commande_id' => $commande->id,
-                'nombre_cageot' => $request->embale ?? $request->quantite_embale,
+                'nombre_cageot' => $request->embale ? $request->embale : 0,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
@@ -171,6 +178,8 @@ class VenteController extends Controller
                 'type_achat' => $type === 0 ? 'cageot' : 'bouteille',
                 'btl' => $bouteilles,
                 'cgt' => (int) $data['cageots'][$index],
+                'etat' => $request->has('payer') ? 1 : 0,
+                'client' => $request->has('fidele') ? 1 : 0
 
             ]);
 
@@ -183,18 +192,30 @@ class VenteController extends Controller
             }
         }
 
-        return redirect()->route('vente.liste')->with('success', 'Ventes enregistrées avec succès.');
+        return redirect()->route('commande.liste.vente')->with('success', 'Ventes enregistrées avec succès.');
     }
 
 
     public function showcommande()
     {
+
+        $commandes = Commande::with(['ventes.consignation' , 'client'])
+            ->withCount('ventes')
+            ->withSum('ventes', 'prix')
+            ->having('ventes_count', '>', 0)
+            ->orderBy('id', 'DESC')
+            ->paginate(6);
+        
+        // Ajouter la somme des consignations manuellement
+        $commandes->each(function ($commande) {
+            $commande->ventes_consignation_sum_prix = $commande->ventes->sum(fn($vente) => $vente->consignation->prix ?? 0);
+            $commande->ventes_consignation_sum_prix_cgt = $commande->ventes->sum(fn($vente) => $vente->consignation->prix_cgt ?? 0);
+        });
+        //dd($commandes);
+
         //dd(Commande::withcount('ventes')->get()->toArray());
         return view('pages.vente.commande', [
-            'commandes' => Commande::withCount('ventes')
-                ->having('ventes_count', '>', 0)
-                ->orderBy('id', 'DESC')
-                ->paginate(6),
+            'commandes' => $commandes,
             'articles' => Article::all(),
             'clients' => Client::all(),
             'dernier' => Commande::latest()->first()
@@ -202,10 +223,10 @@ class VenteController extends Controller
     }
 
     public function DetailCommande($id)
-    
+
     {
         $ventes = Vente::with(['article', 'consignation'])
-            ->where('commande_id',$id)
+            ->where('commande_id', $id)
             ->orderBy('id', 'DESC')
             ->paginate(4); // La pagination doit être ici
 
@@ -229,10 +250,12 @@ class VenteController extends Controller
                 'conditionnement' => $vente->article ? $vente->article->conditionnement : null,
                 'btl' => $vente->btl,
                 'cgt' => $vente->cgt,
-                'commande_id' => $vente->commande_id
+                'commande_id' => $vente->commande_id,
+                'etat_payement' => $vente->etat,
+                'etat_client' => $vente->client
             ];
         });
-        
+        //dd($ventes);
         $conditionnement = Commande::with('conditionnement')->where('id', $id)->first();
 
         //dd($conditionnement->toArray());
@@ -250,5 +273,34 @@ class VenteController extends Controller
             'clients' => Client::all(),
             'dernier' => Commande::latest()->first()
         ]);
+    }
+
+    public function regler(Request $request)
+    {
+        // Validation des données d'entrée
+        $request->validate([
+            'commande_id' => 'required|integer|exists:commandes,id'
+        ]);
+
+        try {
+            $commande = Commande::findOrFail($request->commande_id);
+            DB::beginTransaction();
+            $commande->update([
+                'etat_commande' => 'payé',
+            ]);
+
+            Vente::where('commande_id', $commande->id)
+                ->update(['etat' => 1]);
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Le paiement a été enregistré avec succès.');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'Commande introuvable.');
+        } catch (\Exception $e) {
+            // Annulation en cas d'erreur
+            DB::rollBack();
+            Log::error('Erreur lors du paiement : ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Une erreur est survenue lors du traitement.');
+        }
     }
 }

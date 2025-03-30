@@ -28,7 +28,7 @@ class StockController extends Controller
 
     public function categorie(){
         return view('pages.stock.Categorie',[
-            'categories' => Categorie::withCount('articles')->paginate(6)
+            'categories' => Categorie::withCount('articles')->get()
         ]);
     }
 }

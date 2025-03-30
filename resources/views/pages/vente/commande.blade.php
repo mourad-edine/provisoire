@@ -6,21 +6,31 @@
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">VENTE</h1>
-    <p class="mb-4">liste par commande.</p>
 
     <!-- DataTales Example -->
+    <ul class="nav nav-tabs" id="parametresTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+            <a style="text-decoration: none;" href="{{route('commande.liste.vente')}}">
+                <button class="nav-link  active" id="utilisateur-tab" data-bs-toggle="tab" data-bs-target="#utilisateur" type="button" role="tab" aria-controls="utilisateur" aria-selected="false">
+                    <i class="fas fa-user me-2"></i>Listes par commandes
+                </button>
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a style="text-decoration: none;" href="{{route('vente.liste')}}">
+                <button class="nav-link" id="consignation-tab" data-bs-toggle="tab" data-bs-target="#consignation" type="button" role="tab" aria-controls="consignation" aria-selected="true">
+                    <i class="fas fa-wine-bottle me-2"></i>Listes ventes
+                </button>
+            </a>
+        </li>
+        
+    </ul>
     <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center bg-light border-bottom shadow-sm">
-            <div class="d-flex">
-                <a href="{{route('vente.liste')}}" class="btn btn-outline-primary btn-sm font-weight-bold mr-2 px-3 shadow-sm">Listes ventes</a>
-                <a href="{{route('commande.liste.vente')}}" class="btn btn-outline-success btn-sm font-weight-bold px-3 shadow-sm">Listes par commandes</a>
-            </div>
-            <div class="d-flex">
+        <div class="card-header d-flex justify-content-between align-items-center bg-secondary border-bottom">
+            <h5 class="mb-2 text-white">VENTE</h5>
 
-                <!-- <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#venteModal">Nouvelle vente</button> -->
-                <button class="btn btn-primary btn-sm"><a class="text-white text-decoration-none" href="{{route('vente.page')}}">Nouvelle vente</a></button>
-
+            <div>
+                <a href="{{route('vente.page')}}" class="btn btn-primary btn-sm text-white text-decoration-none">Nouvelle vente</a>
             </div>
         </div>
         <div class="card-body">
@@ -37,6 +47,10 @@
                             <th>id client</th>
                             <th>date commande</th>
                             <th>nombre d'achat</th>
+                            <th>sous-total</th>
+                            <th>consignation</th>
+                            <th>total</th>
+                            <th>état</th>
                             <th>Options</th>
                         </tr>
                     </thead>
@@ -45,18 +59,54 @@
                         @forelse($commandes as $commande)
                         <tr>
                             <td>C-{{$commande->id}}</td>
-                            <td>{{$commande->client_id ? $commande->client_id : 'client passager'}}</td>
+                            <td>{{$commande->client ? $commande->client->nom : 'client passager'}}</td>
                             <td>{{$commande->created_at}}</td>
                             <td>{{$commande->ventes_count}} </td>
+                            <td>{{$commande->ventes_sum_prix}}Ar</td>
+                            <td>{{$commande->ventes_consignation_sum_prix}} Ar</td>
+                            <td>{{$commande->ventes_sum_prix}} Ar</td>
+                            <td>@if($commande->etat_commande == 'payé')
+                                <span class="text-success">
+                                {{$commande->etat_commande}}
+                                </span>
+                                @else
+                                <span class="text-danger">non payé</span>
+                                @endif
+                            </td>
                             <td>
                                 <!-- Icônes d'options -->
-                                <a href="{{route('commande.liste.vente.detail', ['id' => $commande->id]) }}" class="mr-3"><i class="fas fa-eye"></i></a>
-                                <a href="{{route('pdf.download' , ['id'=>$commande->id])}}"><i class="fas fa-print text-warning"></i></a>
+                                <a href="{{route('commande.liste.vente.detail', ['id' => $commande->id]) }}" class=""><i class="fas fa-eye"></i></a>
+                                <a href="{{route('pdf.download' , ['id'=>$commande->id])}}" class="ml-3"><i class="fas fa-print text-warning"></i></a>
+                                <a href="#" class="ml-3"><i class="fas fa-edit text-warning"  data-toggle="modal" data-target="#venteModal2{{$commande->id}}"></i></a>
+
                                 <form action="#" method="POST" style="display:inline;">
 
                                 </form>
                             </td>
                         </tr>
+                        <div class="modal fade" id="venteModal2{{$commande->id}}" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-light">
+                                        <h5 class="modal-title">Rendre consignation</h5>
+                                        <button type="button" class="close" data-dismiss="modal">
+                                            <span>&times;</span>
+                                        </button>
+                                    </div>
+                                    <form action="{{route('regler.payement')}}" method="POST">
+                                        @csrf
+                                        <div class="modal-body">
+                                            <input type="hidden" name="commande_id" value="{{$commande->id}}">
+                                            <p>voulez-vous regler le payement de cette commande {{$commande->id}}?</p>
+                                        </div>
+                                        <div class="modal-footer bg-light">
+                                            <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+                                            <button type="submit" class="btn btn-primary" >Payer</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                         @empty
                         <tr>
                             <td colspan="8" class="text-warning">Pas encore de données insérées pour le moment</td>

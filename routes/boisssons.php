@@ -33,6 +33,9 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
     Route::get('/commandes-vente', [VenteController::class, 'showcommande'])->name('commande.liste.vente');
     Route::get('/commandes-vente-detail/{id}', [VenteController::class, 'DetailCommande'])->name('commande.liste.vente.detail');
     Route::get('/ventes-page', [VenteController::class, 'Vente'])->name('vente.page');
+    Route::post('/regeler-payement', [VenteController::class, 'regler'])->name('regler.payement');
+
+
 
     Route::get('/achats', [AchatController::class, 'show'])->name('achat.liste');
     Route::get('/commande-achats', [AchatController::class, 'commande'])->name('achat.commande');
@@ -61,8 +64,13 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
 
 
     Route::get('/download-pdf/{id}', [PdfController::class, 'generatePDF'])->name('pdf.download');
+    Route::get('/download-pdf-achat/{id}', [PdfController::class, 'achatpdf'])->name('pdf.achat');
 
     Route::post('/consignation-payer', [ConsignationController::class, 'payer'])->name('payer.consignation');
     Route::post('/consignation-payer-achats', [ConsignationController::class, 'payerAchat'])->name('payer.consignation.achat');
 
+    Route::get('/parametre-boissons', [ConsignationController::class, 'parametre'])->name('parametre');
+    Route::post('/parametre-boissons', [ConsignationController::class, 'prix'])->name('parametre.store');
+
+    Route::post('/parametre-user', [ConsignationController::class, 'adduser'])->name('add.user');
 });

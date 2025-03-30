@@ -13,6 +13,8 @@ class Commande extends Model
         'user_id',
         'client_id',
         'fournisseur_id',
+        'etat_client',
+        'etat_commande'
 
     ];
     public function achats(){
@@ -25,5 +27,12 @@ class Commande extends Model
 
     public function conditionnement(){
         return $this->hasOne(Conditionnement::class , 'commande_id');
+    }
+
+    public function client(){
+        return $this->belongsTo(Client::class ,  'client_id');
+    }
+    public function fournisseur(){
+        return $this->belongsTo(Fournisseur::class ,  'fournisseur_id');
     }
 }

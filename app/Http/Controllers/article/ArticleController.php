@@ -13,6 +13,7 @@ class ArticleController extends Controller
 
     public function search(Request $request)
     {
+        //dd($request->all());
         
         $search = $request->input('search');
         $articles = Article::with('categorie')

@@ -14,4 +14,7 @@ class Fournisseur extends Model
         'reference',
 
     ];
+    public function commandes(){
+        return $this->hasMany(Commande::class , 'fournisseur_id');
+    }
 }

@@ -5,14 +5,33 @@
 @section('content')
 <div class="container-fluid">
 
-    <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Tables</h1>
-
-
+    <ul class="nav nav-tabs" id="parametresTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a style="text-decoration: none;" href="{{route('stock.liste')}}">
+                <button class="nav-link active" id="consignation-tab" data-bs-toggle="tab" data-bs-target="#consignation" type="button" role="tab" aria-controls="consignation" aria-selected="true">
+                    <i class="fas fa-wine-bottle me-2"></i>Listes globales
+                </button>
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a style="text-decoration: none;" href="{{route('stock.faible.liste')}}">
+                <button class="nav-link" id="utilisateur-tab" data-bs-toggle="tab" data-bs-target="#utilisateur" type="button" role="tab" aria-controls="utilisateur" aria-selected="false">
+                    <i class="fas fa-user me-2"></i>Stock faible
+                </button>
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a style="text-decoration: none;" href="{{route('stock.categorie.liste')}}">
+                <button class="nav-link" id="utilisateur-tab" data-bs-toggle="tab" data-bs-target="#utilisateur" type="button" role="tab" aria-controls="utilisateur" aria-selected="false">
+                    <i class="fas fa-user me-2"></i>Categorie
+                </button>
+            </a>
+        </li>
+    </ul>
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Listes par catégorie</h6>
+        <div class="card-header d-flex justify-content-between align-items-center bg-secondary">
+            <h5 class="text-white">gestion de stock</h5>
             <button class="btn btn-primary btn-sm">retour</button>
         </div>
         <div class="card-body">

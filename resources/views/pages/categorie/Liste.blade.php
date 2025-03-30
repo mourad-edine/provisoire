@@ -6,13 +6,39 @@
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">CATEGORIE</h1>
 
     <!-- DataTables Example -->
     <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Listes catégorie</h6>
+        <div class="card-header d-flex justify-content-between align-items-center bg-secondary">
+            <h5 class="mb-2 text-white">CATEGORIE</h5>
             <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addArticleModal">Ajouter catégorie</button>
+        </div>
+        <div class="mt-3 ml-4 d-flex flex-wrap align-items-center gap-2 mb-2 mb-md-0">
+            <form action="{{ route('articles.search') }}" method="POST" class="d-flex flex-wrap align-items-center gap-2">
+                @csrf
+                <!-- Champ de recherche principal -->
+                <div class="position-relative">
+                    <input type="text" class="form-control form-control-sm" name="search" placeholder="Rechercher..." value="{{ old('search', request('search')) }}">
+                </div>
+
+                <!-- Filtres supplémentaires -->
+                
+
+                <!-- Tri des résultats -->
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-sort me-1"></i> Trier par
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                        <li><button class="dropdown-item" type="submit" name="sort" value="nom_asc">Nom (A-Z)</button></li>
+                        <li><button class="dropdown-item" type="submit" name="sort" value="nom_desc">Nom (Z-A)</button></li>
+                        <li><button class="dropdown-item" type="submit" name="sort" value="prix_asc">Prix (Croissant)</button></li>
+                        <li><button class="dropdown-item" type="submit" name="sort" value="prix_desc">Prix (Décroissant)</button></li>
+                        <li><button class="dropdown-item" type="submit" name="sort" value="stock_asc">Stock (Croissant)</button></li>
+                        <li><button class="dropdown-item" type="submit" name="sort" value="stock_desc">Stock (Décroissant)</button></li>
+                    </ul>
+                </div>
+            </form>
         </div>
         <div class="card-body">
             @if(session('success'))
@@ -42,7 +68,7 @@
                             <td>{{$categorie->nom}}</td>
                             <td>{{$categorie->reference ? $categorie->reference : 'pas de reference'}}</td>
                             <td>{{$categorie->articles_count}}</td>
-                            <td><img src="{{asset('assets/images/provisoire.jpg')}}" alt="" width="40" height="40"></td>
+                            <td></td>
                             <td>{{$categorie->created_at}}</td>
                             <td>{{$categorie->updated_at}}</td>
                             <td>

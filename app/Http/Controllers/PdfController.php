@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Achat;
 use App\Models\Vente;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -30,14 +31,14 @@ class PdfController extends Controller
                 'conditionnement' => $vente->article ? $vente->article->conditionnement : 1,
             ];
         });
-        
+
         // Création des items pour la facture
         $items = $ventes->map(function ($vente) {
             $total = ($vente['prix_unitaire'] + $vente['prix_consignation']) * $vente['quantite'];
             if ($vente['type_achat'] === 'cageot') {
                 $total *= $vente['conditionnement'];
             }
-        
+
             return [
                 'description' => $vente['article'],
                 'quantity' => $vente['quantite'],
@@ -46,7 +47,7 @@ class PdfController extends Controller
                 'total' => $total
             ];
         })->toArray();
-        
+
         // Création des données de la facture
         $numero_facture = 'FAC-' . date('Ymd') . '-' . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
 
@@ -64,9 +65,29 @@ class PdfController extends Controller
             'items' => $items,
             'total' => array_sum(array_column($items, 'total')),
         ];
-        
+
         $pdf = Pdf::loadView('facture', $vente);
         return $pdf->stream('facture.pdf');
-         // Affiche la facture dans le navigateur
+        // Affiche la facture dans le navigateur
+    }
+
+
+
+    public function achatpdf($id)
+    {
+        // Récupérer les achats liés à la commande
+        $achats = Achat::with('articles')
+            ->where('commande_id', $id)
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        // Calculer le total
+        $total = $achats->sum('prix');
+
+        // Générer le PDF
+        $pdf = Pdf::loadView('pages.pdf.facture', compact('achats', 'total'));
+
+        // Télécharger le PDF
+        return $pdf->stream("facture_commande_{$id}.pdf");
     }
 }

@@ -16,7 +16,9 @@ class Vente extends Model
         'type_achat',
         'btl',
         'cgt',
-        'prix_cgt'
+        'prix_cgt',
+        'etat',
+        'client'
     ];
 
     public function article(){

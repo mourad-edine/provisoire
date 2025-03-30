@@ -19,6 +19,7 @@ class Article extends Model
         'prix_conditionne',
         'prix_achat',
         'quantite',
+        'type_btl'
     ];
 
     public function categorie(){
