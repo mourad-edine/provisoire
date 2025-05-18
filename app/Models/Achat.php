@@ -14,7 +14,9 @@ class Achat extends Model
         'quantite',
         'fournisseur_id',
         'date_entre',
-        'prix'
+        'prix',
+        'prix_unite',
+        'type_achat',
     ];
 
     public function articles(){

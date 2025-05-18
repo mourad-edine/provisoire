@@ -7,34 +7,57 @@
 
     <!-- Page Heading -->
 
-    <ul class="nav nav-tabs" id="parametresTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <a style="text-decoration: none;" href="{{route('stock.liste')}}">
-                <button class="nav-link " id="consignation-tab" data-bs-toggle="tab" data-bs-target="#consignation" type="button" role="tab" aria-controls="consignation" aria-selected="true">
-                    <i class="fas fa-wine-bottle me-2"></i>Listes globales
-                </button>
+    <ul class="nav nav-tabs border-bottom" id="parametresTabs" role="tablist">
+        <li class="nav-item me-2" role="presentation">
+            <a href="{{ route('stock.liste') }}" class="nav-link {{ request()->routeIs('stock.liste') ? 'active' : '' }}">
+                <i class="fas fa-warehouse me-1"></i>Listes globales
+            </a>
+        </li>
+        <li class="nav-item me-2" role="presentation">
+            <a href="{{ route('stock.faible.liste') }}" class="nav-link {{ request()->routeIs('stock.faible.liste') ? 'active' : '' }}">
+                <i class="fas fa-exclamation-triangle me-1"></i>Stocks faibles
             </a>
         </li>
         <li class="nav-item" role="presentation">
-            <a style="text-decoration: none;" href="{{route('stock.faible.liste')}}">
-                <button class="nav-link active" id="utilisateur-tab" data-bs-toggle="tab" data-bs-target="#utilisateur" type="button" role="tab" aria-controls="utilisateur" aria-selected="false">
-                    <i class="fas fa-user me-2"></i>Stock faibles
-                </button>
-            </a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a style="text-decoration: none;" href="{{route('stock.categorie.liste')}}">
-                <button class="nav-link" id="utilisateur-tab" data-bs-toggle="tab" data-bs-target="#utilisateur" type="button" role="tab" aria-controls="utilisateur" aria-selected="false">
-                    <i class="fas fa-user me-2"></i>Categorie
-                </button>
+            <a href="{{ route('stock.categorie.liste') }}" class="nav-link {{ request()->routeIs('stock.categorie.liste') ? 'active' : '' }}">
+                <i class="fas fa-th-large me-1"></i>Catégories
             </a>
         </li>
     </ul>
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center bg-secondary">
+        <div class="card-header d-flex justify-content-between align-items-center bg-dark">
             <h5 class="text-white">Stock faible</h5>
-            <button class="btn btn-primary btn-sm">retour</button>
+            <a href="{{ url('/dashboard') }}" class="btn btn-primary btn-sm">
+    <i class="fas fa-arrow-left mr-2"></i>Retour dashboard
+</a>   
+        </div>
+        <div class="mt-3 ml-4 d-flex flex-wrap align-items-center gap-2 mb-2 mb-md-0">
+            <form action="{{ route('stock.faible.liste') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2">
+                @csrf
+                <!-- Champ de recherche principal -->
+                <div class="position-relative">
+                    <input type="text" class="form-control form-control-sm" name="search" placeholder="Rechercher..." value="{{ old('search', request('search')) }}">
+                </div>
+
+                <!-- Filtres supplémentaires -->
+                
+
+                <!-- Tri des résultats -->
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-sort me-1"></i> Trier par
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                        <li><button class="dropdown-item" type="submit"  value="nom_asc">Nom (A-Z)</button></li>
+                        <li><button class="dropdown-item" type="submit"  value="nom_desc">Nom (Z-A)</button></li>
+                        <li><button class="dropdown-item" type="submit"  value="prix_asc">Prix (Croissant)</button></li>
+                        <li><button class="dropdown-item" type="submit"  value="prix_desc">Prix (Décroissant)</button></li>
+                        <li><button class="dropdown-item" type="submit"  value="stock_asc">Stock (Croissant)</button></li>
+                        <li><button class="dropdown-item" type="submit"  value="stock_desc">Stock (Décroissant)</button></li>
+                    </ul>
+                </div>
+            </form>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -47,7 +70,6 @@
                             <th>P.Vente</th>
                             <th>P.Cageot</th>
                             <th>quantite</th>
-                            <th>image</th>
                             <th>consignation</th>
                             <th>mise à jour</th>
                             <th>date</th>
@@ -72,32 +94,29 @@
                                 <span class="text-danger"> {{ $affichage }} cageot{{ $affichage > 1 ? 's' : '' }} @if($reste> 0) et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}@endif
                                 </span>
                             </td>
-                            <td><img src="{{asset('assets/images/bouteille.png')}}" alt="" width="20" height="20"></td>
                             <td>{{$article->prix_consignation ? $article->prix_consignation .' Ar' :'pas de prix'}}</td>
                             <td>{{ \Carbon\Carbon::parse($article->created_at)->format('Y-m-d') }}</td>
                             <td>{{ \Carbon\Carbon::parse($article->updated_at)->format('Y-m-d') }}</td>
                             <td>
                                 <!-- Icônes d'options -->
-                                <a href="{{route('achat.liste')}}"><i class="fas fa-edit text-secondary"></i></a>
+                                <a href="{{route('achat.page')}}"><i class="fas fa-edit text-secondary"></i></a>
                             </td>
                         </tr>
 
                         @empty
                         <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td class="text-warning">pas encore de donné inséré pour le moment</td>
-                            <td></td>
-                            <td></td>
+                            <td colspan="10" class="">
+                                <div class="alert alert-warning mb-3">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Pas de donnée trouvé --
+                                </div>
+                            </td>
                         </tr>
                         @endforelse
-
-
                     </tbody>
                 </table>
                 <div class="d-flex justify-content-start mt-3">
-                    {{ $articles->links('pagination::bootstrap-4') }} <!-- Ou 'pagination::bootstrap-5' -->
+                    {{ $articles->appends(['search' => request('search')])->links('pagination::bootstrap-4') }}
                 </div>
             </div>
         </div>

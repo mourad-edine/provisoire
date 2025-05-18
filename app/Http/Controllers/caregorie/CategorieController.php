@@ -8,10 +8,14 @@ use Illuminate\Http\Request;
 
 class CategorieController extends Controller
 {
-    public function show(){
+    public function show(Request $request){
+        $search =  $request->input('search');
+        $query = Categorie::withCount('articles');
 
-        $Categories = Categorie::withCount('articles')->orderby('id','DESC')->paginate(6);
-        //dd($Categories);
+        if ($search) {
+            $query->where('nom', 'like', "%{$search}%");
+        }
+        $Categories = $query->orderby('id','DESC')->paginate(6);
         return view('pages.categorie.Liste' ,[
             'categories' => $Categories
         ]);

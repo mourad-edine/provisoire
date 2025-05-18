@@ -3,12 +3,12 @@
 @section('title', 'Accueil')
 
 @section('content')
-<div class="container-fluid">
+<div class="">
 
     <!-- Page Heading -->
 
     <!-- DataTales Example -->
-    <ul class="nav nav-tabs" id="parametresTabs" role="tablist">
+    <ul class="nav nav-tabs mb-4" id="parametresTabs" role="tablist">
     <li class="nav-item" role="presentation">
             <a style="text-decoration: none;" href="{{route('achat.commande')}}">
                 <button class="nav-link  active" id="utilisateur-tab" data-bs-toggle="tab" data-bs-target="#utilisateur" type="button" role="tab" aria-controls="utilisateur" aria-selected="false">
@@ -23,18 +23,41 @@
                 </button>
             </a>
         </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link text-decoration-none p-0" href="{{route('achat.page')}}">
+                <button class="nav-link active bg-dark text-white">
+                    <i class="fas fa-cart-plus me-2 text-white"></i> Nouvel achat
+                </button>
+            </a>
+        </li>
        
     </ul>
     <div class="card shadow mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center bg-secondary border-bottom shadow-sm">
-        <h5 class="mb-2 text-white">ACHATS</h5>
-
-            <div class="d-flex">
-
-                <!-- <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#venteModal">Nouvelle vente</button> -->
-                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#achatModal">Nouvel Achat</button>
-
-            </div>
+    <div class="p-3 mb-3 bg-light rounded shadow-sm">
+            <form method="GET" action="{{ route('achat.commande') }}" class="row g-3 align-items-end">
+                <div class="col-md-2">
+                    <label for="search" class="form-label">Nom|numero commande</label>
+                    <input type="text" id="search" name="search" value="{{ request('search') }}" class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <label for="date_debut" class="form-label">Date début</label>
+                    <input type="date" id="date_debut" name="date_debut" value="{{ request('date_debut') }}" class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <label for="date_fin" class="form-label">Date fin</label>
+                    <input type="date" id="date_fin" name="date_fin" value="{{ request('date_fin') }}" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label for="tri" class="form-label">Trier par date</label>
+                    <select name="tri" id="tri" class="form-control">
+                        <option value="desc" {{ request('tri') == 'desc' ? 'selected' : '' }}>Décroissant</option>
+                        <option value="asc" {{ request('tri') == 'asc' ? 'selected' : '' }}>Croissant</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-dark w-100"><i class="fa fa-search"></i>Rechercher</button>
+                </div>
+            </form>
         </div>
         <div class="card-body">
             @if(session('success'))
@@ -47,7 +70,8 @@
                     <thead>
                         <tr>
                             <th>id</th>
-                            <th>id client</th>
+                            <th>numero_commande</th>
+                            <th>id fournisseur</th>
                             <th>date commande</th>
                             <th>nombre d'achat</th>
                             <th>total</th>
@@ -59,6 +83,7 @@
                         @forelse($commandes as $commande)
                         <tr>
                             <td>C-{{$commande->id}}</td>
+                            <td>{{$commande->numero ? $commande->numero : 'pas de numero'}}</td>
                             <td>{{$commande->fournisseur ? $commande->fournisseur->nom : 'Nom fournisseur'}}</td>
                             <td>{{$commande->created_at}}</td>
                             <td>{{$commande->achats_count}} </td>
@@ -74,13 +99,16 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-warning">Pas encore de données insérées pour le moment</td>
+                        <div class="alert alert-warning mb-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Pas de donnée trouvé -- 
+                    </div>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
-                <div class="d-flex justify-start-center mt-3">
-                    {{ $commandes->links('pagination::bootstrap-4') }} <!-- ou 'pagination::bootstrap-5' -->
+                <div class="d-flex justify-content-start mt-3">
+                    {{$commandes->appends(['search' => request('search')])->links('pagination::bootstrap-4') }}
                 </div>
             </div>
         </div>
@@ -192,113 +220,5 @@
 </div>
 
 <!-- Avant la fermeture du body -->
-<script>
-    document.getElementById('dateachat').value = new Date().toISOString().split('T')[0];
 
-    document.addEventListener("DOMContentLoaded", function() {
-        setTimeout(function() {
-            let highlightedRow = document.querySelector(".highlighted");
-            if (highlightedRow) {
-                highlightedRow.classList.remove("highlighted");
-            }
-        }, 10000);
-    });
-
-    document.getElementById('ajouterArticle').addEventListener('click', function() {
-        let articleSelect = document.getElementById('article');
-        let frnsSelect = document.getElementById('fournisseur');
-        let priceInput = document.getElementById('price');
-
-        // Vérification que le prix est saisi et valide
-        if (!priceInput.value || priceInput.value <= 0) {
-            alert("Veuillez saisir un prix valide.");
-            priceInput.focus();
-            return;
-        }
-
-
-        let selectedOption = articleSelect.options[articleSelect.selectedIndex];
-        let selectedOptionfrns = frnsSelect.options[frnsSelect.selectedIndex];
-
-        let articleId = selectedOption.value;
-        let articleNom = selectedOption.text;
-        let fnrsId = selectedOptionfrns.value;
-        let condi = selectedOption.getAttribute('data-condi');
-        let prix = selectedOption.getAttribute('data-prix');
-        let quantite = document.getElementById('quantite').value;
-        let dateachat = document.getElementById('dateachat').value;
-        let price = priceInput.value;
-
-        if (quantite <= 0) {
-            alert("Veuillez saisir une quantité valide.");
-            return;
-        }
-
-        // Calcul du total pour cet article
-        let articleTotal = price;
-
-        // Ajout de la ligne dans le tableau
-        let newRow = `<tr>
-            <td>${articleNom}</td>
-            <td>${price / quantite} Ar</td>
-            <td>${quantite + ' cageot (' + condi + ' bouteilles/CGT)'}</td>
-            <td class="article-total">${articleTotal} Ar</td>
-            <td><button type="button" class="btn btn-danger btn-sm removeArticle">X</button></td>
-        </tr>`;
-
-        document.getElementById('articlesTable').insertAdjacentHTML('beforeend', newRow);
-
-        // Ajout des inputs cachés
-        let hiddenInputs = document.getElementById('hiddenInputs');
-        let wrapper = document.createElement('div');
-        wrapper.classList.add('articleInputs');
-        wrapper.innerHTML = `
-            <input type="hidden" name="articles[]" value="${articleId}">
-            <input type="hidden" name="quantites[]" value="${quantite}">
-            <input type="hidden" name="dateachat[]" value="${dateachat}">
-            <input type="hidden" name="prices[]" value="${price}">
-            <input type="hidden" name="fournisseurs[]" value="${fnrsId}">
-        `;
-
-        hiddenInputs.appendChild(wrapper);
-
-        // Mise à jour du total général
-        updateTotal();
-
-        // Réinitialisation des champs (sauf le prix)
-        document.getElementById('quantite').value = '';
-        priceInput.value = ''; // Garde le dernier prix saisi au lieu de revenir à 0
-    });
-
-    // Suppression d'un article
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('removeArticle')) {
-            let row = e.target.closest('tr');
-            let rowIndex = Array.from(row.parentNode.children).indexOf(row);
-            row.remove();
-
-            let hiddenInputs = document.getElementById('hiddenInputs');
-            let wrappers = hiddenInputs.getElementsByClassName('articleInputs');
-            if (wrappers[rowIndex]) {
-                wrappers[rowIndex].remove();
-            }
-
-            // Mise à jour du total après suppression
-            updateTotal();
-        }
-    });
-
-    // Fonction pour calculer le total général
-    function updateTotal() {
-        let totalElements = document.querySelectorAll('.article-total');
-        let grandTotal = 0;
-
-        totalElements.forEach(el => {
-            let value = parseFloat(el.textContent.replace(' Ar', ''));
-            grandTotal += value;
-        });
-
-        document.getElementById('total').textContent = `Total: ${grandTotal} Ar`;
-    }
-</script>
 @endsection

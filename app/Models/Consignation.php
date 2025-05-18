@@ -14,7 +14,11 @@ class Consignation extends Model
         'prix_cgt',
         'etat',
         'etat_cgt',
-        'date_consignation'
+        'date_consignation',
+        'casse',
+        'casse_cgt',
+        'rendu_btl',
+        'rendu_cgt'
     ];
 
     public function vente(){

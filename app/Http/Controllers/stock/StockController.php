@@ -9,21 +9,71 @@ use Illuminate\Http\Request;
 
 class StockController extends Controller
 {
-    public function show(){
-        return view('pages.stock.Stock' ,[
-            'articles' => Article::paginate(6)
+    public function show(Request $request)
+    {
+        $search = $request->input('search');
+
+        $query = Article::query();
+
+        if ($search) {
+            $query->where('nom', 'like', "%{$search}%")
+            ->orWhereHas('categorie', function ($query) use ($search) {
+                $query->where('nom', 'like', "%{$search}%");
+            });
+        }
+
+        $articles = $query->orderBy('id', 'DESC')
+                          ->paginate(6)
+                          ->withQueryString();
+
+        return view('pages.stock.Stock', [
+            'articles' => $articles,
         ]);
     }
 
-    public function faible(){
+    public function faible(Request $request)
+    {
+        $search = $request->input('search');
+
+        $query = Article::where('quantite', '<', 40);
+
+        if ($search) {
+            $query->where('nom', 'like', "%{$search}%")
+            ->orWhereHas('categorie', function ($query) use ($search) {
+                $query->where('nom', 'like', "%{$search}%");
+            });
+        }
+
+        $articles = $query->orderBy('id', 'DESC')
+                          ->paginate(6)
+                          ->withQueryString();
+
         return view('pages.stock.Faible', [
-            'articles' => Article::where('quantite' , '<' , 100)->paginate(6)
+            'articles' => $articles,
         ]);
     }
 
-    public function stockbyCategorie($id){
+    public function stockbyCategorie(Request $request, $id)
+    {
+        $search = $request->input('search');
+
+        $query = Article::where('categorie_id', $id);
+
+        if ($search) {
+            $query->where('nom', 'like', "%{$search}%")
+            ->orWhereHas('categorie', function ($query) use ($search) {
+                $query->where('nom', 'like', "%{$search}%");
+            });
+        }
+
+        $articles = $query->orderBy('id', 'DESC')
+                          ->paginate(6)
+                          ->withQueryString();
+
         return view('pages.stock.Article_categorie', [
-            'articles' => Article::where('categorie_id' , $id)->paginate(6)]);
+            'articles' => $articles,
+            'categorie_id' => $id,
+        ]);
     }
 
     public function categorie(){

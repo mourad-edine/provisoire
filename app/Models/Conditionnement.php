@@ -11,6 +11,7 @@ class Conditionnement extends Model
         'commande_id',
         'nombre_cageot',
         'etat',
+        'montant',
         'created_at',
         'updated_at'
     ];

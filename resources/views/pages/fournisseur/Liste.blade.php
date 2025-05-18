@@ -8,12 +8,39 @@
     <!-- Page Heading -->
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
-    <div class="card-header bg-secondary d-flex justify-content-between align-items-center">
-        <h5 class="mb-2 text-white">fournisseurs</h5>
-        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addArticleModal">Ajouter client</button>
+        <div class="card-header bg-dark d-flex justify-content-between align-items-center">
+            <h5 class="mb-2 text-white">fournisseurs</h5>
+            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addArticleModal">
+    <i class="fas fa-plus-circle mr-2"></i>Ajouter fournisseur
+</button>        </div>
+        <div class="d-flex flex-wrap align-items-center gap-2 mt-3 ml-3 mb-md-0">
+            <form action="{{ route('fournisseur.liste') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2">
+                <!-- Champ de recherche principal -->
+                <div class="position-relative">
+                    <input type="text" class="form-control form-control-sm" name="search" placeholder="Rechercher..." value="{{ old('search', request('search')) }}">
+                </div>
+
+                <!-- Filtres supplémentaires -->
+
+
+                <!-- Tri des résultats -->
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-sort me-1"></i> Trier par
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                        <li><button class="dropdown-item" type="submit" value="nom_asc">Nom (A-Z)</button></li>
+                        <li><button class="dropdown-item" type="submit" value="nom_desc">Nom (Z-A)</button></li>
+                        <li><button class="dropdown-item" type="submit" value="prix_asc">Prix (Croissant)</button></li>
+                        <li><button class="dropdown-item" type="submit" value="prix_desc">Prix (Décroissant)</button></li>
+                        <li><button class="dropdown-item" type="submit" value="stock_asc">Stock (Croissant)</button></li>
+                        <li><button class="dropdown-item" type="submit" value="stock_desc">Stock (Décroissant)</button></li>
+                    </ul>
+                </div>
+            </form>
         </div>
         <div class="card-body">
-        @if(session('success'))
+            @if(session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
             </div>
@@ -26,6 +53,7 @@
                             <th>nom</th>
                             <th>numero</th>
                             <th>reference</th>
+                            <th>Dette founisseur</th>
                             <th>date creation</th>
                             <th>options</th>
 
@@ -40,12 +68,13 @@
                             <td>{{$fournisseur->nom}}
                             <td>{{$fournisseur->numero ? $fournisseur->numero  :'pas de numero'}}
                             <td>{{$fournisseur->reference ? $fournisseur->reference  :'pas de reference'}}
+                            <td>---</td>
                             <td>{{$fournisseur->date_entre}}
                             <td>
                                 <!-- Icônes d'options -->
 
 
-                                    <a href="#" data-toggle="modal" data-target="#supprimerArticleModal{{$fournisseur->id}}"><i class="fas fa-trash-alt text-danger"></i></a>
+                                <a href="#" data-toggle="modal" data-target="#supprimerArticleModal{{$fournisseur->id}}"><i class="fas fa-trash-alt text-danger"></i></a>
                             </td>
                         </tr>
                         <div class="modal fade" id="supprimerArticleModal{{$fournisseur->id}}" tabindex="-1" aria-labelledby="supprimerArticleModalLabel" aria-hidden="true">
@@ -58,15 +87,15 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                            <div class="form-group">
-                                                <p>voulez-vous vraiment supprimer ce fournisseur ?</p>
-                                                <input value="{{$fournisseur->nom}}" type="hidden" class="form-control" id="nom" name="nom" required>
-                                            </div>
+                                        <div class="form-group">
+                                            <p>voulez-vous vraiment supprimer ce fournisseur ?</p>
+                                            <input value="{{$fournisseur->nom}}" type="hidden" class="form-control" id="nom" name="nom" required>
+                                        </div>
 
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                                                <a href="{{route('delete.fournisseur', ['id' => $fournisseur->id])}}"><button type="button" class="btn btn-danger">supprimer</button></a>
-                                            </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                            <a href="{{route('delete.fournisseur', ['id' => $fournisseur->id])}}"><button type="button" class="btn btn-danger">supprimer</button></a>
+                                        </div>
                                         </form>
                                     </div>
                                 </div>
@@ -74,20 +103,20 @@
                         </div>
                         @empty
                         <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td class="text-warning">pas encore de donné inséré pour le moment</td>
-                            <td></td>
-                            <td></td>
+                            
+                            <td class="text-warning" colspan="7"><div class="alert alert-warning mb-3">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Pas de donnée trouvé --
+                                </div>
+                            </td>
                         </tr>
                         @endforelse
 
                     </tbody>
                 </table>
                 <div class="d-flex justify-content-start mt-3">
-    {{ $fournisseurs->links('pagination::bootstrap-4') }} <!-- Ou 'pagination::bootstrap-5' -->
-</div>
+                    {{ $fournisseurs->links('pagination::bootstrap-4') }} <!-- Ou 'pagination::bootstrap-5' -->
+                </div>
             </div>
         </div>
     </div>
@@ -116,7 +145,7 @@
                         <label for="categorie">numero</label>
                         <input type="text" class="form-control" id="numero" name="numero" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <input type="checkbox" id="ref" name="ref">
                         <label for="ref">Ajouter une reference</label>
@@ -125,7 +154,7 @@
                         <label for="reference">reference</label>
                         <input type="text" class="form-control" id="reference" name="reference">
                     </div>
-                   
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
                         <button type="submit" class="btn btn-primary">Ajouter</button>

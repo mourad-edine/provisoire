@@ -35,13 +35,6 @@
             background-color: #f2f2f2;
         }
 
-        .total {
-            font-weight: bold;
-            font-size: 18px;
-            text-align: right;
-            padding-top: 10px;
-        }
-
         .contain {
             width: 100%;
             margin-top: 30px;
@@ -53,20 +46,10 @@
             vertical-align: top;
         }
 
-        .left {
-            text-align: left;
-        }
-
-        .center {
-            text-align: start;
-        }
-
+        .left,
+        .center,
         .right {
-            text-align: start;
-        }
-
-        .final {
-            margin-left: 40px;;
+            text-align: left;
         }
 
         .summary-section {
@@ -79,75 +62,93 @@
             padding: 8px 0;
         }
 
+        .fin {
+            margin-top: 20px;
+        }
 
-
+        .fin div {
+            margin-top: 5px;
+        }
     </style>
 </head>
 
 <body>
 
-    <div class="header">Facture DO-09D32001/15714/25</div>
+    <div class="header">Facture commande n° {{ $commande->numero ?? '---' }}</div>
 
     <div class="contain">
         <div class="left">
             <strong>Distributeur :</strong><br>
             Nom : Entreprise ABC<br>
-            Adresse : 123 Rue Marché, Antananarivo<br>
-            Contact : +261 34 12 345 67
+            Adresse : -----------<br>
+            Contact : -----------
         </div>
 
         <div class="right">
-            <strong>Client :</strong><br>
-            Nom : Jean Dupont<br>
-            Adresse : 456 Rue Client, Antananarivo<br>
-            Contact : +261 32 45 678 90
+            <strong>Fournisseur :</strong><br>
+            Nom : {{ $commande->fournisseur->nom ?? '-' }}<br>
+            Adresse : {{ $commande->fournisseur->adresse ?? '-' }}<br>
+            Contact : {{ $commande->fournisseur->telephone ?? '-' }}
         </div>
     </div>
+
     <div class="contain">
         <div class="center">
             <strong>Date de commande :</strong><br>
-            {{ \Carbon\Carbon::parse($achats->first()->created_at)->format('d/m/Y') }}
+            {{ \Carbon\Carbon::parse($commande->created_at)->format('d/m/Y') }}
         </div>
     </div>
+
     <table>
         <thead>
             <tr>
-                <th>commande</th>
-                <th>Prix / cageot</th>
+                <th>Article</th>
+                <th>Prix / unité</th>
                 <th>Quantité</th>
-                <th>Total</th>
+                <th>Prix Total</th>
+                
             </tr>
         </thead>
         <tbody>
             @foreach($achats as $achat)
             <tr>
-                <td>{{ $achat->articles ? $achat->articles->nom : '-' }}</td>
-                <td>{{ number_format($achat->prix / $achat->quantite, 2) }} Ar</td>
-                <td>{{ $achat->quantite }}</td>
-                <td>{{ number_format($achat->prix, 2) }} Ar</td>
+                <td>{{ $achat['article'] ?? '-' }}</td>
+                <td>{{ $achat['prix_unite']}} Ar</td>
+                <td>{{ $achat['quantite']}} - {{$achat['type_achat']}}</td>
+                <td>{{ number_format($achat['prix'], 2, ',', ' ') }} Ar</td>
+                
             </tr>
             @endforeach
         </tbody>
     </table>
+
     <div class="summary-section">
         <div class="summary-row">
-            <span class=""><strong>Montant liquide</strong> : </span>______________________________________________
-            <span class="">{{ number_format($total, 2, ',', ' ') }} Ar</span>
+            <span><strong>Montant liquide :</strong></span>
+            <span>{{ number_format($total, 2, ',', ' ') }} Ar</span>
         </div>
     </div>
+
     <div class="fin">
-        <div class="">
-            <span class="">Total TTC</span>
-            <span class="">186 413 512 Ar</span>
+        <div>
+            <strong>Total TTC :</strong> {{ number_format($total, 2, ',', ' ') }} Ar
         </div>
+        <div>
+            <strong>Total quantité cageots :</strong>
+            {{ $achats->where('type_achat', 'cageot')->sum('quantite') }} cageots,
+        </div>
+        <div>
+            <strong>Total quantité packs :</strong>
+            {{ $achats->where('type_achat', 'pack')->sum('quantite') }} packs,
+        </div>
+        <div>
+            <strong>Total quantité bouteilles :</strong>
+            {{ $achats->where('type_achat', 'bouteilles')->sum('quantite') }} unités
 
-        <div class="">
-            <span class="">Total quantité commande</span>
-            <span class="">32 cgt</span>
         </div>
     </div>
-
 
 </body>
 
 </html>
+

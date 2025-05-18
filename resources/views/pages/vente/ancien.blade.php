@@ -29,15 +29,61 @@
 
         /* Correction pour Select2 dans les modals */
         .select2-container {
-            z-index: 99999 !important;
-        }
-
-        .modal-open .select2-container {
-            z-index: 999999 !important;
+            z-index: 1051 !important;
+            /* Doit être inférieur au z-index du modal */
         }
 
         .select2-dropdown {
-            z-index: 999999 !important;
+            z-index: 1052 !important;
+            /* Doit être légèrement supérieur au container mais inférieur au modal */
+        }
+
+        /* Augmentation du z-index pour le modal et son fond */
+        .modal {
+            z-index: 1060 !important;
+        }
+
+        .modal-backdrop {
+            z-index: 1050 !important;
+        }
+
+        /* Correction pour le dropdown du select2 dans les modals */
+        .modal-open .select2-container {
+            z-index: 1051 !important;
+        }
+
+        .modal-open .select2-dropdown {
+            z-index: 1052 !important;
+        }
+
+        .modal-open .select2-container--default .select2-selection--single,
+        .modal-open .select2-container--default .select2-selection--multiple {
+            background-color: #f8f9fa !important;
+            /* Couleur de fond assombrie */
+            opacity: 0.8 !important;
+            /* Légère transparence pour l'effet "désactivé" */
+        }
+
+        /* Style pour le dropdown (liste déroulante) */
+        .modal-open .select2-dropdown {
+            background-color: #f8f9fa !important;
+            opacity: 0.9 !important;
+        }
+
+        /* Style pour les options dans le dropdown */
+        .modal-open .select2-results__option {
+            background-color: #f8f9fa !important;
+        }
+
+        /* Style spécifique pour le fond du modal */
+        .modal-backdrop {
+            background-color: #000 !important;
+            opacity: 0.5 !important;
+        }
+
+        .sidebar {
+            width: 10rem !important;
+            background-color: #000;
         }
     </style>
 </head>
@@ -71,7 +117,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link collapsed" href="{{route('vente.liste')}}">
+                <a class="nav-link collapsed" href="{{route('commande.liste.vente')}}">
                     <i class="fas fa-cash-register"></i>
                     <span>Ventes</span>
                 </a>
@@ -166,7 +212,12 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="cm">Numéro commande</label>
-                                            <input type="text" value="C-{{ $dernier->id + 1}}" class="form-control" id="cm" disabled>
+                                            <input
+                                                type="text"
+                                                value="C-{{ $dernier ? $dernier->id + 1 : 0 }}"
+                                                class="form-control"
+                                                id="cm"
+                                                disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -178,7 +229,7 @@
                                             <label for="article">Article</label>
                                             <select class="form-control select-search" id="article">
                                                 @foreach($articles as $article)
-                                                <option value="{{ $article->id }}" data-prix="{{ $article->prix_unitaire }}" data-condi="{{ $article->conditionnement }}" data-consignation="{{ $article->prix_consignation }}">{{ $article->nom }}</option>
+                                                <option value="{{ $article->id }}" data-prix="{{ $article->prix_unitaire }}" data-condi="{{ $article->conditionnement }}" data-consignation="{{ $article->prix_consignation }}" data-prixcgt="{{$article->prix_cgt}}">{{ $article->nom }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -197,24 +248,24 @@
                                         <div class="unitecontainer">
                                             <div class="col-md-12 mb-3 d-flex">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="achatUnite">
+                                                    <input class="form-check-input" type="checkbox" id="achatUnite" checked>
                                                     <label class="form-check-label" for="achatUnite">Achat par unité</label>
                                                 </div>
                                                 <div class="form-check cageotcontainer ml-3">
-                                                    <input class="form-check-input" type="checkbox" id="achatCageot" checked>
-                                                    <label class="form-check-label" for="achatCageot">Achat par cageot</label>
+                                                    <input class="form-check-input" type="checkbox" id="achatCageot">
+                                                    <label class="form-check-label" for="achatCageot">Achat par cageot/pack</label>
                                                 </div>
                                             </div>
-                                            <div id="quantiteCageotContainer">
+                                            <div id="quantiteCageotContainer" style="display: none;">
                                                 <div class="form-group">
                                                     <label for="quantiteCageot">Quantité en cageot</label>
-                                                    <input type="number" class="form-control" id="quantiteCageot" min="1" value="1">
+                                                    <input type="number" class="form-control" id="quantiteCageot" min="1">
                                                 </div>
                                             </div>
-                                            <div id="quantiteUniteContainer" style="display: none;">
+                                            <div id="quantiteUniteContainer">
                                                 <div class="form-group">
                                                     <label for="quantiteUnite">Quantité en unité</label>
-                                                    <input type="number" class="form-control" id="quantiteUnite" min="1" value="1">
+                                                    <input type="number" class="form-control" id="quantiteUnite" min="1">
                                                 </div>
                                             </div>
                                         </div>
@@ -230,14 +281,14 @@
                                             <label class="form-check-label" for="avec">Avec bouteille</label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="cgt">
+                                            <input class="form-check-input" type="checkbox" id="cgt" disabled>
                                             <label class="form-check-label" for="cgt">avec cageot</label>
                                         </div>
                                     </div>
-                                    <div class="col-md-12 mb-3 d-flex form-check ml-3">
+                                    <!-- <div class="col-md-12 mb-3 d-flex form-check ml-3">
                                         <input class="form-check-input" type="checkbox" id="unite" name="unites">
                                         <label class="form-check-label" for="unite">conditionner unité</label>
-                                    </div>
+                                    </div> -->
                                 </div>
 
                                 <button type="button" class="btn btn-success" id="ajouterArticle">Ajouter</button>
@@ -254,7 +305,6 @@
                                             <th>Quantité</th>
                                             <th>Cgt</th>
                                             <th>BTL</th>
-                                            <th>état</th>
                                             <th>Total</th>
                                             <th>Action</th>
                                         </tr>
@@ -264,15 +314,10 @@
                                 <div class="form-footer d-flex justify-content-end">
                                     <p id="final" class="mr-3">0</p>
                                     <span class="mr-3">Ar</span>
-                                    <a id="final3"
-                                        style="display: none;"
-                                        class="btn btn-primary btn-sm p-2"
-                                        data-toggle="modal"
-                                        data-target="#venteModal2">
-                                        Valider
-                                    </a>
-                                    <button type="submit"
 
+                                    <button type="button"
+                                        data-toggle="modal"
+                                        data-target="#venteModal2"
                                         class="btn btn-primary"
                                         id="final2">
                                         Valider
@@ -280,46 +325,105 @@
                                 </div>
 
                                 <div class="modal fade" id="venteModal2" tabindex="-1" role="dialog" aria-labelledby="venteModal2Label" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-dialog" role="document">
                                         <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="venteModal2Label">Nombre de cageot</h5>
+                                            <!-- En-tête du modal -->
+                                            <div class="modal-header bg-light">
+                                                <h5 class="modal-title font-weight-bold" id="venteModal2Label">Configuration de la commande</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
+
+                                            <!-- Corps du modal -->
                                             <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <div>
-                                                                <label for="dateachat">Cageot de 24 : <span class="text-warning" id="c24">0</span></label> &nbsp;-----------&nbsp;<label for="dateachat">débordement : <span class="text-warning" id="reste1">0</span> &nbsp;BTL</label>
-
-                                                                <br>
-                                                                <label for="dateachat">Cageot de 20 : <span class="text-warning" id="c20">0</span></label> &nbsp;-----------&nbsp;<label for="dateachat">debordement : <span class="text-warning" id="reste2">0</span> &nbsp;BTL</label><br>
-
-                                                            </div>
-
-
-                                                            <div class="form-group d-flex justify-content-start ">
-                                                                <p>total unité : <span></span></p> &nbsp;
-                                                                <p class="text-success" id="tot"> 0 </p>
-                                                            </div>
-                                                            <div class="col-md-12">
-                                                                <input class="form-check-input" type="checkbox" id="choix" name="choix">
-                                                                <label class="form-check-label" for="choix">choisir nombre cageot</label>
-                                                            </div>
-                                                            <div class="form-group" id="choix_content" style="display: none;">
-                                                                <input type="number" class="form-control" name="embale" id="embale" placeholder="entrez votre choix">
+                                                <div class="container-fluid">
+                                                    <!-- Section Informations -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-12">
+                                                            <div class="d-flex align-items-center justify-content-between bg-light p-2 rounded">
+                                                                <span class="font-weight-bold">Total unités :</span>
+                                                                <span class="text-success font-weight-bold" id="tot">0</span>
                                                             </div>
                                                         </div>
                                                     </div>
+
+                                                    <!-- Section Options -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-12">
+                                                            <h6 class="border-bottom pb-2 mb-3">Options de conditionnement</h6>
+
+                                                            <!-- Option 1: Choix du nombre de cageots -->
+                                                            <div class="form-group row align-items-center">
+                                                                <div class="col-sm-8">
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" id="choix" name="choix">
+                                                                        <label class="form-check-label" for="choix">
+                                                                            Définir manuellement le nombre de cageots
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-8" id="choix_content" style="display: none;">
+                                                                    <input type="number" class="form-control form-control-sm" name="embale" id="embale" placeholder="Nombre">
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Option 2: Non consigné -->
+                                                            <div class="form-group">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" id="fidele" name="fidele">
+                                                                    <label class="form-check-label" for="fidele">
+                                                                        Non consigné (BTL + CGT)
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Option 3: Paiement -->
+                                                            <div class="form-group">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" id="payer" name="payer">
+                                                                    <label class="form-check-label" for="payer">
+                                                                        Paiement immédiat
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" id="disposition" name="disposition">
+                                                                    <label class="form-check-label" for="disposition">
+                                                                        à disposition
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Section Informations conditionnement (optionnelle) -->
+                                                    <!-- <div class="row">
+                        <div class="col-12">
+                            <div class="bg-light p-3 rounded">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Cageot de 24 : <span class="text-warning font-weight-bold" id="c24">0</span></span>
+                                    <span>Débordement : <span class="text-warning font-weight-bold" id="reste1">0</span> BTL</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Cageot de 20 : <span class="text-warning font-weight-bold" id="c20">0</span></span>
+                                    <span>Débordement : <span class="text-warning font-weight-bold" id="reste2">0</span> BTL</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
                                                 </div>
                                             </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">annuler</button>
 
-                                                <button type="submit" class="btn btn-primary">Valider</button>
+                                            <!-- Pied de page du modal -->
+                                            <div class="modal-footer bg-light">
+                                                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+                                                    <i class="fas fa-times mr-1"></i> Annuler
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fas fa-check mr-1"></i> Valider
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -352,7 +456,6 @@
                         const uni = document.getElementById('unite'); // Assurez-vous que cet élément existe
                         // Assurez-vous que cet élément existe
 
-                        const prix_cgt = 3000;
                         const cgt_checkbox = document.getElementById('cgt');
                         const unite = document.getElementById('unite');
                         const vars = 1;
@@ -432,30 +535,32 @@
                             let prix = parseInt(selectedOption.getAttribute('data-prix'), 10) || 0;
                             let conditionnement = parseInt(selectedOption.getAttribute('data-condi'), 10) || 1;
                             let prix_consignation = parseInt(selectedOption.getAttribute('data-consignation'), 10) || 0;
+                            let prixcgt = parseInt(selectedOption.getAttribute('data-prixcgt'), 10) || 0;
 
                             let quantite = achatUnite.checked ?
                                 parseInt(document.getElementById('quantiteUnite').value, 10) || 0 :
                                 parseInt(document.getElementById('quantiteCageot').value, 10) || 0;
                             let types = achatUnite.checked ? '1' : '0';
                             let consignation = 'consigné';
+                            const prix_cgt = prixcgt;
 
                             if (quantite <= 0) {
                                 alert("Veuillez saisir une quantité valide.");
                                 return;
                             }
-                            totalQuantiteUnite += achatUnite.checked ? quantite : 0;
+                            totalQuantiteUnite += (achatUnite.checked) ? (prix_consignation != 0 ? quantite : 0) : 0;
                             tot.innerHTML = totalQuantiteUnite;
                             let total = avec.checked ?
                                 prix * quantite :
                                 (prix + prix_consignation) * quantite;
-                            c20.innerHTML = Math.ceil(totalQuantiteUnite / 20);
-                            c24.innerHTML = Math.ceil(totalQuantiteUnite / 24);
-                            reste2.innerHTML = totalQuantiteUnite < 20 ? 0 : totalQuantiteUnite % 20;
-                            reste1.innerHTML = totalQuantiteUnite < 24 ? 0 : totalQuantiteUnite % 24;
+                            // // c20.innerHTML = Math.ceil(totalQuantiteUnite / 20);
+                            // // c24.innerHTML = Math.ceil(totalQuantiteUnite / 24);
+                            // reste2.innerHTML = totalQuantiteUnite < 20 ? 0 : totalQuantiteUnite % 20;
+                            // reste1.innerHTML = totalQuantiteUnite < 24 ? 0 : totalQuantiteUnite % 24;
 
                             let totalenvoie = Math.ceil(totalQuantiteUnite / 24);
                             let totalconsignecageot = avec.checked ?
-                                (cgt_checkbox.checked ? prix * conditionnement * quantite : (prix * conditionnement * quantite) + (prix_cgt * quantite)) :
+                                (cgt_checkbox.checked ? prix * conditionnement * quantite : (prix * conditionnement * quantite) + (prixcgt * quantite)) :
                                 (cgt_checkbox.checked ? (prix_consignation + prix) * conditionnement * quantite : ((prix_consignation + prix) * conditionnement * quantite) + (prix_cgt * quantite));
                             let totalcageot = vars ?
                                 (prix + prix_consignation) * quantite * conditionnement + (prix_cgt * quantite) :
@@ -468,10 +573,9 @@
                 <td>${articleNom}</td>
                 <td>${prix} Ar</td>
                 <td>${prix + prix_consignation} Ar</td>
-                <td >${quantite} ${achatUnite.checked ? 'bouteille' : 'cageot (' + conditionnement + ' bouteilles / CGT)'}</td>
-                <td>${achatUnite.checked ? 'non conditionné' : (cgt_checkbox.checked ? '<span class="text-success">oui</span>(non consigné)' : '<span class="text-danger">non</span>(3000 ar / CGT)')}</td>
-                <td>${avec.checked ? '<span class="text-success">oui</span>(non consigné)' : '<span class="text-danger">non</span>(700ar/BTL)'}</td>
-                <td></td>
+                <td >${quantite} ${achatUnite.checked ? 'bouteille' : 'cageot/pack (' + conditionnement + ' bouteilles / CGT / PACK)'}</td>
+                <td>${achatUnite.checked ? 'non conditionné' : (cgt_checkbox.checked ? '<span class="text-success">oui</span>(non consigné)' : '<span class="text-danger">non</span>('+prixcgt+'/ CGT)')}</td>
+                <td>${avec.checked ? '<span class="text-success">oui</span>(non consigné)' : '<span class="text-danger">non</span>('+prix_consignation+' Ar/BTL)'}</td>
                 <td>${achatUnite.checked ? total : totalconsignecageot} Ar</td>
                 <td><button type="button" class="btn btn-danger btn-sm removeArticle">X</button></td>
             </tr>`;
@@ -493,6 +597,10 @@
 
                 </div>
             `);
+                            // Réinitialiser les champs après ajout
+                            document.getElementById('quantiteUnite').value = "";
+                            document.getElementById('quantiteCageot').value = "";
+                            articleSelect.dispatchEvent(new Event('change'));
                         });
 
                         document.addEventListener('click', function(e) {
@@ -519,7 +627,7 @@
 
                     });
                 </script>
- </div>
+            </div>
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto"></div>
@@ -535,27 +643,27 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
-    $(document).ready(function() {
-        // Initialisation basique du select
-        $('#article').select2({
-            theme: 'bootstrap-5',
-            placeholder: "Rechercher un article...",
-            allowClear: true
+        $(document).ready(function() {
+            // Initialisation basique du select
+            $('#article').select2({
+                theme: 'bootstrap-5',
+                placeholder: "Rechercher un article...",
+                allowClear: true
+            });
+
+            // Initialisation avec AJAX
+            $('#client').select2({
+                theme: 'bootstrap-5',
+                placeholder: "Rechercher un client...",
+                allowClear: true
+            });
+
+            // Événement lorsqu'une ville est sélectionnée
+            $('#villeSelect').on('select2:select', function(e) {
+                var data = e.params.data;
+                console.log('Ville sélectionnée:', data);
+            });
         });
-        
-        // Initialisation avec AJAX
-        $('#client').select2({
-            theme: 'bootstrap-5',
-            placeholder: "Rechercher un client...",
-            allowClear: true
-        });
-        
-        // Événement lorsqu'une ville est sélectionnée
-        $('#villeSelect').on('select2:select', function(e) {
-            var data = e.params.data;
-            console.log('Ville sélectionnée:', data);
-        });
-    });
     </script>
     <script src="{{asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
     <script src="{{asset('assets/js/sb-admin-2.min.js')}}"></script>

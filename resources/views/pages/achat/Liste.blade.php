@@ -10,11 +10,11 @@
         transition: background-color 2s ease-out;
     }
 </style>
-<div class="container-fluid">
+<div class="">
     @php
     $highlightedId = session('highlighted_id');
     @endphp
-    <ul class="nav nav-tabs" id="parametresTabs" role="tablist">
+    <ul class="nav nav-tabs mb-4" id="parametresTabs" role="tablist">
     <li class="nav-item" role="presentation">
             <a style="text-decoration: none;" href="{{route('achat.commande')}}">
                 <button class="nav-link" id="utilisateur-tab" data-bs-toggle="tab" data-bs-target="#utilisateur" type="button" role="tab" aria-controls="utilisateur" aria-selected="false">
@@ -29,14 +29,17 @@
                 </button>
             </a>
         </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link text-decoration-none p-0" href="{{route('achat.page')}}">
+                <button class="nav-link active bg-dark text-white">
+                    <i class="fas fa-cart-plus me-2 text-white"></i> Nouvel achat
+                </button>
+            </a>
+        </li>
         
     </ul>
     <div class="card shadow mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center bg-secondary">
-            <h5 class="mb-2 text-white">ACHAT</h5>
-
-            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#achatModal">Nouvel Achat</button>
-        </div>
+        
         <div class="card-body">
             @if(session('success'))
             <div class="alert alert-success">
@@ -44,46 +47,45 @@
             </div>
             @endif
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>id</th>
                             <th>article</th>
-                            <th>P.Achat cageot</th>
+                            <th>Prix unité</th>
+                            <th>Prix / cageot</th>
                             <th>commande</th>
                             <th>quantite</th>
                             <th>état</th>
                             <th>total</th>
-                            <th>date creation</th>
-                            <th>options</th>
+                            <th>date</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($achats as $achat)
-                        <tr id="row-{{$achat['id']}}" class="{{ $highlightedId == $achat['id'] ? 'highlighted' : '' }}">
+                        <tr>
                             <td>{{$achat['id']}}</td>
                             <td>{{$achat['article']}}</td>
-                            <td>{{$achat['prix'] / $achat['quantite']}} Ar</td>
+                            <th>
+                                {{$achat['prix_unite']}}
+                            </th>
+                            <td>{{$achat['prix_unite'] * $achat['conditionnement']}} </td>
                             <td>C-{{$achat['numero_commande']}}</td>
-                            <td>{{$achat['quantite']}} - cageot</td>
+
+                            <td>{{$achat['quantite']}} -{{ $achat['type_achat']}}</td>
                             <td><span class="text-success">payé</span></td>
-                            <td>{{ $achat['prix'].' Ar' }}</td>
-                            <td>{{ \Carbon\Carbon::createFromFormat('d/m/Y H:i:s', $achat['created_at'])->format('Y-m-d') }}</td>
-                            <td>
-                                <a href="{{ route('achat.commande.detail', ['id' => $achat['numero_commande']]) }}">
-                                    <i class="fas fa-eye text-secondary"></i>
-                                </a>
-                                <!-- <a href="#" class="ml-3" data-toggle="modal" data-target="#venteModal2{{$achat['id']}}">
-                                    <i class="fas fa-edit text-warning"></i>
-                                </a> -->
-                            </td>
+                            <td>{{ $achat['prix']  .' Ar' }}</td>
+                            <td>{{$achat['created_at']}}</td>
+                            <!-- <td>
+                                <a href="#" class="ml-3" data-toggle="modal" data-target="#venteModal2{{$achat['id']}}"><i class="fas fa-edit text-warning"></i></button>
+                            </td> -->
                         </tr>
                         <div class="modal fade" id="venteModal2{{$achat['id']}}" tabindex="-1" role="dialog" aria-labelledby="venteModal2Label" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <!-- En-tête du modal -->
                                     <div class="modal-header bg-light">
-                                        <h5 class="modal-title" id="venteModal2Label">Payer consignation</h5>
+                                        <h5 class="modal-title" id="venteModal2Label">Rendre consignation</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
@@ -145,14 +147,12 @@
                         </div>
 
                         @empty
-                        <tr>
-                            <td colspan="7" class="text-warning text-center">Pas encore de données insérées pour le moment</td>
-                        </tr>
-
-                        <!-- payer consignation modal -->
-
-
-                        <!-- payer consination fin -->
+                        <td colspan="9" class="">
+                                <div class="alert alert-warning mb-3">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Pas de donnée trouvé --
+                                </div>
+                            </td>
                         @endforelse
                     </tbody>
                 </table>

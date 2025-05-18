@@ -9,12 +9,12 @@
 
     <!-- DataTables Example -->
     <div class="card shadow mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center bg-secondary">
+        <div class="card-header d-flex justify-content-between align-items-center bg-dark">
             <h5 class="mb-2 text-white">CATEGORIE</h5>
             <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addArticleModal">Ajouter catégorie</button>
         </div>
         <div class="mt-3 ml-4 d-flex flex-wrap align-items-center gap-2 mb-2 mb-md-0">
-            <form action="{{ route('articles.search') }}" method="POST" class="d-flex flex-wrap align-items-center gap-2">
+            <form action="{{ route('categorie.liste') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2">
                 @csrf
                 <!-- Champ de recherche principal -->
                 <div class="position-relative">
@@ -30,12 +30,12 @@
                         <i class="fas fa-sort me-1"></i> Trier par
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-                        <li><button class="dropdown-item" type="submit" name="sort" value="nom_asc">Nom (A-Z)</button></li>
-                        <li><button class="dropdown-item" type="submit" name="sort" value="nom_desc">Nom (Z-A)</button></li>
-                        <li><button class="dropdown-item" type="submit" name="sort" value="prix_asc">Prix (Croissant)</button></li>
-                        <li><button class="dropdown-item" type="submit" name="sort" value="prix_desc">Prix (Décroissant)</button></li>
-                        <li><button class="dropdown-item" type="submit" name="sort" value="stock_asc">Stock (Croissant)</button></li>
-                        <li><button class="dropdown-item" type="submit" name="sort" value="stock_desc">Stock (Décroissant)</button></li>
+                        <li><button class="dropdown-item" type="submit"  value="nom_asc">Nom (A-Z)</button></li>
+                        <li><button class="dropdown-item" type="submit"  value="nom_desc">Nom (Z-A)</button></li>
+                        <li><button class="dropdown-item" type="submit"  value="prix_asc">Prix (Croissant)</button></li>
+                        <li><button class="dropdown-item" type="submit"  value="prix_desc">Prix (Décroissant)</button></li>
+                        <li><button class="dropdown-item" type="submit"  value="stock_asc">Stock (Croissant)</button></li>
+                        <li><button class="dropdown-item" type="submit"  value="stock_desc">Stock (Décroissant)</button></li>
                     </ul>
                 </div>
             </form>
@@ -133,14 +133,17 @@
 
                         @empty
                         <tr>
-                            <td colspan="8" class="text-warning">Pas encore de données insérées pour le moment</td>
+                            <td colspan="8" class=""><div class="alert alert-warning mb-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Pas de donnée trouvé -- 
+                    </div></td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
                 <div class="d-flex justify-content-start mt-3">
-                    {{ $categories->links('pagination::bootstrap-4') }} <!-- Ou 'pagination::bootstrap-5' -->
-                </div>
+    {{ $categories->appends(['search' => request('search')])->links('pagination::bootstrap-4') }}
+</div>
             </div>
         </div>
     </div>

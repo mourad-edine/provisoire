@@ -11,7 +11,7 @@ class PayementController extends Controller
     public function show(){
         //dd(Categorie::all());
         return view('pages.categorie.Liste' ,[
-            'categorie' => Payement::all()
+            'categorie' => Payement::take(6)->get()
         ]);
     }
 }

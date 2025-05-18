@@ -8,10 +8,16 @@ use Illuminate\Http\Request;
 
 class FournisseurController extends Controller
 {
-    public function show(){
+    public function show(Request $request){
         //dd(Fournisseur::all());
+        $search =  $request->input('search');
+        $query = Fournisseur::with('commandes');
+        if ($search) {
+            $query->where('nom', 'like', "%{$search}%");
+        }
+        $fournisseurs = $query->orderby('id','DESC')->paginate(6);
         return view('pages.fournisseur.Liste' ,[
-            'fournisseurs' => Fournisseur::paginate(6)
+            'fournisseurs' => $fournisseurs
         ]);
     }
 

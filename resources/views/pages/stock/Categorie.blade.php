@@ -3,78 +3,59 @@
 @section('title', 'Gestion des stocks')
 
 @section('content')
-<div class="container-fluid px-4">
+<div class="container-fluid">
 
-    <div class="shadow mb-4">
-        <div class="card-header bg-white">
-            <ul class="nav nav-tabs" id="parametresTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <a style="text-decoration: none;" href="{{route('stock.liste')}}">
-                        <button class="nav-link " id="consignation-tab" data-bs-toggle="tab" data-bs-target="#consignation" type="button" role="tab" aria-controls="consignation" aria-selected="true">
-                            <i class="fas fa-wine-bottle me-2"></i>Listes globales
-                        </button>
-                    </a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a style="text-decoration: none;" href="{{route('stock.faible.liste')}}">
-                        <button class="nav-link " id="utilisateur-tab" data-bs-toggle="tab" data-bs-target="#utilisateur" type="button" role="tab" aria-controls="utilisateur" aria-selected="false">
-                            <i class="fas fa-user me-2"></i>Stock faibles
-                        </button>
-                    </a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a style="text-decoration: none;" href="{{route('stock.categorie.liste')}}">
-                        <button class="nav-link active" id="utilisateur-tab" data-bs-toggle="tab" data-bs-target="#utilisateur" type="button" role="tab" aria-controls="utilisateur" aria-selected="false">
-                            <i class="fas fa-user me-2"></i>Categorie
-                        </button>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
+    <!-- Onglets -->
+    <ul class="nav nav-tabs mb-1 border-bottom" id="parametresTabs" role="tablist">
+        <li class="nav-item me-2" role="presentation">
+            <a href="{{ route('stock.liste') }}" class="nav-link {{ request()->routeIs('stock.liste') ? 'active' : '' }}">
+                <i class="fas fa-warehouse me-1"></i>Listes globales
+            </a>
+        </li>
+        <li class="nav-item me-2" role="presentation">
+            <a href="{{ route('stock.faible.liste') }}" class="nav-link {{ request()->routeIs('stock.faible.liste') ? 'active' : '' }}">
+                <i class="fas fa-exclamation-triangle me-1"></i>Stocks faibles
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a href="{{ route('stock.categorie.liste') }}" class="nav-link {{ request()->routeIs('stock.categorie.liste') ? 'active' : '' }}">
+                <i class="fas fa-th-large me-1"></i>Catégories
+            </a>
+        </li>
+    </ul>
 
-    <!-- Categories Cards -->
+    <!-- Cartes -->
     <div class="row">
         @forelse($categories as $categorie)
         @php
-        $colorClasses = [
-        0 => ['border' => 'primary', 'icon' => 'box-open'],
-        1 => ['border' => 'success', 'icon' => 'wine-bottle'],
-        2 => ['border' => 'info', 'icon' => 'cubes'],
-        3 => ['border' => 'warning', 'icon' => 'pallet']
-        ];
-        $index = $loop->index % 4;
-        $currentColor = $colorClasses[$index];
+            $iconList = ['box-open', 'warehouse', 'cubes', 'pallet'];
+            $icon = $iconList[$loop->index % count($iconList)];
         @endphp
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-start-lg border-start-{{ $currentColor['border'] }} shadow-sm h-100 hover-lift">
-                <a class="text-decoration-none" href="{{ route('stock.liste.id', ['id' => $categorie->id]) }}">
+        <div class="col-xl-3 col-md-6 mb-2">
+            <a href="{{ route('stock.liste.id', ['id' => $categorie->id]) }}" class="text-decoration-none text-reset">
+                <div class="card h-100 border border-secondary-subtle shadow-sm hover-lift">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="text-uppercase text-muted mb-2 small">{{ $categorie->nom }}</h6>
-                                <h3 class="mb-0">{{ $categorie->articles_count }} <small class="text-muted">articles</small></h3>
+                                <h6 class="text-muted text-uppercase small mb-1">{{ $categorie->nom }}</h6>
+                                <h4 class="mb-0 fw-semibold">{{ $categorie->articles_count }} <small class="text-muted">articles</small></h4>
                             </div>
-                            <div class="icon-circle bg-{{ $currentColor['border'] }}-subtle">
-                                <i class="fas fa-{{ $currentColor['icon'] }} text-{{ $currentColor['border'] }}"></i>
-                            </div>
-                        </div>
-                        <div class="progress mt-3" style="height: 4px;">
+                           
                         </div>
                     </div>
-                </a>
-            </div>
+                </div>
+            </a>
         </div>
         @empty
         <div class="col-12">
-            <div class="card shadow">
-                <div class="card-body text-center py-5">
-                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
-                    <h5 class="text-muted">Aucune catégorie disponible</h5>
-                    <p class="text-muted mb-4">Vous n'avez pas encore créé de catégories pour vos articles.</p>
-                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
-                        <i class="fas fa-plus me-2"></i>Ajouter une catégorie
+            <div class="card text-center shadow-sm border">
+                <div class="card-body py-5">
+                    <i class="fas fa-box-open fa-3x text-secondary mb-3"></i>
+                    <h5 class="fw-semibold">Aucune catégorie disponible</h5>
+                    <p class="text-muted">Vous n'avez pas encore créé de catégories pour vos articles.</p>
+                    <a href="#" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                        <i class="fas fa-plus me-1"></i>Ajouter une catégorie
                     </a>
                 </div>
             </div>
@@ -87,27 +68,31 @@
     .hover-lift {
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .icon-circle {
-        width: 3rem;
-        height: 3rem;
-        border-radius: 50%;
+
+   
+
+    .icon-square {
+        width: 2.75rem;
+        height: 2.75rem;
         display: flex;
         align-items: center;
         justify-content: center;
+        border-radius: 0.25rem;
+        font-size: 1.25rem;
     }
 
-    .nav-pills .nav-link.active {
-        background-color: #4e73df;
-        color: white;
+    .nav-tabs .nav-link {
+        color: #333;
+        font-weight: 500;
     }
 
-    .nav-pills .nav-link {
-        color: #4e73df;
-        border: 1px solid #dddfeb;
+    .nav-tabs .nav-link.active {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #000;
     }
 
-    .border-start-lg {
-        border-left-width: 0.25rem !important;
+    .card {
+        border-radius: 0px;
     }
 </style>
 @endsection

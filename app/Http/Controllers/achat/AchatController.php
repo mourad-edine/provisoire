@@ -8,6 +8,7 @@ use App\Models\Article;
 use App\Models\Commande;
 use App\Models\Consignation;
 use App\Models\ConsignationAchat;
+use App\Models\Depense;
 use App\Models\Fournisseur;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -18,13 +19,15 @@ class AchatController extends Controller
     public function show()
     {
         //dd(Auth::user()->id);
-        $achats = Achat::with('articles','consignation_achat')
+        $achats = Achat::with('articles', 'consignation_achat')
             ->orderBy('id', 'DESC')
             ->paginate(6);
 
         $achats->getCollection()->transform(function ($achat) {
             return [
                 'id' => $achat->id,
+                'type_achat' => $achat->type_achat,
+                'prix_unite'=> $achat->prix_unite,
                 'prix_achat' => $achat->articles ? $achat->articles->prix_achat : null,
                 'prix' => $achat->prix,
                 'conditionnement' => $achat->articles ? $achat->articles->conditionnement : null,
@@ -49,48 +52,79 @@ class AchatController extends Controller
 
     public function store(Request $request)
     {
-     //dd($request->all());
         $data = $request->validate([
             'articles' => 'required|array',
-            'quantites' => 'required|array',
-            'dateachat' => 'required|array',
+            'quantites' => 'nullable|array',
+            'quantitesunite' => 'nullable|array',
             'prices' => 'required|array',
+            'totals' => 'required|array',
         ]);
-
+    
         $commande = Commande::create([
-            'user_id' => Auth::user()->id,
-            'fournisseur_id' => $request->fournisseur_id
+            'user_id' => Auth::id(),
+            'fournisseur_id' => $request->fournisseur_id,
+            'numero' => $request->numero,
         ]);
-        // Boucle pour enregistrer chaque achat
-        foreach ($data['articles'] as $index => $article) {
-            Achat::create([
-                'article_id' => $article,
-                'commande_id' => $commande->id,
-                'quantite' => $data['quantites'][$index],
-                'date_entre' => $data['dateachat'][$index],
-                'prix' => $data['prices'][$index],
-                'fournisseur_id' => $request->fournisseur_id,
-            ]);
-            // Mise à jour de la quantité d'article
-            $article = Article::find($article);
-            $article->quantite = $article->quantite + ($data['quantites'][$index] * (int)$article->conditionnement);
-            $article->prix_conditionne = $data['prices'][$index]  / $data['quantites'][$index];
-            $article->save();
-            // if($data['consignations'][$index] == 1){
-            //     $this->consignation($achat->id , $data['quantites'][$index] , $article->id , $data['bouteilles'][$index] , $data['cageots'][$index]);
+    
+        foreach ($data['articles'] as $index => $articleId) {
+            $article = Article::find($articleId);
+    
+            // Achat par cageot
+            $quantiteCageot = $data['quantites'][$index] ?? 0;
+            if ($quantiteCageot > 0) {
+                Achat::create([
+                    'article_id' => $articleId,
+                    'commande_id' => $commande->id,
+                    'quantite' => $quantiteCageot,
+                    'date_entre' => $request->dateachat,
+                    'prix_unite' => $data['prices'][$index],
+                    'prix' => $data['totals'][$index],
+                    'type_achat' => ($article->prix_consignation == 0 && $article->prix_cgt == 0) ||  ($article->prix_consignation > 0 && $article->prix_cgt == 0) ? 'pack' : 'cageot',
+                    'fournisseur_id' => $request->fournisseur_id,
+                ]);
+                $article->prix_achat = $data['prices'][$index];
+                $article->quantite += $quantiteCageot * (int) $article->conditionnement;
+                $article->prix_conditionne = $data['prices'][$index] * $article->conditionnement;
+                $article->save();
+            }
+    
+            // Achat par unité
+            $quantiteUnite = $data['quantitesunite'][$index] ?? 0;
+            if ($quantiteUnite > 0) {
+                Achat::create([
+                    'article_id' => $articleId,
+                    'commande_id' => $commande->id,
+                    'quantite' => $quantiteUnite,
+                    'date_entre' => $request->dateachat,
+                    'prix' => $data['totals'][$index],
+                    'prix_unite' =>  $data['totals'][$index] / $quantiteUnite,
+                    'type_achat' => 'bouteilles',
+                    'fournisseur_id' => $request->fournisseur_id,
+                ]);
+    
+                $article->quantite += $quantiteUnite;
+                $article->prix_achat = $data['totals'][$index] / $quantiteUnite;
+                $article->prix_conditionne = $article->conditionnement * ($data['totals'][$index] / $quantiteUnite);
+                $article->save();
+            }
+    
+            // Gestion de la consignation si besoin (à réactiver plus tard)
+            // if ($data['consignations'][$index] ?? false) {
+            //     $this->consignation($achat->id, $quantiteCageot, $articleId, $data['bouteilles'][$index], $data['cageots'][$index]);
             // }
         }
-
-        return redirect()->back()->with('success', 'Achats enregistrés avec succès.');
+    
+        return redirect()->route('achat.commande')->with('success', 'Achats enregistrés avec succès.');
     }
+    
 
 
-    public function consignation(int $achat_id , int $quantite , int $article_id ,int $bouteille ,int $cageot)
+    public function consignation(int $achat_id, int $quantite, int $article_id, int $bouteille, int $cageot)
     {
 
         $article = Article::find($article_id);
-      
-        if($article){//cageot
+
+        if ($article) { //cageot
             $totalcageot  = ($cageot == 0) ? $quantite * $article->prix_cgt : 0;
             $totalbouteille = ($bouteille == 0) ?  $quantite * $article->prix_consignation * $article->conditionnement  : 0;
             // dd([
@@ -108,33 +142,61 @@ class AchatController extends Controller
         }
     }
 
-    public function commande(){
-        $commande = Commande::withCount('achats','fournisseur')
-        ->withSum('achats', 'prix') // Assure-toi que 'prix' est bien la colonne des prix dans 'achats'
-        ->having('achats_count', '>', 0)
-        ->orderBy('id', 'DESC')
-        ->paginate(6);
-        //dd($commande);
+    public function commande(Request $request)
+    {
+        $search = $request->input('search');
+        $dateDebut = $request->input('date_debut');
+        $dateFin = $request->input('date_fin');
+        $tri = $request->input('tri', 'desc');
+
+        $commandeQuery = Commande::withCount('achats')
+            ->withSum('achats', 'prix')
+            ->having('achats_count', '>', 0);
+
+        if ($search) {
+            $commandeQuery
+                ->where(function ($q) use ($search) {
+                    $q->where('id', $search)
+                        ->orWhereHas('fournisseur', function ($query) use ($search) {
+                            $query->where('nom', 'like', '%' . $search . '%');
+                        });
+                });
+        }
+
+        if ($dateDebut) {
+            $commandeQuery->whereDate('created_at', '>=', $dateDebut);
+        }
+
+        if ($dateFin) {
+            $commandeQuery->whereDate('created_at', '<=', $dateFin);
+        }
+
+        $commandeQuery->orderBy('created_at', $tri);
+
+        $commande = $commandeQuery->paginate(6);
+
         return view('pages.achat.commande', [
-                'commandes' => Commande::withCount('achats')
-                ->withSum('achats', 'prix') // Assure-toi que 'prix' est bien la colonne des prix dans 'achats'
-                ->having('achats_count', '>', 0)
-                ->orderBy('id', 'DESC')
-                ->paginate(6),
-                'articles' => Article::all(),
-                'fournisseurs' => Fournisseur::all(),
+            'commandes' => $commande,
+            'articles' => Article::all(),
+            'fournisseurs' => Fournisseur::all(),
         ]);
     }
 
-    public function detailcommande($id){
-        $achats = Achat::with('articles','consignation_achat')
+
+    public function detailcommande($id)
+    {
+        $achats = Achat::with('articles', 'consignation_achat')
             ->where('commande_id', $id)
             ->orderBy('id', 'DESC')
             ->paginate(6);
 
+        $total = Achat::where('commande_id', $id)->sum('prix');
+
         $achats->getCollection()->transform(function ($achat) {
             return [
                 'id' => $achat->id,
+                'type_achat' => $achat->type_achat,
+                'prix_unite'=> $achat->prix_unite,
                 'prix_achat' => $achat->articles ? $achat->articles->prix_achat : null,
                 'prix' => $achat->prix,
                 'article' => $achat->articles ? $achat->articles->nom : null,
@@ -153,7 +215,34 @@ class AchatController extends Controller
             'achats' => $achats,
             'articles' => Article::all(),
             'fournisseurs' => Fournisseur::all(),
-            'id' => $id
+            'id' => $id,
+            'total' => $total,
+            'commande' => Commande::with('fournisseur')->find($id)
+        ]);
+    }
+
+    public function showachat()
+    {
+        return view('pages.achat.Achat', [
+            'articles' => Article::all(),
+            'fournisseurs' => Fournisseur::all(),
+        ]);
+    }
+
+    public function depense(){
+
+        $moisActuel = now()->month;
+        $anneeActuelle = now()->year;
+        $now = now();
+        $depensesDuMois = Depense::whereMonth('created_at', $moisActuel)
+            ->whereYear('created_at', $anneeActuelle)
+            ->get();
+        $depensesAujourdhui = Depense::whereDate('created_at', $now->toDateString())->get();
+
+        return view('pages.achat.Depense' , [
+            'depense' => Depense::all(),
+            'totalmois' => $depensesDuMois->sum('montant'),
+            'totalJour' => $depensesAujourdhui->sum('montant')
         ]);
     }
 }

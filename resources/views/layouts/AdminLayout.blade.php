@@ -5,138 +5,269 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Mon Site')</title>
-    
+
     <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/sb-admin-2.min.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/vendor/fontawesome-free/css/all.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/select2-bootstrap-5-theme.min.css') }}">
 
     <style>
-        * {
-            font-weight: 700;
-            color: #000;
+        body {
+            font-family: 'montserrat', sans-serif;
+            padding-top: 60px; /* Compensation for fixed navbar */
+            background-color: #f8f9fa;
         }
-        .sidebar .nav-item .nav-link span {
-            color: #fff;
+
+        /* Navbar styles */
+        .main-navbar {
+            background-color: #330705 !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        .sidebar .sidebar-brand .sidebar-brand-text {
-            color: white;
+        
+
+        .navbar-dark .navbar-brand,
+        .navbar-dark .nav-link,
+        .navbar-dark .dropdown-item {
+            color: #fff !important;
+            font-weight: 600;
         }
-        /* Correction pour Select2 dans les modals */
+
+        .navbar-dark .nav-link:hover,
+        .navbar-dark .nav-link:focus {
+            color: #f0ad4e !important;
+        }
+
+        .navbar-dark .dropdown-menu {
+            background-color: #343a40;
+            border: none;
+        }
+
+        .navbar-dark .dropdown-item:hover {
+            background-color: #495057;
+        }
+
+        i {
+            margin-right: 5px;
+            color: #f0ad4e;
+        }
+
+        /* Select2 and modal fixes */
         .select2-container {
-            z-index: 99999 !important;
+            z-index: 1060 !important;
         }
-        .modal-open .select2-container {
-            z-index: 999999 !important;
-        }
+
         .select2-dropdown {
-            z-index: 999999 !important;
+            z-index: 1061 !important;
         }
-        .sidebar {
-        width: 10rem !important;
-        background-color: #000;
+
+        .modal {
+            z-index: 1070 !important;
+        }
+
+        .modal-backdrop {
+            z-index: 1060 !important;
+        }
+
+        /* Content styles */
+        .main-content {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        /* Form elements */
+        .form-select.form-control-lg {
+            height: 46px;
+            padding: 0.5rem;
+        }
+
+        .select2-container .select2-selection--single {
+            height: 38px !important;
+        }
+
+        /* Article sections */
+        .article-section {
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+        }
+
+        .remove-article {
+            cursor: pointer;
+            color: #dc3545;
+        }
+
+        .total-price {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #28a745;
+        }
+
+        .price-details {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+        a{
+            color: #333;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                background-color: #000;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
         }
     </style>
 </head>
 
-<body id="page-top">
-    <div id="wrapper">
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{route('page.accueil')}}">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-wine-bottle fa-2x text-gray-300"></i>
-                </div>
-                <div class="sidebar-brand-text mx-3">Boissons</div>
-            </a>
-            <hr class="sidebar-divider my-0">
-            <li class="nav-item">
-                <a class="nav-link" href="{{route('page.accueil')}}">
-                    <i class="fas fa-home"></i>
-                    <span>Page d'accueil</span>
-                </a>
-            </li>
-            <hr class="sidebar-divider">
-            <div class="sidebar-heading">Espace utilisateur</div>
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="{{route('article.liste')}}">
-                    <i class="fas fa-glass-martini-alt"></i>
-                    <span>Boissons</span>
-                </a>
-                <a class="nav-link collapsed" href="{{route('categorie.liste')}}">
-                    <i class="fas fa-tags"></i>
-                    <span>Catégories</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="{{route('commande.liste.vente')}}">
-                    <i class="fas fa-cash-register"></i>
-                    <span>Ventes</span>
-                </a>
-                <a class="nav-link collapsed" href="{{route('achat.commande')}}">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>Achats</span>
-                </a>
-            </li>
-            <hr class="sidebar-divider">
-            <div class="sidebar-heading">Clients et fournisseurs</div>
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="{{route('client.liste')}}">
-                    <i class="fas fa-users"></i>
-                    <span>Clients</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="{{route('fournisseur.liste')}}">
-                    <i class="fas fa-truck"></i>
-                    <span>Fournisseurs</span>
-                </a>
-                <a class="nav-link collapsed" href="{{route('parametre')}}">
-                    <i class="fas fa-cog"></i> <!-- Icône de paramètres -->
-                    <span>Paramètres</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="{{route('stock.liste')}}">
-                    <i class="fas fa-fw fa-folder"></i>
-                    <span>Gestion de stock</span>
-                </a>
+<body id="page-top" >
 
-            </li>
-            <hr class="sidebar-divider d-none d-md-block">
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>
-        </ul>
-        <div id="content-wrapper" class="d-flex flex-column">
-            <div id="content">
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <form class="form-inline">
-                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                            <i class="fa fa-bars"></i>
-                        </button>
-                    </form>
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
-                                <i class="fas fa-laugh-wink"></i>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark main-navbar fixed-top">
+        <div class="container-fluid">
+            
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{route('page.accueil')}}">
+                            <i class="fas fa-home"></i>
+                            Accueil
+                        </a>
+                    </li>
+
+                    <!-- User Space Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userSpaceDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user"></i>
+                            Espace utilisateur
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{{route('article.liste')}}">
+                                    <i class="fas fa-glass-martini-alt"></i> Boissons
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{route('categorie.liste')}}">
+                                    <i class="fas fa-tags"></i> Catégories
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{{route('commande.liste.vente')}}">
+                                    <i class="fas fa-cash-register"></i> commandes ventes
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{route('achat.commande')}}">
+                                    <i class="fas fa-cash-register"></i> commandes achats
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{route('depense')}}">
+                                    <i class="fas fa-cash-register"></i>Dépense divers
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{route('vente.page')}}">
+                                    <i class="fas fa-cash-register"></i> Ventes
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{route('achat.page')}}">
+                                    <i class="fas fa-shopping-cart"></i> Achats
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Clients & Suppliers -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="clientsDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-users"></i>
+                            Clients & Fournisseurs
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{{route('client.liste')}}">
+                                    <i class="fas fa-users"></i> Clients
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{route('fournisseur.liste')}}">
+                                    <i class="fas fa-truck"></i> Fournisseurs
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Other Links -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{route('stat')}}">
+                        <i class="fas fa-chart-bar"></i>
+                        Statistique des ventes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{route('parametre')}}">
+                            <i class="fas fa-cog"></i>
+                            Paramètres
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{route('stock.liste')}}">
+                            <i class="fas fa-boxes"></i>
+                            Stock
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- User Menu -->
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userMenuDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i>
+                            {{ Auth::user()->name }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
-                                        {{ __('Se déconnecter') }}
-                                    </x-responsive-nav-link>
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-sign-out-alt"></i> Se déconnecter
+                                    </button>
                                 </form>
-                            </div>
-                        </li>
-                    </ul>
-                </nav>
-                @yield('content')
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
-            <footer class="sticky-footer bg-white">
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="m-4">
+        <div class="main-content" style="font-size: 0.9rem;">
+            @yield('content')
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto"></div>
                 </div>
@@ -146,10 +277,9 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+<script src="{{ asset('assets/js/select2.min.js') }}"></script>
     <script>
         $(document).ready(function() {
             // Initialisation de Select2 avec configuration pour les modals

@@ -14,7 +14,10 @@ class Commande extends Model
         'client_id',
         'fournisseur_id',
         'etat_client',
-        'etat_commande'
+        'etat_commande',
+        'numero',
+        'commande_id',
+        'disposition'
 
     ];
     public function achats(){
@@ -34,5 +37,8 @@ class Commande extends Model
     }
     public function fournisseur(){
         return $this->belongsTo(Fournisseur::class ,  'fournisseur_id');
+    }
+    public function payements(){
+        return $this->hasMany(Payement::class , 'commande_id');
     }
 }

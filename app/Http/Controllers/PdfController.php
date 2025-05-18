@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Achat;
+use App\Models\Article;
+use App\Models\Commande;
 use App\Models\Vente;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -15,79 +17,148 @@ class PdfController extends Controller
 
     public function generatePDF($id)
     {
-        $ventes = Vente::with('article', 'consignation')->where('commande_id', $id)->orderby('id', 'DESC')->get()->map(function ($vente) {
-            return [
+        // Données de base
+        $article = Article::first();
+        $cgt = $article->prix_cgt;
+        $commande = Commande::with(['payements', 'client', 'conditionnement'])->findOrFail($id);
+        $reste = $commande->payements()->where('operation', 'partiel')->sum('somme');
+    
+        // Récupération des ventes
+        $ventes = Vente::with(['article', 'consignation', 'commande'])
+            ->where('commande_id', $id)
+            ->orderBy('id', 'DESC')
+            ->get();
+    
+        // Initialisation des totaux
+        $totals = [
+            'global' => 0,
+            'deconsigne' => 0,
+            'consigne' => 0,
+            'btl' => 0,
+            'cgt' => 0,
+            'rendu_btl' => 0,
+            'rendu_cgt' => 0,
+            'casse' => 0,
+            'casse_cgt' => 0
+        ];
+    
+        // Transformation des données
+        $ventesData = $ventes->map(function ($vente) use (&$totals, $commande) {
+            $data = [
                 'id' => $vente->id,
-                'article' => $vente->article ? $vente->article->nom : null,
-                'prix_unitaire' => $vente->article ? $vente->article->prix_unitaire : null,
-                'reference' => $vente->article ? $vente->article->reference : null,
-                'numero_commande' => $vente->commande_id,
-                'consignation' => $vente->consignation ? $vente->consignation->prix : null,
-                'etat' => $vente->consignation ? $vente->consignation->etat : null,
+                'article' => optional($vente->article)->nom,
                 'quantite' => $vente->quantite,
                 'type_achat' => $vente->type_achat,
-                'created_at' => Carbon::parse($vente->created_at)->format('d/m/Y H:i:s'),
-                'prix_consignation' => $vente->article ? $vente->article->prix_consignation : 0,
-                'conditionnement' => $vente->article ? $vente->article->conditionnement : 1,
+                'prix_unitaire' => optional($vente->article)->prix_unitaire,
+                'conditionnement' => optional($vente->article)->conditionnement,
+                'prix_consignation' => optional($vente->article)->prix_consignation,
+                'consi_cgt' => optional($vente->article)->prix_cgt,
+                'consignation' => optional($vente->consignation)->prix * optional($vente->article)->prix_consignation ?? 0,
+                'prix_cgt' => optional($vente->consignation)->prix_cgt * optional($vente->article)->prix_cgt ?? 0,
+                'etat' => optional($vente->consignation)->etat,
+                'etat_cgt' => optional($vente->consignation)->etat_cgt,
+                'etat_client' => $vente->client,
+                'etat_client_commande' => optional($vente->commande)->etat_client,
+                'casse' => optional($vente->consignation)->casse ?? 0,
+                'rendu_btl' => optional($vente->consignation)->rendu_btl ?? 0,
+                'rendu_cgt' => optional($vente->consignation)->rendu_cgt ?? 0,
+                'casse_cgt' => optional($vente->consignation)->casse_cgt ?? 0,
             ];
-        });
-
-        // Création des items pour la facture
-        $items = $ventes->map(function ($vente) {
-            $total = ($vente['prix_unitaire'] + $vente['prix_consignation']) * $vente['quantite'];
-            if ($vente['type_achat'] === 'cageot') {
-                $total *= $vente['conditionnement'];
+    
+            // Calcul des totaux (identique à la vue)
+            $prix_total = ($data['type_achat'] === 'cageot' || $data['type_achat'] === 'pack')
+                ? ($data['prix_unitaire'] * $data['quantite'] * $data['conditionnement']) + $data['consignation'] + $data['prix_cgt']
+                : ($data['prix_unitaire'] * $data['quantite']) + $data['consignation'] + $data['prix_cgt'];
+    
+            if ($commande->etat_client == 1) {
+                $prix_total -= $data['consignation'] + $data['prix_cgt'];
             }
-
-            return [
-                'description' => $vente['article'],
-                'quantity' => $vente['quantite'],
-                'type_achat' => $vente['type_achat'],
-                'unit_price' => $vente['prix_unitaire'] + $vente['prix_consignation'],
-                'total' => $total
-            ];
-        })->toArray();
-
-        // Création des données de la facture
-        $numero_facture = 'FAC-' . date('Ymd') . '-' . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
-
-        $vente = [
-            'invoice_number' => $numero_facture,
-            'date' => date('d/m/Y'),
-            'company_name' => 'Reflet Boisson',
-            'company_address' => 'Mangarano || parcelle 11/47',
-            'company_phone' => '0349219223',
-            'company_email' => 'chamsedinemaulice@reflet.mg',
-            'client_name' => 'client passager',
-            'client_address' => "----pas d 'adresse----",
-            'client_phone' => "---pas de téléphone---",
-            'client_email' => "---pas d'email---",
-            'items' => $items,
-            'total' => array_sum(array_column($items, 'total')),
-        ];
-
-        $pdf = Pdf::loadView('facture', $vente);
-        return $pdf->stream('facture.pdf');
-        // Affiche la facture dans le navigateur
+    
+            $prix_total_deconsigne = ($data['type_achat'] === 'cageot' || $data['type_achat'] === 'pack')
+                ? ($data['prix_unitaire'] * $data['quantite'] * $data['conditionnement'])
+                : ($data['prix_unitaire'] * $data['quantite']);
+    
+            $prix_total_consigne = $data['consignation'] + $data['prix_cgt'];
+    
+            // Mise à jour des totaux globaux
+            $totals['global'] += $prix_total;
+            $totals['deconsigne'] += $prix_total_deconsigne;
+            $totals['consigne'] += $prix_total_consigne;
+            $totals['btl'] += $data['prix_consignation'] == 0 ? 0 : $data['consignation'] / $data['prix_consignation'];
+            $totals['cgt'] += $data['consi_cgt'] == 0 ? 0 : $data['prix_cgt'] / $data['consi_cgt'];
+            $totals['rendu_btl'] += $data['rendu_btl'];
+            $totals['rendu_cgt'] += $data['rendu_cgt'];
+            $totals['casse'] += $data['casse'];
+            $totals['casse_cgt'] += $data['casse_cgt'];
+    
+            return $data;
+        });
+    
+        // Gestion des cageots
+        $nombreCageots = optional($commande->conditionnement)->nombre_cageot ?? 0;
+        $valeurCageots = $nombreCageots * $cgt;
+        $totals['global'] += $valeurCageots;
+    
+        // Calcul final identique à la vue
+        $montantTotal = max($totals['deconsigne'] - $reste, 0) + $totals['consigne'] + $valeurCageots;
+    
+        // Génération du PDF
+        $pdf = PDF::loadView('facture', [
+            'ventes' => $ventesData,
+            'commande' => $commande,
+            'conditionnement' => $commande->conditionnement,
+            'cgt' => $cgt,
+            'reste' => $reste,
+            'totals' => $totals,
+            'nombreCageots' => $nombreCageots,
+            'valeurCageots' => $valeurCageots,
+            'montantTotal' => $montantTotal,
+            'date' => now()->format('d/m/Y'),
+            'company' => [
+                'name' => config('app.name'),
+                'phone' => '034 00 000 00'
+            ]
+        ]);
+    
+        return $pdf->stream('facture-' . $commande->id . '.pdf');
     }
 
 
 
     public function achatpdf($id)
-    {
-        // Récupérer les achats liés à la commande
-        $achats = Achat::with('articles')
-            ->where('commande_id', $id)
-            ->orderBy('id', 'DESC')
-            ->get();
+{
+    $achats = Achat::with('articles', 'consignation_achat')
+        ->where('commande_id', $id)
+        ->orderBy('id', 'DESC')
+        ->get();
 
-        // Calculer le total
-        $total = $achats->sum('prix');
+    // On transforme comme dans detailcommande()
+    $achats = $achats->map(function ($achat) {
+        return [
+            'id' => $achat->id,
+            'type_achat' => $achat->type_achat,
+            'prix_unite' => $achat->prix_unite,
+            'prix_achat' => $achat->articles ? $achat->articles->prix_achat : null,
+            'prix' => $achat->prix,
+            'article' => $achat->articles ? $achat->articles->nom : null,
+            'conditionnement' => $achat->articles ? $achat->articles->conditionnement : null,
+            'numero_commande' => $achat->commande_id,
+            'consignation_id' => $achat->consignation_achat->id ?? null,
+            'etat' => $achat->consignation_achat->etat ?? null,
+            'etat_cgt' => $achat->consignation_achat->etat_cgt ?? null,
+            'prix_cgt' => $achat->consignation_achat->prix_cgt ?? null,
+            'quantite' => $achat->quantite,
+            'created_at' => \Carbon\Carbon::parse($achat->created_at)->format('d/m/Y H:i:s'),
+        ];
+    });
 
-        // Générer le PDF
-        $pdf = Pdf::loadView('pages.pdf.facture', compact('achats', 'total'));
+    $total = $achats->sum('prix');
+    $commande = Commande::with('fournisseur', 'client')->find($id);
 
-        // Télécharger le PDF
-        return $pdf->stream("facture_commande_{$id}.pdf");
-    }
+    $pdf = PDF::loadView('pages.pdf.facture', compact('achats', 'total', 'commande'));
+
+    return $pdf->stream("facture_commande_{$id}.pdf");
+}
+
+    
 }
