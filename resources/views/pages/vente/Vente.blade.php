@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendor/fontawesome-free/css/all.min.css') }}">
 
-<link rel="stylesheet" href="{{ asset('assets/select2/dist/css/select2.min.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/css/select2-bootstrap-5-theme.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/select2/dist/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/select2-bootstrap-5-theme.min.css') }}">
 
     <style>
         body {
@@ -132,7 +132,7 @@
     <!-- Main Navigation -->
     <nav style="z-index: 1063;" class="navbar navbar-expand-lg navbar-dark main-navbar fixed-top">
         <div class="container-fluid">
-            
+
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
                 <span class="navbar-toggler-icon"></span>
@@ -216,8 +216,8 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{route('stat')}}">
-                        <i class="fas fa-chart-bar"></i>
-                        Statistique des ventes
+                            <i class="fas fa-chart-bar"></i>
+                            Statistique des ventes
                         </a>
                     </li>
                     <!-- Other Links -->
@@ -259,31 +259,33 @@
     </nav>
     <style>
         .form-label {
-        font-size: 0.7rem;
-        font-weight: 600;
-        color: #495057;
-        margin-bottom: 0.3rem;
-        display: block;
-    }
-        .form-control, .form-select {
-        border: 1px solid #ced4da;
-        padding: 0.375rem 0.75rem;
-        background-color: white;
-        font-size: 0.95rem;
-        height: calc(1.5em + 0.75rem + 2px);
-    }
-    
-    .form-control:focus, .form-select:focus {
-        box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
-        border-color: #80bdff;
-    }
-    
-    .form-control[readonly] {
-        background-color: #e9ecef;
-        font-weight: 600;
-        color: #212529;
-    }
-    
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+
+        .form-control,
+        .form-select {
+            border: 1px solid #ced4da;
+            padding: 0.375rem 0.75rem;
+            background-color: white;
+            font-size: 0.95rem;
+            height: calc(1.5em + 0.75rem + 2px);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            border-color: #80bdff;
+        }
+
+        .form-control[readonly] {
+            background-color: #e9ecef;
+            font-weight: 600;
+            color: #212529;
+        }
     </style>
     <!-- fin sidebar -->
     <div class="container-fluid py-4" style="font-size: 0.9rem;">
@@ -555,9 +557,21 @@
                                                         <div class="form-group mb-0">
                                                             <div class="custom-control custom-checkbox">
                                                                 <input type="checkbox" class="custom-control-input" id="disposition" name="disposition" style="cursor : pointer;">
-                                                                <label class="custom-control-label" for="disposition" style="cursor : pointer;"> 
+                                                                <label class="custom-control-label" for="disposition" style="cursor : pointer;">
                                                                     <i class="fas fa-archive mr-1 text-warning"></i> À disposition
                                                                 </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="paiement-fields" style="display: none;" class="mt-3 p-3 border rounded bg-light">
+                                                        <div class="form-group row">
+                                                            <div class="col-md-6">
+                                                                <label for="montant-recu">Montant reçu (Ar)</label>
+                                                                <input type="number" class="form-control" id="montant-recu" name="montant_recu">
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label for="montant-rendu">Montant à rendre (Ar)</label>
+                                                                <input type="number" class="form-control" id="montant-rendu" name="montant_rendu" readonly>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -670,279 +684,317 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-    const toggleBtn = document.getElementById("toggle_nouveau_client");
-    const clientSelect = document.getElementById("client_id");
-    const nouveauInput = document.getElementById("nouveau_client");
+        const toggleBtn = document.getElementById("toggle_nouveau_client");
+        const clientSelect = document.getElementById("client_id");
+        const nouveauInput = document.getElementById("nouveau_client");
 
-    let modeNouveauClient = false;
+        let modeNouveauClient = false;
 
-    toggleBtn.addEventListener("click", function() {
-        modeNouveauClient = !modeNouveauClient;
+        toggleBtn.addEventListener("click", function() {
+            modeNouveauClient = !modeNouveauClient;
 
-        if (modeNouveauClient) {
-            clientSelect.value = "";
-            clientSelect.disabled = true;
-            nouveauInput.disabled = false;
-            toggleBtn.classList.remove("btn-outline-primary");
-            toggleBtn.classList.add("btn-success");
-        } else {
-            nouveauInput.value = "";
-            nouveauInput.disabled = true;
-            clientSelect.disabled = false;
-            toggleBtn.classList.remove("btn-success");
-            toggleBtn.classList.add("btn-outline-primary");
-        }
-    });
-});
-
-$(document).ready(function() {
-    // Initialiser Select2
-    $('.searchable-select').select2();
-
-    // Variables globales
-    let articleIndex = 1;
-    let emptyCageotsPrice = 0;
-
-    // Fonction pour calculer le prix total d'un article
-    function calculateArticleTotal(index) {
-        const section = $(`.article-section[data-index="${index}"]`);
-        const prixUnitaire = parseFloat(section.find('.prix-unitaire').val()) || 0;
-        const quantiteCageot = parseInt(section.find('.quantite-cageot').val()) || 0;
-        const quantiteUnite = parseInt(section.find('.quantite-unite').val()) || 0;
-        
-        const selectedOption = section.find('.article-select option:selected');
-        const prixConsignation = parseFloat(selectedOption.data('consignation')) || 0;
-        const prixCgt = parseFloat(selectedOption.data('cgt')) || 0;
-        const conditionnement = parseInt(selectedOption.data('conditionnement')) || 1;
-
-        // Décocher automatiquement si prix à 0
-        if (prixConsignation === 0) {
-            section.find('.avec-bouteille').prop('checked', false);
-        }
-        if (prixCgt === 0) {
-            section.find('.avec-cageot').prop('checked', false);
-        }
-
-        const avecCageot = prixCgt > 0 && section.find('.avec-cageot').is(':checked');
-        const avecBouteille = prixConsignation > 0 && section.find('.avec-bouteille').is(':checked');
-
-        const totalUnites = (quantiteCageot * conditionnement) + quantiteUnite;
-
-        let total = totalUnites * prixUnitaire;
-        let totalSansConsigne = total;
-
-        let details = [];
-
-        if (avecCageot && quantiteCageot > 0) {
-            const suppCageot = quantiteCageot * prixCgt;
-            total += suppCageot;
-            details.push(`+ ${quantiteCageot} cageot: ${suppCageot.toFixed(2)}`);
-        }
-
-        if (avecBouteille && totalUnites > 0) {
-            const suppBouteille = totalUnites * prixConsignation;
-            total += suppBouteille;
-            details.push(`+ ${totalUnites} bouteille: ${suppBouteille.toFixed(2)}`);
-        }
-
-        $(`.total-price[data-index="${index}"]`).text(total.toFixed(2) + ' Ar');
-        $(`.price-details[data-index="${index}"]`).html(details.join('<br>'));
-
-        return {
-            totalAvecConsigne: total,
-            totalSansConsigne: totalSansConsigne,
-            prixCgt: prixCgt
-        };
-    }
-
-    // Fonction pour calculer le total général
-    function calculateGlobalTotal() {
-        let globalTotal = 0;
-        let globalNonConsigne = 0;
-        let prixCgtReference = 0;
-
-        $('.article-section').each(function() {
-            const index = $(this).data('index');
-            const result = calculateArticleTotal(index);
-            globalTotal += result.totalAvecConsigne;
-            globalNonConsigne += result.totalSansConsigne;
-
-            if (prixCgtReference === 0) {
-                prixCgtReference = result.prixCgt;
+            if (modeNouveauClient) {
+                clientSelect.value = "";
+                clientSelect.disabled = true;
+                nouveauInput.disabled = false;
+                toggleBtn.classList.remove("btn-outline-primary");
+                toggleBtn.classList.add("btn-success");
+            } else {
+                nouveauInput.value = "";
+                nouveauInput.disabled = true;
+                clientSelect.disabled = false;
+                toggleBtn.classList.remove("btn-success");
+                toggleBtn.classList.add("btn-outline-primary");
             }
         });
-
-        // Calculer le supplément pour les cageots vides
-        const emptyCageots = parseInt($('#embale').val()) || 0;
-        emptyCageotsPrice = emptyCageots * prixCgtReference;
-
-        const totalWithEmptyCageots = globalTotal + emptyCageotsPrice;
-
-        // Mettre à jour l'affichage principal
-        $('#global-total').text(totalWithEmptyCageots.toFixed(2) + ' Ar');
-        $('#total_non_consignee').val(globalNonConsigne.toFixed(2));
-        $('#tot_glob').val(totalWithEmptyCageots.toFixed(2));
-
-        // Mettre à jour l'affichage dans le modal
-        $('#global-total-modal').text(totalWithEmptyCageots.toFixed(2) + ' Ar');
-
-        // Afficher le détail du supplément
-        if ($('#choix').is(':checked') && emptyCageots > 0) {
-            $('#empty-cageots-supplement').show();
-            $('#empty-cageots-supplement span').text(emptyCageotsPrice.toFixed(2) + ' Ar');
-        } else {
-            $('#empty-cageots-supplement').hide();
-        }
-    }
-
-    // Gestion du modal
-    $('#venteModal2').on('show.bs.modal', function() {
-        calculateGlobalTotal();
     });
-
-    // Gestion des cageots vides
-    $(document).on('change', '#choix', function() {
+    $(document).on('change', '#payer', function() {
         if ($(this).is(':checked')) {
-            $('#choix_content').show();
+            $('#paiement-fields').show();
+            $('#montant-recu').val('');
+            $('#montant-rendu').val('');
+            $('#montant-recu').focus();
         } else {
-            $('#choix_content').hide();
-            $('#embale').val('');
-            calculateGlobalTotal();
+            $('#paiement-fields').hide();
         }
     });
 
-    $(document).on('input', '#embale', function() {
-        calculateGlobalTotal();
-    });
+    // Calcul du montant à rendre
+    $(document).on('input', '#montant-recu', function() {
+        const montantRecu = parseFloat($(this).val()) || 0;
+        const total = parseFloat($('#tot_glob').val()) || 0;
+        const montantRendu = montantRecu - total;
 
-    // Fonction pour mettre à jour le stock affiché
-    function updateStockDisplay(section) {
-        const selectedOption = section.find('.article-select option:selected');
-        const conditionnement = parseInt(selectedOption.data('conditionnement')) || 1;
-        const stockTotal = parseInt(selectedOption.data('quantite')) || 0;
-
-        const cageots = Math.floor(stockTotal / conditionnement);
-        const unites = stockTotal % conditionnement;
-
-        section.find('.stock-total').val(stockTotal);
-        section.find('.stock-cageots').val(cageots);
-        section.find('.stock-unites').val(unites);
-    }
-
-    // Gérer le changement d'article
-    $(document).on('change', '.article-select', function() {
-        const selectedOption = $(this).find('option:selected');
-        const prixUnitaire = parseFloat(selectedOption.data('prix')) || 0;
-        const prixCgt = parseFloat(selectedOption.data('cgt')) || 0;
-        const prixConsignation = parseFloat(selectedOption.data('consignation')) || 0;
-        const conditionnement = parseInt(selectedOption.data('conditionnement')) || 1;
-        const prix_cageot = prixUnitaire * conditionnement;
-        const parentSection = $(this).closest('.article-section');
-        const index = parentSection.data('index');
-
-        parentSection.find('.prix-unitaire').val(prixUnitaire.toFixed(2));
-        parentSection.find('.prix-cgt').val(prix_cageot.toFixed(2));
-
-        // Décocher automatiquement si prix à 0
-        if (prixConsignation === 0) {
-            parentSection.find('.avec-bouteille').prop('checked', false);
+        if (montantRendu >= 0) {
+            $('#montant-rendu').val(montantRendu.toFixed(2));
+        } else {
+            $('#montant-rendu').val('0.00');
         }
-        
-        if (prixCgt === 0) {
-            parentSection.find('.avec-cageot').prop('checked', false);
-        }
-
-        updateStockDisplay(parentSection);
-        calculateGlobalTotal();
     });
 
-    // Gérer les changements de quantité
-    $(document).on('change input', '.quantite-cageot, .quantite-unite, .avec-cageot, .avec-bouteille', function() {
-        const parentSection = $(this).closest('.article-section');
-        const index = parentSection.data('index');
-
-        const selectedOption = parentSection.find('.article-select option:selected');
-        const conditionnement = parseInt(selectedOption.data('conditionnement')) || 1;
-        const stockTotal = parseInt(selectedOption.data('quantite')) || 0;
-
-        const quantiteCageot = parseInt(parentSection.find('.quantite-cageot').val()) || 0;
-        const quantiteUnite = parseInt(parentSection.find('.quantite-unite').val()) || 0;
-
-        const totalDemande = (quantiteCageot * conditionnement) + quantiteUnite;
-
-        if (totalDemande > stockTotal) {
-            alert('La quantité demandée dépasse le stock disponible!');
-            parentSection.find('.quantite-cageot').val(0);
-            parentSection.find('.quantite-unite').val(0);
-        }
-
-        calculateGlobalTotal();
-    });
-
-    // Ajouter un nouvel article
-    $('#add-article').click(function() {
-        const template = $('#article-template').html();
-        const newArticle = template.replace(/{index}/g, articleIndex);
-        $('#articles-container').append(newArticle);
-
-        $('#articles-container .article-select').last().select2();
-        articleIndex++;
-    });
-
-    // Supprimer un article
-    $(document).on('click', '.remove-article', function() {
-        $(this).closest('.article-section').remove();
-        calculateGlobalTotal();
-    });
-
-    // Validation du formulaire
+    // Empêcher la fermeture du modal si paiement immédiat est coché mais montant non saisi
     $('#venteForm').submit(function(e) {
-        if ($('.article-section').length === 0) {
-            e.preventDefault();
-            alert('Veuillez ajouter au moins un article');
-            return false;
-        }
+        if ($('#payer').is(':checked')) {
+            const montantRecu = parseFloat($('#montant-recu').val()) || 0;
+            const total = parseFloat($('#tot_glob').val()) || 0;
 
-        let isValid = true;
-        $('.article-select').each(function() {
-            if ($(this).val() === '') {
-                isValid = false;
+            if (montantRecu < total) {
+                e.preventDefault();
+                alert('Le montant reçu doit être supérieur ou égal au total à payer');
+                $('#montant-recu').focus();
                 return false;
             }
-        });
-
-        if (!isValid) {
-            e.preventDefault();
-            alert('Veuillez sélectionner un article pour chaque ligne');
-            return false;
         }
-
         return true;
     });
-});
 
-document.addEventListener('DOMContentLoaded', function() {
-    const disposition = document.getElementById('disposition');
-    const payer = document.getElementById('payer');
-    const fidele = document.getElementById('fidele');
+    $(document).ready(function() {
+        // Initialiser Select2
+        $('.searchable-select').select2();
 
-    disposition.addEventListener('change', function() {
-        if (disposition.checked) {
-            payer.checked = false;
-            fidele.checked = false;
+        // Variables globales
+        let articleIndex = 1;
+        let emptyCageotsPrice = 0;
+
+        // Fonction pour calculer le prix total d'un article
+        function calculateArticleTotal(index) {
+            const section = $(`.article-section[data-index="${index}"]`);
+            const prixUnitaire = parseFloat(section.find('.prix-unitaire').val()) || 0;
+            const quantiteCageot = parseInt(section.find('.quantite-cageot').val()) || 0;
+            const quantiteUnite = parseInt(section.find('.quantite-unite').val()) || 0;
+
+            const selectedOption = section.find('.article-select option:selected');
+            const prixConsignation = parseFloat(selectedOption.data('consignation')) || 0;
+            const prixCgt = parseFloat(selectedOption.data('cgt')) || 0;
+            const conditionnement = parseInt(selectedOption.data('conditionnement')) || 1;
+
+            // Décocher automatiquement si prix à 0
+            if (prixConsignation === 0) {
+                section.find('.avec-bouteille').prop('checked', false);
+            }
+            if (prixCgt === 0) {
+                section.find('.avec-cageot').prop('checked', false);
+            }
+
+            const avecCageot = prixCgt > 0 && section.find('.avec-cageot').is(':checked');
+            const avecBouteille = prixConsignation > 0 && section.find('.avec-bouteille').is(':checked');
+
+            const totalUnites = (quantiteCageot * conditionnement) + quantiteUnite;
+
+            let total = totalUnites * prixUnitaire;
+            let totalSansConsigne = total;
+
+            let details = [];
+
+            if (avecCageot && quantiteCageot > 0) {
+                const suppCageot = quantiteCageot * prixCgt;
+                total += suppCageot;
+                details.push(`+ ${quantiteCageot} cageot: ${suppCageot.toFixed(2)}`);
+            }
+
+            if (avecBouteille && totalUnites > 0) {
+                const suppBouteille = totalUnites * prixConsignation;
+                total += suppBouteille;
+                details.push(`+ ${totalUnites} bouteille: ${suppBouteille.toFixed(2)}`);
+            }
+
+            $(`.total-price[data-index="${index}"]`).text(total.toFixed(2) + ' Ar');
+            $(`.price-details[data-index="${index}"]`).html(details.join('<br>'));
+
+            return {
+                totalAvecConsigne: total,
+                totalSansConsigne: totalSansConsigne,
+                prixCgt: prixCgt
+            };
         }
+
+        // Fonction pour calculer le total général
+        function calculateGlobalTotal() {
+            let globalTotal = 0;
+            let globalNonConsigne = 0;
+            let prixCgtReference = 0;
+
+            $('.article-section').each(function() {
+                const index = $(this).data('index');
+                const result = calculateArticleTotal(index);
+                globalTotal += result.totalAvecConsigne;
+                globalNonConsigne += result.totalSansConsigne;
+
+                if (prixCgtReference === 0) {
+                    prixCgtReference = result.prixCgt;
+                }
+            });
+
+            const emptyCageots = parseInt($('#embale').val()) || 0;
+            emptyCageotsPrice = emptyCageots * prixCgtReference;
+
+            const totalWithEmptyCageots = globalTotal + emptyCageotsPrice;
+
+            $('#global-total').text(totalWithEmptyCageots.toFixed(2) + ' Ar');
+            $('#total_non_consignee').val(globalNonConsigne.toFixed(2));
+            $('#tot_glob').val(totalWithEmptyCageots.toFixed(2));
+            $('#global-total-modal').text(totalWithEmptyCageots.toFixed(2) + ' Ar');
+
+            if ($('#choix').is(':checked') && emptyCageots > 0) {
+                $('#empty-cageots-supplement').show();
+                $('#empty-cageots-supplement span').text(emptyCageotsPrice.toFixed(2) + ' Ar');
+            } else {
+                $('#empty-cageots-supplement').hide();
+            }
+
+            // Recalculer le montant à rendre si un montant a déjà été saisi
+            if ($('#payer').is(':checked') && $('#montant-recu').val()) {
+                $('#montant-recu').trigger('input');
+            }
+        }
+        // Gestion du modal
+        $('#venteModal2').on('show.bs.modal', function() {
+            calculateGlobalTotal();
+        });
+
+        // Gestion des cageots vides
+        $(document).on('change', '#choix', function() {
+            if ($(this).is(':checked')) {
+                $('#choix_content').show();
+            } else {
+                $('#choix_content').hide();
+                $('#embale').val('');
+                calculateGlobalTotal();
+            }
+        });
+
+        $(document).on('input', '#embale', function() {
+            calculateGlobalTotal();
+        });
+
+        // Fonction pour mettre à jour le stock affiché
+        function updateStockDisplay(section) {
+            const selectedOption = section.find('.article-select option:selected');
+            const conditionnement = parseInt(selectedOption.data('conditionnement')) || 1;
+            const stockTotal = parseInt(selectedOption.data('quantite')) || 0;
+
+            const cageots = Math.floor(stockTotal / conditionnement);
+            const unites = stockTotal % conditionnement;
+
+            section.find('.stock-total').val(stockTotal);
+            section.find('.stock-cageots').val(cageots);
+            section.find('.stock-unites').val(unites);
+        }
+
+        // Gérer le changement d'article
+        $(document).on('change', '.article-select', function() {
+            const selectedOption = $(this).find('option:selected');
+            const prixUnitaire = parseFloat(selectedOption.data('prix')) || 0;
+            const prixCgt = parseFloat(selectedOption.data('cgt')) || 0;
+            const prixConsignation = parseFloat(selectedOption.data('consignation')) || 0;
+            const conditionnement = parseInt(selectedOption.data('conditionnement')) || 1;
+            const prix_cageot = prixUnitaire * conditionnement;
+            const parentSection = $(this).closest('.article-section');
+            const index = parentSection.data('index');
+
+            parentSection.find('.prix-unitaire').val(prixUnitaire.toFixed(2));
+            parentSection.find('.prix-cgt').val(prix_cageot.toFixed(2));
+
+            // Décocher automatiquement si prix à 0
+            if (prixConsignation === 0) {
+                parentSection.find('.avec-bouteille').prop('checked', false);
+            }
+
+            if (prixCgt === 0) {
+                parentSection.find('.avec-cageot').prop('checked', false);
+            }
+
+            updateStockDisplay(parentSection);
+            calculateGlobalTotal();
+        });
+
+        // Gérer les changements de quantité
+        $(document).on('change input', '.quantite-cageot, .quantite-unite, .avec-cageot, .avec-bouteille', function() {
+            const parentSection = $(this).closest('.article-section');
+            const index = parentSection.data('index');
+
+            const selectedOption = parentSection.find('.article-select option:selected');
+            const conditionnement = parseInt(selectedOption.data('conditionnement')) || 1;
+            const stockTotal = parseInt(selectedOption.data('quantite')) || 0;
+
+            const quantiteCageot = parseInt(parentSection.find('.quantite-cageot').val()) || 0;
+            const quantiteUnite = parseInt(parentSection.find('.quantite-unite').val()) || 0;
+
+            const totalDemande = (quantiteCageot * conditionnement) + quantiteUnite;
+
+            if (totalDemande > stockTotal) {
+                alert('La quantité demandée dépasse le stock disponible!');
+                parentSection.find('.quantite-cageot').val(0);
+                parentSection.find('.quantite-unite').val(0);
+            }
+
+            calculateGlobalTotal();
+        });
+
+        // Ajouter un nouvel article
+        $('#add-article').click(function() {
+            const template = $('#article-template').html();
+            const newArticle = template.replace(/{index}/g, articleIndex);
+            $('#articles-container').append(newArticle);
+
+            $('#articles-container .article-select').last().select2();
+            articleIndex++;
+        });
+
+        // Supprimer un article
+        $(document).on('click', '.remove-article', function() {
+            $(this).closest('.article-section').remove();
+            calculateGlobalTotal();
+        });
+
+        // Validation du formulaire
+        $('#venteForm').submit(function(e) {
+            if ($('.article-section').length === 0) {
+                e.preventDefault();
+                alert('Veuillez ajouter au moins un article');
+                return false;
+            }
+
+            let isValid = true;
+            $('.article-select').each(function() {
+                if ($(this).val() === '') {
+                    isValid = false;
+                    return false;
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                alert('Veuillez sélectionner un article pour chaque ligne');
+                return false;
+            }
+
+            return true;
+        });
     });
 
-    payer.addEventListener('change', function() {
-        if (payer.checked) {
-            disposition.checked = false;
-        }
-    });
+    document.addEventListener('DOMContentLoaded', function() {
+        const disposition = document.getElementById('disposition');
+        const payer = document.getElementById('payer');
+        const fidele = document.getElementById('fidele');
 
-    fidele.addEventListener('change', function() {
-        if (fidele.checked) {
-            disposition.checked = false;
-        }
+        disposition.addEventListener('change', function() {
+            if (disposition.checked) {
+                payer.checked = false;
+                fidele.checked = false;
+            }
+        });
+
+        payer.addEventListener('change', function() {
+            if (payer.checked) {
+                disposition.checked = false;
+            }
+        });
+
+        fidele.addEventListener('change', function() {
+            if (fidele.checked) {
+                disposition.checked = false;
+            }
+        });
     });
-});
 </script>

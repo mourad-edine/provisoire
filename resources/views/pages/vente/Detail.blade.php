@@ -505,35 +505,87 @@
 <div class="modal fade" id="payement" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
+
+            <!-- Modal Header -->
             <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title">regler payement</h5>
+                <h5 class="modal-title">Régler le paiement</h5>
                 <button type="button" class="close" data-dismiss="modal">
                     <span>&times;</span>
                 </button>
             </div>
-            <form action="{{route('regler.payement')}}" method="POST">
+
+            <!-- Modal Form -->
+            <form action="{{ route('regler.payement') }}" method="POST">
                 @csrf
+
+                <!-- Hidden Inputs -->
+                <input type="hidden" name="commande_id" value="{{ $commande_id }}">
+                <input type="hidden" name="montant_total" value="{{ $deconsigneglobale }}">
+                <input type="hidden" name="montant_tot" value="{{ $montantTotal }}">
+                <input type="hidden" name="totalconsigne"
+                    value="{{ $totalconsigne + (optional($conditionnement->conditionnement)->nombre_cageot * $cgt) }}">
+
                 <div class="modal-body">
-                    <input type="hidden" name="commande_id" value="{{$commande_id}}">
-                    <input type="hidden" name="montant_total"
-                        value="{{$deconsigneglobale}}">
-                    <input type="hidden" name="montant_tot"
-                        value="{{$montantTotal}}">
-                    <input type="hidden" name="totalconsigne"
-                        value="{{$totalconsigne + (optional($conditionnement->conditionnement)->nombre_cageot * $cgt)}}">
+
                     @if($deconsigneglobale - $reste <= 0)
-                        <p class="text-danger">Le payement a déjà pour l'eau a déjà été fait.</p>
+                        <p class="text-danger">
+                        Le paiement pour l'eau a déjà été effectué.
+                        </p>
                         @else
-                        <p>voulez-vous regler le payement de cette commande {{$commande_id}}? somme restant à payer <span class="text-danger">{{$deconsigneglobale - $reste}}</span> Ar </p>
-                        <input type="number" name="somme" class="form-control" placeholder="montant" max="{{$prixGlobale - $reste}}">
+                        <p>
+                            Voulez-vous régler le paiement de la commande
+                            <strong>{{ $commande_id }}</strong> ?<br>
+                            Somme restante à payer :
+                            <span class="text-danger">
+                                {{ $deconsigneglobale - $reste }} Ar
+                            </span>
+                        </p>
+
+                        <div class="form-group">
+                            <input
+                                type="number"
+                                name="somme"
+                                class="form-control"
+                                placeholder="Montant à régler"
+                                max="{{ $prixGlobale - $reste }}">
+                        </div>
                         @endif
-                        <div class="m-5 form-group">
-                            <input type="checkbox" id="all" name="all" class="form-check-input">
-                            <label for="all">Tout regler en Argent (Avec BTL + CGT) <br>
-                                <span class="fw-bold text-success">{{$montantTotal}} Ar</span>
-                            </label>
+
+                        <!-- Option: Tout régler -->
+                        <div class="form-group mt-4">
+                            <div class="form-check">
+                                <input type="checkbox" id="all" name="all" class="form-check-input">
+                                <label class="form-check-label" for="all">
+                                    Tout régler en Argent (Avec BTL + CGT)<br>
+                                    <span class="fw-bold text-success">{{ $montantTotal }} Ar</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Montant reçu -->
+                        <div class="form-group mt-3">
+                            <label for="montant-recu">Montant reçu (Ar)</label>
+                            <input
+                                type="number"
+                                id="montant-recu"
+                                name="recu"
+                                class="form-control"
+                                placeholder="Entrez le montant reçu"
+                                max="{{ $prixGlobale - $reste }}">
+                        </div>
+
+                        <!-- Montant rendu -->
+                        <div class="form-group">
+                            <label for="montant-rendu">Montant à rendre (Ar)</label>
+                            <input
+                                type="number"
+                                id="montant-rendu"
+                                class="form-control bg-light"
+                                readonly>
                         </div>
                 </div>
+
+                <!-- Modal Footer -->
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
                     <button type="submit" class="btn btn-primary">Payer</button>
@@ -542,6 +594,24 @@
         </div>
     </div>
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const montantRecu = document.getElementById("montant-recu");
+    const montantRendu = document.getElementById("montant-rendu");
+    const montantAPayer = document.querySelector('input[name="somme"]');
+
+    function calculerRendu() {
+        const recu = parseFloat(montantRecu.value) || 0;
+        const aPayer = parseFloat(montantAPayer.value) || 0;
+        const rendu = recu - aPayer;
+        montantRendu.value = rendu > 0 ? rendu.toFixed(2) : 0;
+    }
+
+    montantRecu.addEventListener("input", calculerRendu);
+    montantAPayer.addEventListener("input", calculerRendu);
+});
+</script>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         document.querySelectorAll('input[type="checkbox"][name="check_bouteille_casse"]').forEach(function(checkbox) {
