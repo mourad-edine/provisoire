@@ -13,13 +13,13 @@
 
     <!-- Cartes de synthèse -->
     <div class="row">
-        <!-- Dépenses ce mois - Style minimaliste -->
+        <!-- Dépenses ce mois -->
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card minimal-card h-100">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
                         <div class="icon-square bg-soft-blue mr-3">
-                            <i class="fas fa-calendar-alt text-warning"></i>
+                            <i class="fas fa-calendar-alt text-primary"></i> <!-- Calendrier -->
                         </div>
                         <div>
                             <p class="small text-muted mb-1">Dépenses ce mois</p>
@@ -30,13 +30,13 @@
             </div>
         </div>
 
-        <!-- Dépenses du jour - Style compact -->
+        <!-- Dépenses du jour -->
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card minimal-card h-100">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
                         <div class="icon-square bg-soft-green mr-3">
-                            <i class="fas fa-coins text-warning"></i>
+                            <i class="fas fa-calendar-day text-success"></i> <!-- Journée -->
                         </div>
                         <div>
                             <p class="small text-muted mb-1">Aujourd'hui</p>
@@ -47,12 +47,75 @@
             </div>
         </div>
 
-        <!-- Catégorie principale - Style simple -->
+        <!-- Bouteille acheté aujourd'hui -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card minimal-card h-100">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-square bg-soft-yellow mr-3">
+                            <i class="fas fa-wine-bottle text-warning"></i> <!-- Bouteille -->
+                        </div>
+                        <div>
+                            <p class="small text-muted mb-1">Bouteille acheté aujourd'hui</p>
+                            <h5 class="mb-0">{{$bouteillejour}}</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Bouteille acheté ce mois ci -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card minimal-card h-100">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-square bg-soft-yellow mr-3">
+                            <i class="fas fa-wine-bottle text-info"></i> <!-- Bouteille -->
+                        </div>
+                        <div>
+                            <p class="small text-muted mb-1">Bouteille acheté ce mois-ci</p>
+                            <h5 class="mb-0">{{$bouteillemois}}</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <!-- Dépense moyenne - Style sobre -->
-      
+        <!-- Cageot acheté aujourd'hui -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card minimal-card h-100">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-square bg-soft-orange mr-3">
+                            <i class="fas fa-box text-danger"></i> <!-- Cageot -->
+                        </div>
+                        <div>
+                            <p class="small text-muted mb-1">Cageot acheté aujourd'hui</p>
+                            <h5 class="mb-0">{{$cageotjour}}</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cageot acheté ce mois ci -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card minimal-card h-100">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-square bg-soft-orange mr-3">
+                            <i class="fas fa-box-open text-primary"></i> <!-- Cageot -->
+                        </div>
+                        <div>
+                            <p class="small text-muted mb-1">Cageot acheté ce mois-ci</p>
+                            <h5 class="mb-0">{{$cageotmois}}</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
 
     <style>
         .minimal-card {
@@ -134,6 +197,7 @@
                             <th>Description</th>
                             <th>Montant</th>
                             <th>Moyen de paiement</th>
+                            <th>Quantité</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -144,6 +208,7 @@
                             <td>{{ $item->description }}</td>
                             <td class="font-weight-bold">{{ number_format($item->montant, 2, ',', ' ') }} Ar</td>
                             <td>{{ $item->mode_paye }}</td>
+                            <td>{{ $item->quantite }}</td>
                             <td>
                                 <!-- Bouton pour supprimer (à adapter selon route) -->
                                 <form action="{{ route('depense.destroy', $item->id) }}" method="POST" style="display:inline-block;">
@@ -189,12 +254,17 @@
                         </select>
                     </div> -->
 
-                    
+
 
                     <div class="form-group">
                         <label for="montant">Montant (Ar)</label>
                         <input type="number" class="form-control" name="montant" id="montant" required>
                     </div>
+                    <div id="quantiteContainer" class="form-group">
+                        <label for="quantite">Quantité</label>
+                        <input type="number" class="form-control" name="quantite" id="quantite" min="1">
+                    </div>
+
 
                     <div class="form-group">
                         <label for="mode_paye">Moyen de paiement</label>
@@ -205,7 +275,13 @@
                     </div>
                     <div class="form-group">
                         <label for="description">Description (optionel <span class="text-danger">*</span>)</label>
-                        <textarea class="form-control" name="description" id="description" rows="2" maxlength="100"></textarea>
+                        <!-- <textarea class="form-control" name="description" id="description" rows="2" maxlength="100"></textarea> -->
+                        <select class="form-control" name="description" id="description" required>
+                            <option value="Bouteille">Bouteille</option>
+                            <option value="cageot">cageot</option>
+
+                            <option value="Autre">Autre</option>
+                        </select>
                     </div>
                 </div>
 
@@ -222,6 +298,8 @@
 @endsection
 
 @section('scripts')
+
+
 <script>
     $(document).ready(function() {
         // Initialisation du DataTable

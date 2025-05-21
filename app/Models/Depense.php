@@ -11,6 +11,7 @@ class Depense extends Model
         'categorie',
         'description',
         'montant',
+        'quantite',
         'mode_paye',
     ];
 }

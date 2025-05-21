@@ -238,11 +238,18 @@ class AchatController extends Controller
             ->whereYear('created_at', $anneeActuelle)
             ->get();
         $depensesAujourdhui = Depense::whereDate('created_at', $now->toDateString())->get();
-
+        $bouteillejour = Depense::whereDate('created_at', $now->toDateString())->where('description', 'Bouteille')->sum('quantite');
+        $cageotjour = Depense::whereDate('created_at', $now->toDateString())->where('description', 'cageot')->sum('quantite');
+        $bouteillemois = Depense::whereMonth('created_at', $moisActuel)->whereYear('created_at', $anneeActuelle)->where('description', 'Bouteille')->sum('quantite');
+        $cageotmois = Depense::whereMonth('created_at', $moisActuel)->whereYear('created_at', $anneeActuelle)->where('description', 'cageot')->sum('quantite');
         return view('pages.achat.Depense' , [
-            'depense' => Depense::all(),
+            'depense' => Depense::orderBy('id', 'desc')->get(),
             'totalmois' => $depensesDuMois->sum('montant'),
-            'totalJour' => $depensesAujourdhui->sum('montant')
+            'totalJour' => $depensesAujourdhui->sum('montant'),
+            'bouteillejour' => $bouteillejour,
+            'cageotjour' => $cageotjour,
+            'bouteillemois' => $bouteillemois,
+            'cageotmois' => $cageotmois,
         ]);
     }
 }

@@ -59,7 +59,7 @@
                             <th>bouteille(s)</th>
                             <th>cageot(s)</th>
                             <th>créance BTL+CGT</th>
-                            <th>Total achat</th>
+                            <th>Reste à payer</th>
                             <th>Commande non payé</th>
                             <th>date creation</th>
                             <th>options</th>
@@ -78,8 +78,11 @@
                             <td>{{$client['sum_btl']}}</td>
                             <td>{{$client['sum_cgt'] + $client['conditionnement']}}</td>
                             <td>{{ number_format($client['consignation_sum_prix'] + $client['consignation_sum_prix_cgt'] + ($client['conditionnement'] * $cgt), 0, ',', ' ') .'Ar'}}</td>
-                            <td>{{ number_format($client['commandes_total'], 0, ',', ' ') .'Ar'}}</td>
-                            <td class="fw-bold text-{{$client['nombre_com_no_paye'] > 0 ? 'danger' : 'success'}}">{{$client['nombre_com_no_paye']}}</td>
+                            <td>{{$client['reste_a_payer'].' Ar'}}</td>
+
+                            <!-- <td>{{ number_format($client['commandes_total'], 0, ',', ' ') .'Ar'}}</td> -->
+                            <td ><a class="fw-bold text-{{$client['nombre_com_no_paye'] > 0 ? 'danger' : 'success'}}" href="{{route('client.commande' , ['id'=>$client['id']])}}">{{$client['nombre_com_no_paye']}}</a></td>
+
                             <td>{{$client['created_at']}}</td>
                             <td>
                                 <a href="{{route('client.commande' , ['id'=>$client['id']])}}"><i class="fas fa-user-alt"></i></button>

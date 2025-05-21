@@ -45,7 +45,6 @@ class ArticleController extends Controller
                 'created_at' => Carbon::parse($article->created_at)->format('d/m/Y H:i:s'),
             ];
         });
-
         return view('pages.article.Liste', [
             'articles' => $articles,
             'categories' => Categorie::all(),
@@ -86,6 +85,7 @@ class ArticleController extends Controller
                 'created_at' => $article->created_at ? $article->created_at->format('d/m/Y H:i:s') : null,
             ];
         });
+        //dd($articles->toArray());
 
         return view('pages.article.Liste', [
             'articles' => $articles,
@@ -134,7 +134,6 @@ class ArticleController extends Controller
         }
         if ($condjet == 0) {
             $t = ($pck == 0) ? $type_btl : 0;
-            //dd($t);
             $tab = [
                 'categorie_id' => (int)$request->categorie_id,
                 'nom' => $request->nom,
@@ -210,21 +209,21 @@ class ArticleController extends Controller
 
         if ($condjet == 1) {
             // Bouteille jetable
-            $article->prix_consignation = $request->input('diff_'.$article->id) ?? 0;
+            $article->prix_consignation =  $request->input('diff_'.$article->id) ? $request->input('diff_'.$article->id) : $request->prix_consignation;
             //dd($request->input('diff_'.$article->id));
             $article->prix_cgt = 0;
             $article->type_btl = 0;
         } else {
             // Pack ou Cageot
-            $article->prix_consignation = ($pck == 1) ? 0 : ($request->input('diff_'.$article->id) != null ? $request->input('diff_'.$article->id) : $consignation);
+            $article->prix_consignation = ($pck == 1) ? 0 : ($request->input('diff_'.$article->id) != null ? $request->input('diff_'.$article->id) : (($article->type_btl == 0 || $article->type_btl == null) && ($article->prix_consignation > 0) ? $request->prix_consignation : $consignation));
             $article->prix_cgt = ($pck == 1) ? 0 : 8000;
             $article->type_btl = ($pck == 1) ? 0 : ($request->input('diff_'.$article->id)!= null ? 0 : $type_btl);
         }
-
+        //dd($article->toArray());
         $article->prix_conditionne = $request->prix_conditionne ?? null;
         // $article->quantite = $request->quantite ? (int) $request->quantite : 0;
         $article->prix_achat = $request->prix_achat ? (int) $request->prix_achat : 0;
-
+        //dd($article->toArray());
         $article->save();
 
         return redirect()->back()->withSuccess('Article mis à jour avec succès.');

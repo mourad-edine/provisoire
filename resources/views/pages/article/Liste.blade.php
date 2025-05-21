@@ -40,9 +40,9 @@
 
             <!-- Bouton d'ajout -->
             <div>
-            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addArticleModal">
-                <i class="fas fa-plus-circle mr-2"></i>Ajouter boisson
-            </button>
+                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addArticleModal">
+                    <i class="fas fa-plus-circle mr-2"></i>Ajouter boisson
+                </button>
             </div>
         </div>
 
@@ -168,25 +168,30 @@
                                             </div>
                                             <div class="ml-3 mr-3 col-md-12 row">
                                                 <div class="mb-3 col-md-3 d-flex align-items-center">
-                                                    <input type="radio" class="form-check-input me-2" id="condi_cgt_{{ $article['id'] }}" name="choix_{{ $article['id'] }}" value="cageot" {{ $article['prix_consignation'] > 0 && $article['prix_cgt'] > 0  ? 'checked' : '' }}>
+                                                    <input type="radio" class="form-check-input me-2" id="condi_cgt_{{ $article['id'] }}" name="choix_{{ $article['id'] }}" value="cageot" {{ ($article['prix_consignation'] > 0 && $article['prix_cgt']) > 0 ? 'checked' : '' }}>
                                                     <label for="condi_cgt_{{ $article['id'] }}" class="form-label mb-0">Cageot</label>
                                                 </div>
                                                 <div class="mb-3 col-md-3 d-flex align-items-center">
                                                     <input type="radio" class="form-check-input me-2" id="condi_pack_{{ $article['id'] }}" name="choix_{{ $article['id'] }}" value="pack" {{ $article['prix_consignation'] == 0 ? 'checked' : '' }}>
                                                     <label for="condi_pack_{{ $article['id'] }}" class="form-label mb-0">Pack</label>
                                                 </div>
-                                                <div class="mb-3 col-md-6 d-flex align-items-center">
+                                                <div class="mb-3 col-md-3 d-flex align-items-center">
                                                     <input type="radio" class="form-check-input me-2 condi_jet_radio" data-id="{{ $article['id'] }}" id="condi_jet_{{ $article['id'] }}" name="choix_{{ $article['id'] }}" value="jet" {{ $article['prix_consignation'] > 0 && ($article['prix_cgt'] == 0 || $article['prix_cgt'] == null) ? 'checked' : '' }}>
-                                                    <label for="condi_jet_{{ $article['id'] }}" class="form-label mb-0">BTL consigné / Emb jetable</label>
+                                                    <label for="condi_jet_{{ $article['id'] }}" class="form-label mb-0">Emb. jetable</label>
                                                 </div>
-
+                                                @if($article['prix_consignation'] > 0)
+                                                <div class="mb-3 col-md-3 d-flex align-items-center">
+                                                    <input type="radio" class="form-check-input me-2" id="reini_{{ $article['id'] }}" name="choix_{{ $article['id'] }}" value="pack">
+                                                    <label for="reini_{{ $article['id'] }}" class="form-label mb-0">Réinitialiser</label>
+                                                </div>
+                                                @endif
                                             </div>
 
-                                            <div class="form-group mt-2" >
+                                            <div class="form-group mt-2">
                                                 <label for="diff_{{ $article['id'] }}">Prix consignation</label>
-                                                <input type="number" class="form-control" value="{{ $article['prix_consignation'] ?? '' }}" readonly>
+                                                <input type="number" class="form-control" value="{{ $article['prix_consignation'] ?? '' }}" readonly name="prix_consignation">
                                             </div>
-                                             <div class="form-group mt-2">
+                                            <div class="form-group mt-2">
                                                 <label for="diff_{{ $article['id'] }}">Nouveau prix consignation</label>
                                                 <input type="number" class="form-control" id="diff_{{ $article['id'] }}" name="diff_{{ $article['id'] }}">
                                             </div>
@@ -211,7 +216,7 @@
                         </div>
                         @empty
                         <tr>
-                            <td colspan="9" class="">
+                            <td colspan="10" class="">
                                 <div class="alert alert-warning mb-3">
                                     <i class="fas fa-exclamation-triangle me-2"></i>
                                     Pas de donnée trouvé --
@@ -291,7 +296,7 @@
                                 <label for="condi_jet" class="form-label mb-0">BTL consigné / Emb jetable</label>
                             </div>
                         </div>
-                        <div class="form-group" id="consignation_field_add" >
+                        <div class="form-group" id="consignation_field_add">
                             <label for="diff">Prix consignation</label>
                             <input type="number" class="form-control" id="diff" name="diff">
                         </div>
@@ -339,7 +344,7 @@
     document.addEventListener("DOMContentLoaded", function() {
         // Gestion des radios dans le modal d'ajout
         const choixRadios = document.querySelectorAll('input[name="choix"]');
-        
+
 
         // Gestion des radios dans les modals d'édition
         document.querySelectorAll('[id^="condi_jet_"]').forEach(radio => {
@@ -351,7 +356,7 @@
         });
 
         // Masquer les champs de consignation quand un autre choix est sélectionné
-        
+
 
         // Gestion de la checkbox pour afficher/masquer les champs de prix
         document.getElementById('checkCageot').addEventListener('change', function() {
@@ -360,5 +365,35 @@
             document.getElementById('quantiteContainer').style.display = this.checked ? 'block' : 'none';
         });
     });
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Pour chaque modal d'édition
+    document.querySelectorAll('[id^="editArticleModal"]').forEach(modal => {
+        const id = modal.id.replace('editArticleModal', '');
+        
+        // Gestion du changement de radio
+        const radios = modal.querySelectorAll(`input[name="choix_${id}"]`);
+        radios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                const reiniDiv = modal.querySelector(`#reini_${id}`).closest('div.mb-3');
+                
+                // Masquer "Réinitialiser" si "Pack" est sélectionné
+                if (this.value === 'pack') {
+                    reiniDiv.style.display = 'none';
+                } else {
+                    reiniDiv.style.display = 'flex';
+                }
+            });
+        });
+
+        // Initialiser l'état au chargement
+        const checkedRadio = modal.querySelector(`input[name="choix_${id}"]:checked`);
+        const reiniDiv = modal.querySelector(`#reini_${id}`).closest('div.mb-3');
+        if (checkedRadio && checkedRadio.value === 'pack') {
+            reiniDiv.style.display = 'none';
+        }
+    });
+});
 </script>
 @endsection

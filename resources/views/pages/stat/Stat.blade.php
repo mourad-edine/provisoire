@@ -236,139 +236,190 @@
 
     <!-- Ligne des 3 tableaux -->
     <div class="row">
-        @php
-        $moisNom = [
+    @php
+    $moisNom = [
         1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
         5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
         9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre'
-        ];
+    ];
 
-        $caParMois = $ventesParMois->pluck('total', 'mois')->toArray();
-        $depensesParMois = $depense->pluck('total', 'mois')->toArray();
-        $totalCA = 0;
-        $totalDepense = 0;
-        $totalBenefice = 0;
-        @endphp
+    $caParMois = $ventesParMois->pluck('total', 'mois')->toArray();
+    $depensesParMois = $depense->pluck('total', 'mois')->toArray();
+    $depensesDiversParMois = $depensesDivers->pluck('total', 'mois')->toArray();
+    
+    $totalCA = 0;
+    $totalDepense = 0;
+    $totalDepensesDivers = 0;
+    $totalBenefice = 0;
+    @endphp
 
-        <!-- CA Mensuel -->
-        <div class="col-lg-4 mb-4">
-            <div class="card shadow h-100">
-                <div class="card-header py-3 bg-light text-dark">
-                    <h6 class="m-0 font-weight-bold">Chiffre d'Affaires Mensuel</h6>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover mb-0">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th width="50%">Mois</th>
-                                    <th width="50%">Montant (Ar)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($moisNom as $num => $mois)
-                                @php
-                                $montant = $caParMois[$num] ?? 0;
-                                $totalCA += $montant;
-                                @endphp
-                                <tr>
-                                    <td><strong>{{ $mois }}</strong></td>
-                                    <td class="text-right">{{ number_format($montant, 0, ',', ' ') }}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                            <tfoot class="bg-light font-weight-bold">
-                                <tr>
-                                    <td>TOTAL</td>
-                                    <td class="text-right">{{ number_format($totalCA, 0, ',', ' ') }}</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
+    <!-- CA Mensuel -->
+    <div class="col-lg-3 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 bg-light text-dark">
+                <h6 class="m-0 font-weight-bold">Chiffre d'Affaires Mensuel</h6>
             </div>
-        </div>
-
-        <!-- Dépenses Mensuelles -->
-        <div class="col-lg-4 mb-4">
-            <div class="card shadow h-100">
-                <div class="card-header py-3 bg-light text-dark">
-                    <h6 class="m-0 font-weight-bold">Dépenses Mensuelles</h6>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover mb-0">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th width="50%">Mois</th>
-                                    <th width="50%">Montant (Ar)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($moisNom as $num => $mois)
-                                @php
-                                $montant = $depensesParMois[$num] ?? 0;
-                                $totalDepense += $montant;
-                                @endphp
-                                <tr>
-                                    <td><strong>{{ $mois }}</strong></td>
-                                    <td class="text-right">{{ number_format($montant, 0, ',', ' ') }}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                            <tfoot class="bg-light font-weight-bold">
-                                <tr>
-                                    <td>TOTAL</td>
-                                    <td class="text-right">{{ number_format($totalDepense, 0, ',', ' ') }}</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bénéfice Mensuel -->
-        <div class="col-lg-4 mb-4">
-            <div class="card shadow h-100">
-                <div class="card-header py-3 bg-light text-dark">
-                    <h6 class="m-0 font-weight-bold">Bénéfice / Pertes Mensuel</h6>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover mb-0">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th width="50%">Mois</th>
-                                    <th width="50%">Montant (Ar)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($moisNom as $num => $mois)
-                                @php
-                                $ca = $caParMois[$num] ?? 0;
-                                $dep = $depensesParMois[$num] ?? 0;
-                                $benefice = $ca - $dep;
-                                $totalBenefice += $benefice;
-                                @endphp
-                                <tr>
-                                    <td><strong>{{ $mois }}</strong></td>
-                                    <td class="text-right">@if($benefice < 0 ) <span class="text-danger">{{ number_format($benefice, 0, ',', ' ') }}</span> @else <span class="text-success">{{ number_format($benefice, 0, ',', ' ') }} @endif</span></td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                            <tfoot class="bg-light font-weight-bold">
-                                <tr>
-                                    <td>TOTAL</td>
-                                    <td class="text-right">{{ number_format($totalBenefice, 0, ',', ' ') }}</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th width="50%">Mois</th>
+                                <th width="50%">Montant (Ar)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($moisNom as $num => $mois)
+                            @php
+                            $montant = $caParMois[$num] ?? 0;
+                            $totalCA += $montant;
+                            @endphp
+                            <tr>
+                                <td><strong>{{ $mois }}</strong></td>
+                                <td class="text-right">{{ number_format($montant, 0, ',', ' ') }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot class="bg-light font-weight-bold">
+                            <tr>
+                                <td>TOTAL</td>
+                                <td class="text-right">{{ number_format($totalCA, 0, ',', ' ') }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Dépenses Mensuelles -->
+    <div class="col-lg-3 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 bg-light text-dark">
+                <h6 class="m-0 font-weight-bold">Dépenses Mensuelles</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th width="50%">Mois</th>
+                                <th width="50%">Montant (Ar)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($moisNom as $num => $mois)
+                            @php
+                            $montant = $depensesParMois[$num] ?? 0;
+                            $totalDepense += $montant;
+                            @endphp
+                            <tr>
+                                <td><strong>{{ $mois }}</strong></td>
+                                <td class="text-right">{{ number_format($montant, 0, ',', ' ') }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot class="bg-light font-weight-bold">
+                            <tr>
+                                <td>TOTAL</td>
+                                <td class="text-right">{{ number_format($totalDepense, 0, ',', ' ') }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dépenses divers -->
+    <div class="col-lg-3 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 bg-light text-dark">
+                <h6 class="m-0 font-weight-bold">Dépenses divers</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th width="50%">Mois</th>
+                                <th width="50%">Montant (Ar)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($moisNom as $num => $mois)
+                            @php
+                            $montant = $depensesDiversParMois[$num] ?? 0;
+                            $totalDepensesDivers += $montant;
+                            @endphp
+                            <tr>
+                                <td><strong>{{ $mois }}</strong></td>
+                                <td class="text-right">{{ number_format($montant, 0, ',', ' ') }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot class="bg-light font-weight-bold">
+                            <tr>
+                                <td>TOTAL</td>
+                                <td class="text-right">{{ number_format($totalDepensesDivers, 0, ',', ' ') }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bénéfice Mensuel -->
+    <div class="col-lg-3 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 bg-light text-dark">
+                <h6 class="m-0 font-weight-bold">Bénéfice / Pertes Mensuel</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th width="50%">Mois</th>
+                                <th width="50%">Montant (Ar)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($moisNom as $num => $mois)
+                            @php
+                            $ca = $caParMois[$num] ?? 0;
+                            $dep = $depensesParMois[$num] ?? 0;
+                            $depDivers = $depensesDiversParMois[$num] ?? 0;
+                            $benefice = $ca - $dep - $depDivers;
+                            $totalBenefice += $benefice;
+                            @endphp
+                            <tr>
+                                <td><strong>{{ $mois }}</strong></td>
+                                <td class="text-right">
+                                    @if($benefice < 0)
+                                        <span class="text-danger">{{ number_format($benefice, 0, ',', ' ') }}</span>
+                                    @else
+                                        <span class="text-success">{{ number_format($benefice, 0, ',', ' ') }}</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot class="bg-light font-weight-bold">
+                            <tr>
+                                <td>TOTAL</td>
+                                <td class="text-right @if($totalBenefice < 0) text-danger @else text-success @endif">
+                                    {{ number_format($totalBenefice, 0, ',', ' ') }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
     <!-- Recherche par date -->
     <div class="card shadow mt-4">

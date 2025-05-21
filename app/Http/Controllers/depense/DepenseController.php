@@ -14,6 +14,7 @@ class DepenseController extends Controller
         $request->validate([
             'categorie' => 'nullable|string|max:30',
             'description' => 'nullable|string|max:100',
+            'quantite' => 'nullable|integer',
             'montant' => 'required|integer',
             'mode_paye' => 'nullable|string|max:15',
         ]);

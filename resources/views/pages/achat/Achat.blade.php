@@ -333,7 +333,7 @@
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <label>Quantité (cageots)</label>
+                            <label>Quantité (cageot / Pack)</label>
                             <input type="number" class="form-control quantite-input" data-index="0" min="1">
                         </div>
                         <div class="col-md-2">

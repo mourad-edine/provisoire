@@ -375,7 +375,7 @@
                                 </div>
 
                                 <div class="col-md-1">
-                                    <label class="form-label">Qt.CGT</label>
+                                    <label class="form-label">Qt.CGT/Pack</label>
                                     <input type="number" class="form-control stock-cageots" name="articles[0][stock_cageots]" readonly>
                                 </div>
                                 <div class="col-md-1">
@@ -738,12 +738,7 @@
             const montantRecu = parseFloat($('#montant-recu').val()) || 0;
             const total = parseFloat($('#tot_glob').val()) || 0;
 
-            if (montantRecu < total) {
-                e.preventDefault();
-                alert('Le montant reçu doit être supérieur ou égal au total à payer');
-                $('#montant-recu').focus();
-                return false;
-            }
+            
         }
         return true;
     });
@@ -807,6 +802,17 @@
                 prixCgt: prixCgt
             };
         }
+
+        // $(document).on('input', '.quantite-cageot', function() {
+        //     const parentSection = $(this).closest('.article-section');
+        //     const quantiteCageot = parseInt($(this).val()) || 0;
+        //     const prixCgt = parseFloat(parentSection.find('.article-select option:selected').data('cgt')) || 0;
+
+        //     if (quantiteCageot > 0 && prixCgt > 0) {
+        //         parentSection.find('.avec-cageot').prop('checked', true);
+        //     }
+        //     calculateGlobalTotal();
+        // });
 
         // Fonction pour calculer le total général
         function calculateGlobalTotal() {

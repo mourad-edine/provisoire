@@ -109,9 +109,11 @@
 
         <!-- Card Body -->
         <div class="card-body p-4">
+            
             @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show">
-                {{ session('success') }}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             @endif
 
@@ -289,7 +291,7 @@
                                             <div class="row">
                                                 <div class="col-md-6 mb-3">
                                                     <div class="alert {{ $vente['etat'] == 'avec BTL' ? 'alert-warning' : 'alert-success' }}">
-                                                        <strong>Bouteille :</strong>
+                                                        <strong>Bouteille</strong>
                                                     </div>
                                                 </div>
 
@@ -304,7 +306,7 @@
                                         <!-- Footer -->
                                         <div class="modal-footer border-top-0 px-4 pb-4">
                                             <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
-                                            @php
+                                            <!-- @php
                                             $disabled = true;
 
                                             if ($vente['prix_consignation'] != 0 && $vente['consi_cgt'] != 0) {
@@ -315,9 +317,9 @@
                                             $disabled = false;
                                             }
                                             }
-                                            @endphp
+                                            @endphp -->
 
-                                            <button type="submit" class="btn btn-primary" {{ $disabled ? 'disabled' : '' }}>Valider</button>
+                                            <button type="submit" class="btn btn-primary">Valider</button>
                                         </div>
                                     </form>
                                 </div>
@@ -461,7 +463,7 @@
                         </tbody>
                         @endif
                         <tr class="table-active fw-bold">
-                            <td colspan="6" class="text-end uppercase">Total globale :</td>
+                            <td colspan="6" class="text-end uppercase">Net à payer :</td>
                             <td class=""><span class="">@if($commande->etat_client == 1)
                                     {{ number_format($prixGlobale, 0, ',', ' ') }} Ar
                                     @else
@@ -570,8 +572,7 @@
                                 id="montant-recu"
                                 name="recu"
                                 class="form-control"
-                                placeholder="Entrez le montant reçu"
-                                max="{{ $prixGlobale - $reste }}">
+                                placeholder="Entrez le montant reçu">
                         </div>
 
                         <!-- Montant rendu -->
@@ -594,22 +595,119 @@
         </div>
     </div>
 </div>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const montantRecu = document.getElementById("montant-recu");
-    const montantRendu = document.getElementById("montant-rendu");
-    const montantAPayer = document.querySelector('input[name="somme"]');
-
-    function calculerRendu() {
-        const recu = parseFloat(montantRecu.value) || 0;
-        const aPayer = parseFloat(montantAPayer.value) || 0;
-        const rendu = recu - aPayer;
-        montantRendu.value = rendu > 0 ? rendu.toFixed(2) : 0;
+<style>
+    /* Supprime tous les styles Bootstrap hérités pour text et number */
+    input[type="text"].form-control,
+    input[type="number"].form-control {
+        all: unset;
+        display: block;
+        font-family: inherit;
     }
 
-    montantRecu.addEventListener("input", calculerRendu);
-    montantAPayer.addEventListener("input", calculerRendu);
-});
+    /* Applique ton propre style simple */
+    input[type="text"],
+    input[type="number"] {
+        font-size: 16px;
+        padding: 6px 8px;
+        border: 1px solid #333;
+        border-radius: 0;
+        background-color: #fff;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Style lorsqu'on est en readonly */
+    input[type="text"][readonly],
+    input[type="number"][readonly] {
+        background-color: #f0f0f0;
+        color: #555;
+    }
+
+    /* Supprime les effets visuels de focus Bootstrap */
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+        outline: none;
+        border-color: #333;
+        box-shadow: none;
+    }
+</style>
+<style>
+    /* Supprime les styles Bootstrap */
+    input[type="text"].form-control,
+    input[type="number"].form-control {
+        all: unset;
+        display: block;
+    }
+
+    /* Applique ton propre style avec priorité */
+    input[type="text"],
+    input[type="number"] {
+        font-size: 16px !important;
+        padding: 6px 8px !important;
+        border: 1px solid #000 !important;
+        /* bordure bien visible */
+        border-radius: 0 !important;
+        background-color: #fff !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        color: #000 !important;
+    }
+
+    /* Bordure bien visible au focus */
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+        outline: none !important;
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+    }
+
+    /* Inputs en readonly */
+    input[type="text"][readonly],
+    input[type="number"][readonly] {
+        background-color: #f0f0f0 !important;
+        color: #555 !important;
+        border: 1px solid #000 !important;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const montantRecu = document.getElementById("montant-recu");
+        const montantRendu = document.getElementById("montant-rendu");
+        const montantAPayer = document.querySelector('input[name="somme"]');
+        const toutReglerCheckbox = document.getElementById("all");
+        const montantTotal = parseFloat("{{ $montantTotal }}") || 0;
+
+        function calculerRendu() {
+            const recu = parseFloat(montantRecu.value) || 0;
+            let aPayer = parseFloat(montantAPayer.value) || 0;
+
+            // Si "Tout régler" est coché, utiliser le montant total comme montant à payer
+            if (toutReglerCheckbox.checked) {
+                aPayer = montantTotal;
+                montantAPayer.value = aPayer.toFixed(2);
+            }
+
+            const rendu = recu - aPayer;
+            montantRendu.value = rendu > 0 ? rendu.toFixed(2) : 0;
+        }
+
+        // Écouteurs d'événements
+        montantRecu.addEventListener("input", calculerRendu);
+        montantAPayer.addEventListener("input", calculerRendu);
+
+        // Écouteur pour la case "Tout régler"
+        toutReglerCheckbox.addEventListener("change", function() {
+            if (this.checked) {
+                montantAPayer.value = montantTotal.toFixed(2);
+                montantAPayer.readOnly = true;
+            } else {
+                montantAPayer.readOnly = false;
+                montantAPayer.value = "";
+            }
+            calculerRendu();
+        });
+    });
 </script>
 
 <script>

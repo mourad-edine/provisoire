@@ -291,7 +291,7 @@ class VenteController extends Controller
             'articles' => Article::all(),
             'clients' => Client::all(),
             'dernier' => Commande::latest()->first(),
-            'cgt' => $article->prix_cgt
+            'cgt' => $article->prix_cgt ?? 0
         ]);
     }
 

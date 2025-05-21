@@ -18,6 +18,7 @@ class Article extends Model
         'prix_consignation',
         'prix_conditionne',
         'prix_achat',
+        'prix_cgt',
         'quantite',
         'type_btl'
     ];

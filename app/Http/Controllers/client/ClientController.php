@@ -53,9 +53,13 @@ class ClientController extends Controller
 
 
             // Total des paiements partiels effectués
-            $client->payement_fait = $client->commandes->sum(function ($commande) {
-                return $commande->payements->where('operation', 'partiel')->sum('somme');
-            });
+            $payementFait = 0;
+
+            foreach ($client->commandes->where('etat_commande', 'non payé') as $commande) {
+                $payementFait += $commande->payements->where('operation', 'partiel')->sum('somme');
+            }
+
+            $client->payement_fait = $payementFait;
 
             // Calcul du reste à payer (commandes non payées - paiements effectués)
             $client->reste_a_payer = $client->commandes_total_non_paye - $client->payement_fait;
@@ -66,14 +70,14 @@ class ClientController extends Controller
                     return (optional($vente->consignation)->prix ?? 0) * ($vente->article->prix_consignation ?? 0);
                 });
             });
-            $client->sum_btl = $client->commandes->sum(function($commande){
-                return $commande->ventes->sum(function ($vente){
-                    return (optional($vente->consignation)->prix ?? 0); 
+            $client->sum_btl = $client->commandes->sum(function ($commande) {
+                return $commande->ventes->sum(function ($vente) {
+                    return (optional($vente->consignation)->prix ?? 0);
                 });
             });
-            $client->sum_cgt = $client->commandes->sum(function($commande){
-                return $commande->ventes->sum(function ($vente){
-                    return (optional($vente->consignation)->prix_cgt ?? 0); 
+            $client->sum_cgt = $client->commandes->sum(function ($commande) {
+                return $commande->ventes->sum(function ($vente) {
+                    return (optional($vente->consignation)->prix_cgt ?? 0);
                 });
             });
 
@@ -102,7 +106,7 @@ class ClientController extends Controller
                 'created_at' => $client->created_at ? $client->created_at->format('d/m/Y H:i:s') : null,
                 'payement_fait' => $client->payement_fait,
                 'commandes_total_non_paye' => $client->commandes_total_non_paye,
-                'reste_a_payer' => $client->reste_a_payer,
+                'reste_a_payer' => $client->nombre_com_no_paye > 0 ?  $client->reste_a_payer + $client->consignation_sum_prix + $client->consignation_sum_prix_cgt + ($article->prix_cgt ?? 0) : 0,
                 'consignation_sum_prix' => $client->consignation_sum_prix,
                 'consignation_sum_prix_cgt' => $client->consignation_sum_prix_cgt,
                 'conditionnement' => $client->commandes->sum(function ($commande) {
@@ -115,7 +119,7 @@ class ClientController extends Controller
 
         return view('pages.clients.Liste', [
             'clients' => $clients,
-            'cgt' => $article->prix_cgt
+            'cgt' => $article->prix_cgt ?? 0,
         ]);
     }
 
@@ -212,55 +216,55 @@ class ClientController extends Controller
 
 
     public function profil($id)
-{
-    $client = Client::with([
-        'commandes.ventes.consignation',
-        'commandes.ventes.article',
-        'commandes.conditionnement',
-        'commandes.payements',
-    ])->withCount('commandes')->findOrFail($id);
+    {
+        $client = Client::with([
+            'commandes.ventes.consignation',
+            'commandes.ventes.article',
+            'commandes.conditionnement',
+            'commandes.payements',
+        ])->withCount('commandes')->findOrFail($id);
 
-    // Calcul des statistiques
-    $client->commandes_total = $client->commandes->sum(function ($commande) {
-        return $commande->ventes->sum('total');
-    });
-
-    $client->commandes_total_non_paye = $client->commandes->where('etat_commande', 'non payé')->sum(function ($commande) {
-        return $commande->ventes->sum('total');
-    });
-
-    $client->nombre_com_no_paye = $client->commandes->where('etat_commande', 'non payé')->count();
-
-    $client->payement_fait = $client->commandes->sum(function ($commande) {
-        return $commande->payements->where('operation', 'partiel')->sum('somme');
-    });
-
-    $client->reste_a_payer = $client->commandes_total_non_paye - $client->payement_fait;
-
-    $client->sum_btl = $client->commandes->sum(function($commande) {
-        return $commande->ventes->sum(function ($vente) {
-            return optional($vente->consignation)->prix ?? 0;
+        // Calcul des statistiques
+        $client->commandes_total = $client->commandes->sum(function ($commande) {
+            return $commande->ventes->sum('total');
         });
-    });
 
-    $client->sum_cgt = $client->commandes->sum(function($commande) {
-        return $commande->ventes->sum(function ($vente) {
-            return optional($vente->consignation)->prix_cgt ?? 0;
+        $client->commandes_total_non_paye = $client->commandes->where('etat_commande', 'non payé')->sum(function ($commande) {
+            return $commande->ventes->sum('total');
         });
-    });
 
-    $derniereCommande = $client->commandes->sortByDesc('created_at')->first();
-    $derniereVisite = $derniereCommande ? $derniereCommande->created_at: 'Jamais';
+        $client->nombre_com_no_paye = $client->commandes->where('etat_commande', 'non payé')->count();
 
-    return view('pages.clients.Profil', [
-        'client' => $client,
-        'commandes' => Commande::with(['ventes', 'client'])
-            ->where('client_id', $id)
-            ->orderByDesc('id')
-            ->paginate(5),
-        'derniereVisite' => $derniereVisite
-    ]);
-}
+        $client->payement_fait = $client->commandes->sum(function ($commande) {
+            return $commande->payements->where('operation', 'partiel')->sum('somme');
+        });
+
+        $client->reste_a_payer = $client->commandes_total_non_paye - $client->payement_fait;
+
+        $client->sum_btl = $client->commandes->sum(function ($commande) {
+            return $commande->ventes->sum(function ($vente) {
+                return optional($vente->consignation)->prix ?? 0;
+            });
+        });
+
+        $client->sum_cgt = $client->commandes->sum(function ($commande) {
+            return $commande->ventes->sum(function ($vente) {
+                return optional($vente->consignation)->prix_cgt ?? 0;
+            });
+        });
+
+        $derniereCommande = $client->commandes->sortByDesc('created_at')->first();
+        $derniereVisite = $derniereCommande ? $derniereCommande->created_at : 'Jamais';
+
+        return view('pages.clients.Profil', [
+            'client' => $client,
+            'commandes' => Commande::with(['ventes', 'client'])
+                ->where('client_id', $id)
+                ->orderByDesc('id')
+                ->paginate(5),
+            'derniereVisite' => $derniereVisite
+        ]);
+    }
     public function historique($id)
     {
         $client = Client::with(['commandes.payements'])

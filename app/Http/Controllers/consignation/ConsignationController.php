@@ -168,7 +168,9 @@ class ConsignationController extends Controller
 
                 if ($actions_effectuees) {
                     $consignation->save();
-                    $this->operation('cageot_bouteille', $request->commande_id, $request->mode_paye, (($prix_bouteille * $article->prix_consignation) + ($prix_cageot * $article->prix_cgt)));
+                    $this->operation('cageot', $request->commande_id, $request->mode_paye, ($prix_cageot * $article->prix_cgt));
+                    $this->operation('bouteille', $request->commande_id, $request->mode_paye, ($prix_bouteille * $article->prix_consignation));
+
                     $this->verification($request->commande_id);
                     return redirect()->back()
                         ->with('success', 'Paiement enregistré avec succès.')

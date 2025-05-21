@@ -35,7 +35,7 @@ class StockController extends Controller
     {
         $search = $request->input('search');
 
-        $query = Article::where('quantite', '<', 40);
+        $query = Article::where('quantite', '<', 24);
 
         if ($search) {
             $query->where('nom', 'like', "%{$search}%")

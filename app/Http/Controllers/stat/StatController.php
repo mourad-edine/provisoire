@@ -21,19 +21,16 @@ class StatController extends Controller
             ->get();
         $depensesAujourdhui = Depense::whereDate('created_at', $now->toDateString())->get();
 
-
         $annee = $request->annee ?? now()->year;
         $today = now()->toDateString();
-        $moisActuel = now()->month;
-        $anneeActuelle = now()->year;
 
-        // Ventes par mois (déjà en place)
+        // Ventes par mois
         $ventesParMois = Vente::select(
             DB::raw('MONTH(date_sortie) as mois'),
             DB::raw('SUM(CASE 
-            WHEN ventes.type_achat IN ("cageot", "pack") 
-            THEN ventes.quantite * ventes.prix * articles.conditionnement
-            ELSE ventes.quantite * ventes.prix 
+        WHEN ventes.type_achat IN ("cageot", "pack") 
+        THEN ventes.quantite * ventes.prix * articles.conditionnement
+        ELSE ventes.quantite * ventes.prix 
         END) as total')
         )
             ->join('articles', 'ventes.article_id', '=', 'articles.id')
@@ -42,13 +39,23 @@ class StatController extends Controller
             ->orderBy('mois')
             ->get();
 
-        // Dépenses (achats) par mois (déjà en place)
-        $depenseparMois = Achat::select(
+        // Dépenses diverses par mois
+        $depensesDivers = Depense::select(
+            DB::raw('MONTH(created_at) as mois'),
+            DB::raw('SUM(montant) as total')
+        )
+            ->whereYear('created_at', $annee)
+            ->groupBy(DB::raw('MONTH(created_at)'))
+            ->orderBy('mois')
+            ->get();
+
+        // Dépenses (achats) par mois
+        $depenseParMois = Achat::select(
             DB::raw('MONTH(date_entre) as mois'),
             DB::raw('SUM(CASE 
-            WHEN achats.type_achat IN ("cageot", "pack") 
-            THEN achats.quantite * achats.prix_unite * articles.conditionnement
-            ELSE achats.quantite * achats.prix_unite 
+        WHEN achats.type_achat IN ("cageot", "pack") 
+        THEN achats.quantite * achats.prix_unite * articles.conditionnement
+        ELSE achats.quantite * achats.prix_unite 
         END) as total')
         )
             ->join('articles', 'achats.article_id', '=', 'articles.id')
@@ -61,13 +68,13 @@ class StatController extends Controller
         $ventesJour = Vente::join('articles', 'ventes.article_id', '=', 'articles.id')
             ->whereDate('date_sortie', $today)
             ->select(DB::raw('
-            SUM(
-                CASE 
-                    WHEN ventes.type_achat IN ("cageot", "pack") 
-                    THEN ventes.quantite * ventes.prix * articles.conditionnement
-                    ELSE ventes.quantite * ventes.prix 
-                END
-            ) as total'))
+        SUM(
+            CASE 
+                WHEN ventes.type_achat IN ("cageot", "pack") 
+                THEN ventes.quantite * ventes.prix * articles.conditionnement
+                ELSE ventes.quantite * ventes.prix 
+            END
+        ) as total'))
             ->value('total');
 
         // Ventes du mois
@@ -75,26 +82,26 @@ class StatController extends Controller
             ->whereYear('date_sortie', $anneeActuelle)
             ->whereMonth('date_sortie', $moisActuel)
             ->select(DB::raw('
-            SUM(
-                CASE 
-                    WHEN ventes.type_achat IN ("cageot", "pack") 
-                    THEN ventes.quantite * ventes.prix * articles.conditionnement
-                    ELSE ventes.quantite * ventes.prix 
-                END
-            ) as total'))
+        SUM(
+            CASE 
+                WHEN ventes.type_achat IN ("cageot", "pack") 
+                THEN ventes.quantite * ventes.prix * articles.conditionnement
+                ELSE ventes.quantite * ventes.prix 
+            END
+        ) as total'))
             ->value('total');
 
         // Achats du jour
         $achatsJour = Achat::join('articles', 'achats.article_id', '=', 'articles.id')
             ->whereDate('date_entre', $today)
             ->select(DB::raw('
-            SUM(
-                CASE 
-                    WHEN achats.type_achat IN ("cageot", "pack") 
-                    THEN achats.quantite * achats.prix_unite * articles.conditionnement
-                    ELSE achats.quantite * achats.prix_unite 
-                END
-            ) as total'))
+        SUM(
+            CASE 
+                WHEN achats.type_achat IN ("cageot", "pack") 
+                THEN achats.quantite * achats.prix_unite * articles.conditionnement
+                ELSE achats.quantite * achats.prix_unite 
+            END
+        ) as total'))
             ->value('total');
 
         // Achats du mois
@@ -102,13 +109,13 @@ class StatController extends Controller
             ->whereYear('date_entre', $anneeActuelle)
             ->whereMonth('date_entre', $moisActuel)
             ->select(DB::raw('
-            SUM(
-                CASE 
-                    WHEN achats.type_achat IN ("cageot", "pack") 
-                    THEN achats.quantite * achats.prix_unite * articles.conditionnement
-                    ELSE achats.quantite * achats.prix_unite 
-                END
-            ) as total'))
+        SUM(
+            CASE 
+                WHEN achats.type_achat IN ("cageot", "pack") 
+                THEN achats.quantite * achats.prix_unite * articles.conditionnement
+                ELSE achats.quantite * achats.prix_unite 
+            END
+        ) as total'))
             ->value('total');
 
         // Calcul du bénéfice
@@ -125,8 +132,9 @@ class StatController extends Controller
 
         return view('pages.stat.Stat', [
             'ventes' => $ventes,
-            'depense' => $depenseparMois,
+            'depense' => $depenseParMois,
             'ventesParMois' => $ventesParMois,
+            'depensesDivers' => $depensesDivers,
             'venteJour' => $ventesJour ?? 0,
             'venteMois' => $ventesMois ?? 0,
             'achatJour' => $achatsJour ?? 0,
