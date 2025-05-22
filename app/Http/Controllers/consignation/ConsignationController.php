@@ -121,7 +121,7 @@ class ConsignationController extends Controller
                 $totentre = $request->total_cgt * $article->prix_cgt;
                 $this->operation('cageot', $request->commande_id, $request->mode_paye, $totentre);
                 return redirect()->back()
-                    ->with('success', 'Paiement enregistré avec succès.')
+                    ->with('success', 'Paiement enregistré avec succès !!.')
                     ->with('highlighted_id', $vente_id);
             }
             if ($bouteille == 1 && $cageot == 0) {
