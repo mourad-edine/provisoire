@@ -13,23 +13,26 @@
             </a>
         </li>
         <li class="nav-item me-2" role="presentation">
-            <a href="{{ route('stock.faible.liste') }}" class="nav-link {{ request()->routeIs('stock.faible.liste') ? 'active' : '' }}">
+            <a href="{{ route('stock.faible.liste') }}" class="nav-link text-dark {{ request()->routeIs('stock.faible.liste') ? 'active' : '' }}">
                 <i class="fas fa-exclamation-triangle me-1"></i>Stocks faibles
             </a>
         </li>
         <li class="nav-item" role="presentation">
-            <a href="{{ route('stock.categorie.liste') }}" class="nav-link {{ request()->routeIs('stock.categorie.liste') ? 'active' : '' }}">
+            <a href="{{ route('stock.categorie.liste') }}" class="nav-link  text-dark {{ request()->routeIs('stock.categorie.liste') ? 'active' : '' }}">
                 <i class="fas fa-th-large me-1"></i>Catégories
             </a>
         </li>
     </ul>
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center bg-dark">
-            <h5 class="text-white">Liste globale</h5>
-            <a href="{{ url('/dashboard') }}" class="btn btn-primary btn-sm">
-    <i class="fas fa-arrow-left mr-2"></i>Retour dashboard
-</a>        </div>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="d-flex">
+                <h6 class="text-dark fw-bold">LISTE GLOBALE</h6>
+            </div>
+            <a  style="background-color: #4c4e5b;" href="{{ url('/dashboard') }}" class="btn text-white btn-sm">
+                <i class="fas fa-arrow-left mr-2"></i>Retour dashboard
+            </a>
+        </div>
         <div class="mt-3 ml-4 d-flex flex-wrap align-items-center gap-2 mb-2 mb-md-0">
             <form action="{{ route('stock.liste') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2">
                 @csrf
@@ -39,7 +42,7 @@
                 </div>
 
                 <!-- Filtres supplémentaires -->
-                
+
 
                 <!-- Tri des résultats -->
                 <div class="dropdown">
@@ -47,20 +50,20 @@
                         <i class="fas fa-sort me-1"></i> Trier par
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-                        <li><button class="dropdown-item" type="submit"  value="nom_asc">Nom (A-Z)</button></li>
-                        <li><button class="dropdown-item" type="submit"  value="nom_desc">Nom (Z-A)</button></li>
-                        <li><button class="dropdown-item" type="submit"  value="prix_asc">Prix (Croissant)</button></li>
-                        <li><button class="dropdown-item" type="submit"  value="prix_desc">Prix (Décroissant)</button></li>
-                        <li><button class="dropdown-item" type="submit"  value="stock_asc">Stock (Croissant)</button></li>
-                        <li><button class="dropdown-item" type="submit"  value="stock_desc">Stock (Décroissant)</button></li>
+                        <li><button class="dropdown-item" type="submit" value="nom_asc">Nom (A-Z)</button></li>
+                        <li><button class="dropdown-item" type="submit" value="nom_desc">Nom (Z-A)</button></li>
+                        <li><button class="dropdown-item" type="submit" value="prix_asc">Prix (Croissant)</button></li>
+                        <li><button class="dropdown-item" type="submit" value="prix_desc">Prix (Décroissant)</button></li>
+                        <li><button class="dropdown-item" type="submit" value="stock_asc">Stock (Croissant)</button></li>
+                        <li><button class="dropdown-item" type="submit" value="stock_desc">Stock (Décroissant)</button></li>
                     </ul>
                 </div>
             </form>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
+                <table class="table table-striped table-hover table-bordered text-center align-middle" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-dark">
                         <tr>
                             <th>id</th>
                             <th>nom</th>

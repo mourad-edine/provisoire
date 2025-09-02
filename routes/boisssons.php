@@ -40,6 +40,7 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
 
     Route::get('/commandes-vente', [VenteController::class, 'showcommande'])->name('commande.liste.vente');
     Route::get('/commandes-vente-detail/{id}', [VenteController::class, 'DetailCommande'])->name('commande.liste.vente.detail');
+    Route::post('/commandes-vente', [VenteController::class, 'delete'])->name('delete.commande');
     Route::get('/ventes-page', [VenteController::class, 'Vente'])->name('vente.page');
     Route::get('/rendre/{id}', [VenteController::class, 'Rendre'])->name('rendre.boissons');
     Route::get('/payement/{id}', [VenteController::class, 'Paiment'])->name('paiment.boissons');
@@ -90,6 +91,8 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
 
 
     Route::get('/download-pdf/{id}', [PdfController::class, 'generatePDF'])->name('pdf.download');
+    Route::get('/rendre-pdf/{id}', [PdfController::class, 'rendrepdf'])->name('rendrepdf.download');
+
     Route::get('/download-pdf-achat/{id}', [PdfController::class, 'achatpdf'])->name('pdf.achat');
 
     Route::post('/consignation-payer', [ConsignationController::class, 'payer'])->name('payer.consignation');

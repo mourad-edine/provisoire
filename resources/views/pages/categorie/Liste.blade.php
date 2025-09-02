@@ -9,9 +9,13 @@
 
     <!-- DataTables Example -->
     <div class="card shadow mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center bg-dark">
-            <h5 class="mb-2 text-white">CATEGORIE</h5>
-            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addArticleModal">Ajouter catégorie</button>
+        <div class="card-header d-flex justify-content-between align-items-center bg-light">
+            <div class="d-flex">
+                <i class="fas fa-th-list fa-1x" style="font-size: 20px;"></i>
+                <h5 class="mb-2 text-dark fw-bold">CATEGORIE</h5>
+
+            </div>
+            <button  style="background-color: #4c4e5b;" class="btn text-white btn-sm" data-toggle="modal" data-target="#addArticleModal">Ajouter catégorie</button>
         </div>
         <div class="mt-3 ml-4 d-flex flex-wrap align-items-center gap-2 mb-2 mb-md-0">
             <form action="{{ route('categorie.liste') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2">
@@ -47,8 +51,8 @@
             </div>
             @endif
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
+                 <table class="table table-striped table-hover table-bordered text-center align-middle" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-dark">
                         <tr>
                             <th>id</th>
                             <th>nom</th>
@@ -63,14 +67,14 @@
 
                     <tbody>
                         @forelse($categories as $categorie)
-                        <tr>
-                            <td>{{$categorie->id}}</td>
-                            <td>{{$categorie->nom}}</td>
-                            <td>{{$categorie->reference ? $categorie->reference : 'pas de reference'}}</td>
-                            <td>{{$categorie->articles_count}}</td>
-                            <td></td>
-                            <td>{{$categorie->created_at}}</td>
-                            <td>{{$categorie->updated_at}}</td>
+                        <tr style="cursor: pointer;">
+                            <td data-toggle="modal" data-target="#editArticleModal{{$categorie->id}}">{{$categorie->id}}</td>
+                            <td data-toggle="modal" data-target="#editArticleModal{{$categorie->id}}">{{$categorie->nom}}</td>
+                            <td data-toggle="modal" data-target="#editArticleModal{{$categorie->id}}">{{$categorie->reference ? $categorie->reference : 'pas de reference'}}</td>
+                            <td data-toggle="modal" data-target="#editArticleModal{{$categorie->id}}">{{$categorie->articles_count}}</td>
+                            <td data-toggle="modal" data-target="#editArticleModal{{$categorie->id}}"></td>
+                            <td data-toggle="modal" data-target="#editArticleModal{{$categorie->id}}">{{$categorie->created_at}}</td>
+                            <td data-toggle="modal" data-target="#editArticleModal{{$categorie->id}}">{{$categorie->updated_at}}</td>
                             <td>
                                 <!-- Icônes d'options -->
                                 <a href="#" data-toggle="modal" data-target="#editArticleModal{{$categorie->id}}"><i class="fas fa-edit text-secondary"></i></a>

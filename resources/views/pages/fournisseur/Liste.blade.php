@@ -8,11 +8,16 @@
     <!-- Page Heading -->
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
-        <div class="card-header bg-dark d-flex justify-content-between align-items-center">
-            <h5 class="mb-2 text-white">fournisseurs</h5>
-            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addArticleModal">
-    <i class="fas fa-plus-circle mr-2"></i>Ajouter fournisseur
-</button>        </div>
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <div class="d-flex">
+                <i class="fas fa-truck fa-2x"></i>
+                <h5 class="mb-2 text-dark">fournisseurs</h5>
+
+            </div>
+            <button class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#addArticleModal">
+                <i class="fas fa-plus-circle mr-2"></i>Ajouter fournisseur
+            </button>
+        </div>
         <div class="d-flex flex-wrap align-items-center gap-2 mt-3 ml-3 mb-md-0">
             <form action="{{ route('fournisseur.liste') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2">
                 <!-- Champ de recherche principal -->
@@ -46,8 +51,8 @@
             </div>
             @endif
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
+                <table class="table table-striped table-hover table-bordered text-center align-middle" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-dark">
                         <tr>
                             <th>id</th>
                             <th>nom</th>
@@ -103,8 +108,9 @@
                         </div>
                         @empty
                         <tr>
-                            
-                            <td class="text-warning" colspan="7"><div class="alert alert-warning mb-3">
+
+                            <td class="text-warning" colspan="7">
+                                <div class="alert alert-warning mb-3">
                                     <i class="fas fa-exclamation-triangle me-2"></i>
                                     Pas de donnée trouvé --
                                 </div>

@@ -15,7 +15,7 @@ class CategorieController extends Controller
         if ($search) {
             $query->where('nom', 'like', "%{$search}%");
         }
-        $Categories = $query->orderby('id','DESC')->paginate(6);
+        $Categories = $query->where('status', 1)->orderby('id','DESC')->paginate(10);
         return view('pages.categorie.Liste' ,[
             'categories' => $Categories
         ]);
@@ -55,7 +55,8 @@ class CategorieController extends Controller
         //dd($id);
         $article = Categorie::find($id);
         if ($article) {
-            $article->delete();
+            $article->status = 0;
+            $article->save();
             return redirect()->back()->withSuccess('Success', 'categorie supprimé avec success success');
         }
 

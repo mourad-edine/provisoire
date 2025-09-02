@@ -5,10 +5,10 @@
 @section('content')
 <style>
     .btn-vibrant-blue {
-    background-color: var(--vibrant-blue);
-    border-color: var(--vibrant-blue);
-    color: white;
-}
+        background-color: var(--vibrant-blue);
+        border-color: var(--vibrant-blue);
+        color: white;
+    }
 </style>
 <div class="">
 
@@ -32,7 +32,7 @@
         </li>
         <li class="nav-item" role="presentation">
             <a class="nav-link text-decoration-none p-0" href="{{route('vente.page')}}">
-                <button class="nav-link active  text-white bg-dark">
+                <button style="background-color: #4c4e5b;" class="nav-link active  text-white ">
                     <i class="fas fa-cart-plus me-2 text-white"></i> Nouvel vente
                 </button>
             </a>
@@ -62,12 +62,12 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <button type="submit" class="btn btn-dark w-100">
+                    <button style="background-color: #4c4e5b;" type="submit" class="btn text-white w-100">
                         <i class="fa fa-search"></i>Rechercher</button>
                 </div>
             </form>
         </div>
-        
+
 
         <div class="card-body">
             @if(session('success'))
@@ -76,13 +76,13 @@
             </div>
             @endif
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
+                <table class="table table-striped table-hover table-bordered text-center align-middle" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-dark">
                         <tr>
                             <th>id</th>
                             <th>id client</th>
                             <th>date commande</th>
-                            <th>nombre d'achat</th>
+                            <th>nombre d'operation</th>
                             <th>sous-total</th>
                             <th>consignation</th>
                             <th>total</th>
@@ -90,10 +90,18 @@
                             <th>Options</th>
                         </tr>
                     </thead>
+                    <style>
+                        .clickable-row {
+                            cursor: pointer;
+                        }
 
+                        .clickable-row:hover {
+                            background-color: #f9f9f9;
+                        }
+                    </style>
                     <tbody>
                         @forelse($commandes as $commande)
-                        <tr>
+                        <tr class="clickable-row" data-href="{{ route('commande.liste.vente.detail', ['id' => $commande->id]) }}">
                             <td>C-{{$commande->id}}</td>
                             <td>{{$commande->client ? $commande->client->nom : 'client passager'}}</td>
                             <td>{{$commande->created_at}}</td>
@@ -137,12 +145,16 @@
                                 <a href="{{route('commande.liste.vente.detail', ['id' => $commande->id]) }}" class=""><i class="fas fa-eye"></i></a>
                                 <a href="{{route('pdf.download' , ['id'=>$commande->id])}}" class="ml-3"><i class="fas fa-print text-warning"></i></a>
                                 @if($commande->etat_commande == 'payé')
-                                <span class="text-success ml-3">
+                                <!-- <span class="text-success ml-3">
                                     <i class="fas fa-edit text-secondary" style="cursor: not-allowed; opacity: 0.5;"></i>
-                                </span>
+                                </span> -->
+
+                                <a href="#" class="ml-3">
+                                    <i class="fas fa-trash text-danger" data-toggle="modal" data-target="#venteModal2"></i>
+                                </a>
                                 @else
                                 <a href="#" class="ml-3">
-                                    <i class="fas fa-edit text-warning" data-toggle="modal"></i>
+                                    <i class="fas fa-trash text-danger" data-toggle="modal" data-target="#venteModal2"></i>
                                 </a>
                                 @endif
 
@@ -152,24 +164,24 @@
                                 </form>
                             </td>
                         </tr>
-                        <div class="modal fade" id="venteModal2{{$commande->id}}" tabindex="-1" role="dialog">
+                        <div class="modal fade" id="venteModal2" tabindex="-1" role="dialog">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header bg-light">
-                                        <h5 class="modal-title">regler payement</h5>
+                                        <h5 class="modal-title">Annuler commande</h5>
                                         <button type="button" class="close" data-dismiss="modal">
                                             <span>&times;</span>
                                         </button>
                                     </div>
-                                    <form action="{{route('regler.payement')}}" method="POST">
+                                    <form action="{{route('delete.commande')}}" method="POST">
                                         @csrf
                                         <div class="modal-body">
                                             <input type="hidden" name="commande_id" value="{{$commande->id}}">
-                                            <p>voulez-vous regler le payement de cette commande {{$commande->id}}?</p>
+                                            <p>voulez-vous  supprimer cette commande{{$commande->id}}?</p>
                                         </div>
                                         <div class="modal-footer bg-light">
                                             <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                                            <button type="submit" class="btn btn-primary">Payer</button>
+                                            <button type="submit" class="btn btn-primary">supprimer</button>
                                         </div>
                                     </form>
                                 </div>
@@ -177,10 +189,12 @@
                         </div>
                         @empty
                         <tr>
-                            <td colspan="9" class=""><div class="alert alert-warning mb-3">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Pas de donnée trouvé -- 
-                    </div></td>
+                            <td colspan="9" class="">
+                                <div class="alert alert-warning mb-3">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Pas de donnée trouvé --
+                                </div>
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -195,10 +209,19 @@
 </div>
 
 <!-- Modal Nouvelle vente -->
+<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
 
 <script>
-
+    $(document).ready(function() {
+        $('.clickable-row').click(function(e) {
+            // Évite les conflits si on clique sur une icône ou un lien
+            if (!$(e.target).is('a, i, button')) {
+                window.location = $(this).data('href');
+            }
+        });
+    });
 </script>
+
 
 
 @endsection

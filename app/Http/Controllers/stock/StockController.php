@@ -13,7 +13,7 @@ class StockController extends Controller
     {
         $search = $request->input('search');
 
-        $query = Article::query();
+        $query = Article::query()->where('status', 1);
 
         if ($search) {
             $query->where('nom', 'like', "%{$search}%")
@@ -23,7 +23,7 @@ class StockController extends Controller
         }
 
         $articles = $query->orderBy('id', 'DESC')
-                          ->paginate(6)
+                          ->paginate(10)
                           ->withQueryString();
 
         return view('pages.stock.Stock', [
@@ -35,7 +35,7 @@ class StockController extends Controller
     {
         $search = $request->input('search');
 
-        $query = Article::where('quantite', '<', 24);
+        $query = Article::where('quantite', '<', 24)->where('status', 1);
 
         if ($search) {
             $query->where('nom', 'like', "%{$search}%")
@@ -45,7 +45,7 @@ class StockController extends Controller
         }
 
         $articles = $query->orderBy('id', 'DESC')
-                          ->paginate(6)
+                          ->paginate(10)
                           ->withQueryString();
 
         return view('pages.stock.Faible', [
@@ -57,7 +57,7 @@ class StockController extends Controller
     {
         $search = $request->input('search');
 
-        $query = Article::where('categorie_id', $id);
+        $query = Article::where('categorie_id', $id)->where('status', 1);
 
         if ($search) {
             $query->where('nom', 'like', "%{$search}%")
@@ -67,7 +67,7 @@ class StockController extends Controller
         }
 
         $articles = $query->orderBy('id', 'DESC')
-                          ->paginate(6)
+                          ->paginate(10)
                           ->withQueryString();
 
         return view('pages.stock.Article_categorie', [

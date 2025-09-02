@@ -209,8 +209,8 @@
     <!-- Sélecteur d'année -->
     <div class="card shadow mb-2">
         <!-- En-tête de recherche amélioré -->
-        <div class="card-header py-3 d-flex flex-column flex-md-row justify-content-between align-items-center bg-dark">
-            <h6 class="m-0 font-weight-bold text-white mb-3 mb-md-0">Analyse financière par année</h6>
+        <div class="card-header py-3 d-flex flex-column flex-md-row justify-content-between align-items-center bg-light">
+            <h6 class="m-0 font-weight-bold text-dark mb-3 mb-md-0 fw-bold">ANALYSE FINCANCIERE PAR ANNEE</h6>
 
             <div class="d-flex align-items-center">
                 <!-- Formulaire pour envoyer l'année en GET -->
@@ -423,7 +423,7 @@
 
     <!-- Recherche par date -->
     <div class="card shadow mt-4">
-        <div class="card-header py-3 bg-dark text-white">
+        <div class="card-header py-3 bg-light text-dark fw-bold">
             <h6 class="m-0 font-weight-bold">Recherche vente par date</h6>
         </div>
         <div class="card-body">

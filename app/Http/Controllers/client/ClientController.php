@@ -21,32 +21,34 @@ class ClientController extends Controller
             'commandes.ventes.article',
             'commandes.conditionnement',
             'commandes.payements',
-        ])->withCount('commandes');
+        ])->where('status' , 1)->withCount('commandes');
 
         if ($search) {
             $query->where('nom', 'like', "%{$search}%");
         }
 
-        $clients = $query->orderBy('id', 'DESC')->paginate(6);
+        $clients = $query->orderBy('id', 'DESC')->paginate(10);
 
         $clients->each(function ($client) {
             // Total des commandes (toutes)
             $client->commandes_total = $client->commandes->sum(function ($commande) {
                 return $commande->ventes->sum(function ($vente) {
-                    $multiplicateur = ($vente->type_achat === 'cageot' || $vente->type_achat === 'pack')
-                        ? ($vente->article->conditionnement ?? 1)
-                        : 1;
-                    return $vente->prix * $vente->quantite * $multiplicateur;
+                    if($vente->type_achat === 'cageot' || $vente->type_achat === 'pack'){
+                        return $vente->prix_cage * $vente->quantite;
+                    }else{
+                        return $vente->prix * $vente->quantite;
+                    }
                 });
             });
 
             // Total des commandes NON PAYÉES
-            $client->commandes_total_non_paye = $client->commandes->where('etat_commande', 'non payé')->sum(function ($commande) {
+            $client->commandes_total_non_paye = $client->commandes->where('etat_commande', 'non payé')->where('disposition', 0)->sum(function ($commande) {
                 return $commande->ventes->sum(function ($vente) {
-                    $multiplicateur = ($vente->type_achat === 'cageot' || $vente->type_achat === 'pack')
-                        ? ($vente->article->conditionnement ?? 1)
-                        : 1;
-                    return $vente->prix * $vente->quantite * $multiplicateur;
+                  if($vente->type_achat === 'cageot' || $vente->type_achat === 'pack'){
+                        return $vente->prix_cage * $vente->quantite;
+                    }else{
+                        return $vente->prix * $vente->quantite;
+                    }
                 });
             });
             $client->nombre_com_no_paye = $client->commandes->where('etat_commande', 'non payé')->where('disposition', 0)->count();
@@ -65,24 +67,24 @@ class ClientController extends Controller
             $client->reste_a_payer = $client->commandes_total_non_paye - $client->payement_fait;
 
             // Consignation - prix
-            $client->consignation_sum_prix = $client->commandes->sum(function ($commande) {
+            $client->consignation_sum_prix = $client->commandes->where('disposition' , 0)->sum(function ($commande) {
                 return $commande->ventes->sum(function ($vente) {
                     return (optional($vente->consignation)->prix ?? 0) * ($vente->article->prix_consignation ?? 0);
                 });
             });
-            $client->sum_btl = $client->commandes->sum(function ($commande) {
+            $client->sum_btl = $client->commandes->where('disposition', 0)->sum(function ($commande) {
                 return $commande->ventes->sum(function ($vente) {
                     return (optional($vente->consignation)->prix ?? 0);
                 });
             });
-            $client->sum_cgt = $client->commandes->sum(function ($commande) {
+            $client->sum_cgt = $client->commandes->where('disposition' , 0)->sum(function ($commande) {
                 return $commande->ventes->sum(function ($vente) {
                     return (optional($vente->consignation)->prix_cgt ?? 0);
                 });
             });
 
             // Consignation - prix_cgt
-            $client->consignation_sum_prix_cgt = $client->commandes->sum(function ($commande) {
+            $client->consignation_sum_prix_cgt = $client->commandes->where('disposition' ,0)->sum(function ($commande) {
                 return $commande->ventes->sum(function ($vente) {
                     return (optional($vente->consignation)->prix_cgt ?? 0) * ($vente->article->prix_cgt ?? 0);
                 });
@@ -151,7 +153,8 @@ class ClientController extends Controller
         //dd($id);
         $client = Client::find($id);
         if ($client) {
-            $client->delete();
+            $client->status = 0; // Marquer le client comme supprimé
+            $client->save();
             return redirect()->back()->withSuccess('Success', 'client supprimé avec success success');
         }
     }
@@ -190,13 +193,16 @@ class ClientController extends Controller
         $query->having('ventes_count', '>', 0)->orderBy('created_at', $tri);
 
         // Pagination
-        $commandes = $query->paginate(6)->withQueryString();
+        $commandes = $query->paginate(10)->withQueryString();
 
         // Calcule les totaux
         $commandes->each(function ($commande) {
             $commande->ventes_total = $commande->ventes->sum(function ($vente) {
-                $multiplicateur = ($vente->type_achat === 'cageot' || $vente->type_achat == 'pack') ? ($vente->article->conditionnement ?? 1) : 1;
-                return $vente->prix * $vente->quantite * $multiplicateur;
+                if ($vente->type_achat === 'cageot' || $vente->type_achat == 'pack') {
+                    return $vente->prix_cage * $vente->quantite;
+                } else {
+                    return $vente->prix * $vente->quantite;
+                }
             });
 
             $commande->ventes_consignation_sum_prix = $commande->ventes->sum(fn($vente) => optional($vente->consignation)->prix * $vente->article->prix_consignation ?? 0);

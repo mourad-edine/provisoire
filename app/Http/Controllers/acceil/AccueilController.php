@@ -14,10 +14,10 @@ class AccueilController extends Controller
 {
     public function index(Request $request)
     {
-        
-$search = $request->input('search');
 
-        $query = Article::with('categorie');
+        $search = $request->input('search');
+
+        $query = Article::with('categorie')->where('status', 1);
 
         if ($search) {
             $query->where('nom', 'like', "%{$search}%")
@@ -45,14 +45,15 @@ $search = $request->input('search');
                 'prix_conditionne' => $article->prix_conditionne,
                 'quantite' => $article->quantite,
                 'created_at' => $article->created_at ? $article->created_at->format('d/m/Y H:i:s') : null,
+                'prix_gros' => $article->prix_gros,
             ];
         });
         $bestseller = Article::withCount('achats')  // Charge le nombre d'achats associés à chaque article
             ->orderByDesc('achats_count')  // Trie les articles par le nombre d'achats, en ordre décroissant
             ->take(3)  // Limite à 3 articles
             ->get();
-        $faible = Article::where('quantite', '<' , 20)->take(3)->get();
-        
+        $faible = Article::where('quantite', '<', 20)->take(3)->get();
+
         //dd($faible);
 
         // $ventesParMois = Vente::selectRaw('MONTH(created_at) as mois, SUM(prix * quantite) as total')
@@ -63,13 +64,12 @@ $search = $request->input('search');
         //     ->toArray();
         // //dd($ventesParMois);
         // $ventesParMois = array_replace(array_fill(1, 12, 0), $ventesParMois);
-        return view('pages.dashboard',[
+        return view('pages.dashboard', [
             'categories' => Categorie::All(),
             'articles' => $articles,
             'meilleur' => $bestseller,
             'faible' => $faible,
         ]);
-
     }
 
     public function dash(Request $request)
@@ -77,7 +77,7 @@ $search = $request->input('search');
 
         $search = $request->input('search');
 
-        $query = Article::with('categorie');
+        $query = Article::with('categorie')->where('status', 1);
 
         if ($search) {
             $query->where('nom', 'like', "%{$search}%")
@@ -105,15 +105,19 @@ $search = $request->input('search');
                 'prix_conditionne' => $article->prix_conditionne,
                 'quantite' => $article->quantite,
                 'created_at' => $article->created_at ? $article->created_at->format('d/m/Y H:i:s') : null,
+                'prix_gros' => $article->prix_gros,
             ];
         });
 
-        $bestseller = Article::withCount('achats')  // Charge le nombre d'achats associés à chaque article
-            ->orderByDesc('achats_count')  // Trie les articles par le nombre d'achats, en ordre décroissant
-            ->take(3)  // Limite à 3 articles
+        $bestseller = Article::select('articles.*')
+            ->join('ventes', 'articles.id', '=', 'ventes.article_id')
+            ->selectRaw('COUNT(ventes.article_id) as ventes_count')
+            ->groupBy('articles.id')
+            ->orderByDesc('ventes_count')
+            ->take(3)
             ->get();
-        $faible = Article::where('quantite', '<' , 20)->take(3)->get();
-        
+        $faible = Article::where('quantite', '<', 20)->take(3)->get();
+
         //dd($faible);
 
         // $ventesParMois = Vente::selectRaw('MONTH(created_at) as mois, SUM(prix * quantite) as total')
@@ -124,7 +128,7 @@ $search = $request->input('search');
         //     ->toArray();
         // //dd($ventesParMois);
         // $ventesParMois = array_replace(array_fill(1, 12, 0), $ventesParMois);
-        return view('pages.Accueil',[
+        return view('pages.Accueil', [
             'categories' => Categorie::all(),
             'articles' => $articles,
             'meilleur' => $bestseller,

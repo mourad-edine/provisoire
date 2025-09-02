@@ -10,7 +10,8 @@ class Categorie extends Model
     protected $fillable = [
         'nom',
         'reference',
-        'imagep'
+        'imagep',
+        'status'
     ];
 
     public function articles(){

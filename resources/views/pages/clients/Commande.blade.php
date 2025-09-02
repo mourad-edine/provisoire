@@ -7,12 +7,12 @@
     <!-- Navigation par onglets -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <ul class="nav nav-tabs" id="clientTabs" role="tablist">
-            <li class="nav-item" role="presentation">
+            <!-- <li class="nav-item" role="presentation">
                 <a class="nav-link" href="{{ route('client.profil', ['id' => $client_id]) }}">
                     <i class="fas fa-id-card me-2"></i>Profil client et Emballage
                 </a>
-            </li>
-            
+            </li> -->
+
             <li class="nav-item" role="presentation">
                 <a class="nav-link" href="{{route('client.historique', ['id' => $client_id])}}">
                     <i class="fas fa-history me-2"></i> Historique
@@ -24,7 +24,7 @@
                 </a>
             </li>
         </ul>
-        
+
         <a href="{{ url()->previous() }}" class="btn btn-dark btn-sm">
             <i class="fas fa-arrow-left me-1"></i> Retour
         </a>
@@ -66,15 +66,15 @@
 
     <!-- Tableau des commandes -->
     <div class="card shadow">
-    <div class="card-body">
+        <div class="card-body">
             @if(session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
             </div>
             @endif
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
+                <table class="table table-striped table-hover table-bordered text-center align-middle" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-dark">
                         <tr>
                             <th>id</th>
                             <th>id client</th>
@@ -87,10 +87,18 @@
                             <th>Options</th>
                         </tr>
                     </thead>
+                    <style>
+                        .clickable-row {
+                            cursor: pointer;
+                        }
 
+                        .clickable-row:hover {
+                            background-color: #f9f9f9;
+                        }
+                    </style>
                     <tbody>
                         @forelse($commandes as $commande)
-                        <tr>
+                        <tr class="clickable-row" data-href="{{route('commande.liste.vente.detail', ['id' => $commande->id]) }}">
                             <td>C-{{$commande->id}}</td>
                             <td>{{$commande->client ? $commande->client->nom : 'client passager'}}</td>
                             <td>{{$commande->created_at}}</td>
@@ -129,7 +137,7 @@
                                 <!-- Icônes d'options -->
                                 <a href="{{route('commande.liste.vente.detail', ['id' => $commande->id]) }}" class=""><i class="fas fa-eye"></i></a>
                                 <a href="{{route('pdf.download' , ['id'=>$commande->id])}}" class="ml-3"><i class="fas fa-print text-warning"></i></a>
-                                
+
 
 
                                 <form action="#" method="POST" style="display:inline;">
@@ -162,10 +170,12 @@
                         </div>
                         @empty
                         <tr>
-                            <td colspan="9" class=""><div class="alert alert-warning mb-3">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Pas de donnée trouvé -- 
-                    </div></td>
+                            <td colspan="9" class="">
+                                <div class="alert alert-warning mb-3">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Pas de donnée trouvé --
+                                </div>
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -179,6 +189,17 @@
 </div>
 
 
+<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+<script>
+    $(document).ready(function() {
+        $('.clickable-row').click(function(e) {
+            // Évite les conflits si on clique sur une icône ou un lien
+            if (!$(e.target).is('a, i, button')) {
+                window.location = $(this).data('href');
+            }
+        });
+    });
+</script>
 @endsection
 
 @push('styles')
@@ -188,14 +209,17 @@
         color: #495057;
         padding: 0.75rem 1.25rem;
     }
+
     .nav-tabs .nav-link.active {
         color: #0d6efd;
         border-bottom: 3px solid #0d6efd;
         background-color: transparent;
     }
+
     .table th {
         white-space: nowrap;
     }
+
     .badge {
         font-weight: 500;
         padding: 0.35em 0.65em;

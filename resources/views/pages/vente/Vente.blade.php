@@ -24,7 +24,7 @@
 
         /* Navbar styles */
         .main-navbar {
-            background-color: #330705 !important;
+            background-color: #4c4e5b !important;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
@@ -290,14 +290,14 @@
     <!-- fin sidebar -->
     <div class="container-fluid py-4" style="font-size: 0.9rem;">
         <div class="card shadow container p-3">
-            <div class="card-header bg-dark text-white d-flex justify-content-between">
+            <div style="background-color: #4c4e5b;" class="card-header text-white d-flex justify-content-between">
                 <h5 class="mb-0 text-white"><i class="fas fa-cash-register me-2"></i> Nouvelle vente</h5>
                 <a href="{{ url()->previous() }}" class="btn btn-primary btn-sm">
                     <i class="fas fa-arrow-left me-1 text-white"></i>Retour
                 </a>
             </div>
             <div class="card-body">
-                <form id="venteForm" action="{{ route('vente.store') }}" method="POST">
+                <form id="venteForm" action="{{ route('vente.store') }}" method="POST" onsubmit="disableSubmitButton(this)">
                     @csrf
 
                     <!-- Section Client -->
@@ -315,7 +315,7 @@
                             </select>
                         </div>
 
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label for="nouveau_client" class="form-label">Nouveau client</label>
                             <input type="text" class="form-control" name="nouveau" id="nouveau_client" disabled>
                         </div>
@@ -326,7 +326,7 @@
                                 <span style="font-size: 1rem;color : white;">+</span>
                             </button>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label for="date_vente" class="form-label">Date</label>
                             <input type="text" class="form-control" id="date_vente" value="{{ now()->format('d/m/Y') }}" readonly>
                         </div>
@@ -335,6 +335,13 @@
                         <div class="col-md-2">
                             <label for="numero_commande" class="form-label">N° Commande</label>
                             <input type="text" class="form-control" id="numero_commande" value="C-{{ str_pad(($dernier->id ?? 0) + 1, 5, '0', STR_PAD_LEFT) }}" readonly>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="type_vente" class="form-label">Type</label>
+                            <select class="form-control" id="type_vente" name="cat">
+                                <option value="gros">Gros</option>
+                                <option value="detail">Détail</option>
+                            </select>
                         </div>
                     </div>
 
@@ -356,7 +363,9 @@
                                             data-consignation="{{ $article->prix_consignation }}"
                                             data-cgt="{{ $article->prix_cgt }}"
                                             data-conditionnement="{{ $article->conditionnement }}"
-                                            data-quantite="{{ $article->quantite }}">
+                                            data-quantite="{{ $article->quantite }}"
+                                            data-prix_conditionne="{{ $article->prix_conditionne }}"
+                                            data-prix_gros="{{ $article->prix_gros }}">
 
                                             {{ $article->nom }}
                                         </option>
@@ -545,7 +554,7 @@
                                                     <div class="col-md-6">
                                                         <div class="form-group mb-3">
                                                             <div class="custom-control custom-checkbox">
-                                                                <input type="checkbox" class="custom-control-input" id="payer" name="payer" style="cursor : pointer;">
+                                                                <input type="checkbox" class="custom-control-input" id="payer" name="payer" style="cursor : pointer;" checked>
                                                                 <label class="custom-control-label" for="payer" style="cursor : pointer;">
                                                                     <i class="fas fa-money-bill-wave mr-1"></i> Paiement immédiat
                                                                 </label>
@@ -563,7 +572,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div id="paiement-fields" style="display: none;" class="mt-3 p-3 border rounded bg-light">
+                                                    <div id="paiement-fields" class="mt-3 p-3 border rounded bg-light">
                                                         <div class="form-group row">
                                                             <div class="col-md-6">
                                                                 <label for="montant-recu">Montant reçu (Ar)</label>
@@ -586,7 +595,7 @@
                                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
                                         <i class="fas fa-times mr-1"></i> Annuler
                                     </button>
-                                    <button type="submit" class="btn btn-success">
+                                    <button type="submit" class="btn btn-success" id="confirm-btn">
                                         <i class="fas fa-check-circle mr-1"></i> Confirmer la configuration
                                     </button>
                                 </div>
@@ -612,7 +621,10 @@
                             data-consignation="{{ $article->prix_consignation }}"
                             data-cgt="{{ $article->prix_cgt }}"
                             data-conditionnement="{{ $article->conditionnement }}"
-                            data-quantite="{{ $article->quantite }}">
+                            data-quantite="{{ $article->quantite }}" *
+                            data-prix_gros="{{ $article->prix_gros }}"
+                            data-prix_conditionne="{{ $article->prix_conditionne }}">
+
                             {{ $article->nom }}
                         </option>
                         @endforeach
@@ -681,8 +693,14 @@
 <script src="{{ asset('assets/select2/dist/js/select2.min.js') }}"></script>
 <script src="{{asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
 <script src="{{asset('assets/js/sb-admin-2.min.js')}}"></script>
-
 <script>
+   function disableSubmitButton(form) {
+        const button = form.querySelector('button[type="submit"]');
+        if (button) {
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Confirmer la configuration';
+        }
+    }
     document.addEventListener("DOMContentLoaded", function() {
         const toggleBtn = document.getElementById("toggle_nouveau_client");
         const clientSelect = document.getElementById("client_id");
@@ -738,7 +756,7 @@
             const montantRecu = parseFloat($('#montant-recu').val()) || 0;
             const total = parseFloat($('#tot_glob').val()) || 0;
 
-            
+
         }
         return true;
     });
@@ -750,7 +768,23 @@
         // Variables globales
         let articleIndex = 1;
         let emptyCageotsPrice = 0;
+        $('#type_vente').on('change', function() {
+            const type = $(this).val(); // 'detail' ou 'gros'
 
+            $('.article-section').each(function() {
+                const section = $(this);
+                const selectedOption = section.find('.article-select option:selected');
+                const prixDetail = parseFloat(selectedOption.data('prix')) || 0;
+                const prixGros = parseFloat(selectedOption.data('prix_gros')) || 0;
+
+                const prixFinal = (type === 'gros') ? prixGros : prixDetail;
+                section.find('.prix-unitaire').val(prixFinal);
+
+                calculateArticleTotal(section.data('index'));
+            });
+
+            calculateGlobalTotal();
+        });
         // Fonction pour calculer le prix total d'un article
         function calculateArticleTotal(index) {
             const section = $(`.article-section[data-index="${index}"]`);
@@ -760,6 +794,8 @@
 
             const selectedOption = section.find('.article-select option:selected');
             const prixConsignation = parseFloat(selectedOption.data('consignation')) || 0;
+            const groscageots = parseFloat(selectedOption.data('prix_conditionne')) || 0;
+
             const prixCgt = parseFloat(selectedOption.data('cgt')) || 0;
             const conditionnement = parseInt(selectedOption.data('conditionnement')) || 1;
 
@@ -776,7 +812,7 @@
 
             const totalUnites = (quantiteCageot * conditionnement) + quantiteUnite;
 
-            let total = totalUnites * prixUnitaire;
+            let total = (quantiteUnite * prixUnitaire) + (quantiteCageot * groscageots);
             let totalSansConsigne = total;
 
             let details = [];
@@ -890,16 +926,22 @@
         // Gérer le changement d'article
         $(document).on('change', '.article-select', function() {
             const selectedOption = $(this).find('option:selected');
-            const prixUnitaire = parseFloat(selectedOption.data('prix')) || 0;
+            const type = $('#type_vente').val();
+            const prixDetail = parseFloat(selectedOption.data('prix')) || 0;
+            const prixGros = parseFloat(selectedOption.data('prix_gros')) || 0;
+            const prixUnitaire = (type === 'gros') ? prixGros : prixDetail;
+
+            const groscageot = parseFloat(selectedOption.data('prix_conditionne')) || 0;
+
             const prixCgt = parseFloat(selectedOption.data('cgt')) || 0;
             const prixConsignation = parseFloat(selectedOption.data('consignation')) || 0;
             const conditionnement = parseInt(selectedOption.data('conditionnement')) || 1;
-            const prix_cageot = prixUnitaire * conditionnement;
+            const prix_cageot = groscageot;
             const parentSection = $(this).closest('.article-section');
             const index = parentSection.data('index');
 
-            parentSection.find('.prix-unitaire').val(prixUnitaire.toFixed(2));
-            parentSection.find('.prix-cgt').val(prix_cageot.toFixed(2));
+            parentSection.find('.prix-unitaire').val(prixUnitaire);
+            parentSection.find('.prix-cgt').val(groscageot);
 
             // Décocher automatiquement si prix à 0
             if (prixConsignation === 0) {
@@ -930,8 +972,8 @@
 
             if (totalDemande > stockTotal) {
                 alert('La quantité demandée dépasse le stock disponible!');
-                parentSection.find('.quantite-cageot').val(0);
-                parentSection.find('.quantite-unite').val(0);
+                parentSection.find('.quantite-cageot').val('');
+                parentSection.find('.quantite-unite').val('');
             }
 
             calculateGlobalTotal();
@@ -1004,3 +1046,7 @@
         });
     });
 </script>
+
+
+
+

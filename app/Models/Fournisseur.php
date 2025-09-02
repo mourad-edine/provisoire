@@ -12,6 +12,7 @@ class Fournisseur extends Model
         'nom',
         'numero',
         'reference',
+        'status'
 
     ];
     public function commandes(){

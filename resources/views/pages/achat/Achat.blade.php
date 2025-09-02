@@ -24,7 +24,7 @@
 
         /* Navbar styles */
         .main-navbar {
-            background-color: #330705 !important;
+            background-color: #4c4e5b !important;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
@@ -132,7 +132,7 @@
     <!-- Main Navigation -->
     <nav style="z-index: 1063;" class="navbar navbar-expand-lg navbar-dark main-navbar fixed-top">
         <div class="container-fluid">
-            
+
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
                 <span class="navbar-toggler-icon"></span>
@@ -216,8 +216,8 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{route('stat')}}">
-                        <i class="fas fa-chart-bar"></i>
-                        Statistique des ventes
+                            <i class="fas fa-chart-bar"></i>
+                            Statistique des ventes
                         </a>
                     </li>
                     <!-- Other Links -->
@@ -259,12 +259,25 @@
     </nav>
 
     <div class="container p-5 card shadow mb-4 border rounded p-3 position-relative" style="font-size: 0.9rem;">
-        <div class="card-header bg-dark text-white d-flex justify-content-between mb-4">
+        <div style="background-color: #4c4e5b;" class="card-header text-white d-flex justify-content-between mb-4">
             <h5 class="mb-0 text-white"><i class="fas fa-cash-register me-2"></i> Nouvelle achat</h5>
             <a href="{{ url()->previous() }}" class="btn btn-primary btn-sm">
                 <i class="fas fa-arrow-left me-1 text-white"></i>Retour
             </a>
         </div>
+        @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Erreur!</strong> {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
+        @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Erreur!</strong> Veuillez remplir tous les champs requis.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
+
         <form id="achatForm" method="POST" action="{{ route('achat.store') }}">
             @csrf
 
@@ -287,33 +300,35 @@
                 </div>
             </div>
             <style>
-        .form-label {
-        font-size: 0.7rem;
-        font-weight: 600;
-        color: #495057;
-        margin-bottom: 0.3rem;
-        display: block;
-    }
-        .form-control, .form-select {
-        border: 1px solid #ced4da;
-        padding: 0.375rem 0.75rem;
-        background-color: white;
-        font-size: 0.95rem;
-        height: calc(1.5em + 0.75rem + 2px);
-    }
-    
-    .form-control:focus, .form-select:focus {
-        box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
-        border-color: #80bdff;
-    }
-    
-    .form-control[readonly] {
-        background-color: #e9ecef;
-        font-weight: 600;
-        color: #212529;
-    }
-    
-    </style>
+                .form-label {
+                    font-size: 0.7rem;
+                    font-weight: 600;
+                    color: #495057;
+                    margin-bottom: 0.3rem;
+                    display: block;
+                }
+
+                .form-control,
+                .form-select {
+                    border: 1px solid #ced4da;
+                    padding: 0.375rem 0.75rem;
+                    background-color: white;
+                    font-size: 0.95rem;
+                    height: calc(1.5em + 0.75rem + 2px);
+                }
+
+                .form-control:focus,
+                .form-select:focus {
+                    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+                    border-color: #80bdff;
+                }
+
+                .form-control[readonly] {
+                    background-color: #e9ecef;
+                    font-weight: 600;
+                    color: #212529;
+                }
+            </style>
             <div id="articlesContainer">
                 <!-- Premier article -->
                 <div class=" article-section mb-4 border rounded p-3 position-relative">
@@ -407,17 +422,18 @@
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times mr-1"></i> Annuler
                     </button>
-                    <button type="button" class="btn btn-dark" id="confirmSubmit">
+                    <button type="submit" class="btn btn-dark" id="confirmSubmit">
                         <i class="fas fa-check mr-1"></i> Confirmer
                     </button>
+
                 </div>
             </div>
         </div>
     </div>
 
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-<script src="{{ asset('assets/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/select2/dist/js/select2.min.js') }}"></script>
     <script>
         $(document).ready(function() {
             // Initialisation de Select2
@@ -435,7 +451,7 @@
                 const conditionnement = parseFloat(selectedOption.data('condi')) || 1;
 
                 let prixUnite = 0;
-                
+
                 if (quantiteCageot > 0) {
                     // Calcul pour achat par cageot
                     prixUnite = total / (quantiteCageot * conditionnement);
@@ -580,10 +596,22 @@
                 validationModal.show();
             });
 
-            // Confirmation finale
+            let isSubmitting = false;
+
             $('#confirmSubmit').click(function() {
-                $('#achatForm').submit();
+                if (isSubmitting) return;
+
+                isSubmitting = true;
+                const button = this;
+
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Traitement...';
+
+                setTimeout(() => {
+                    $('#achatForm').submit();
+                }, 50);
             });
+
 
             // Fonction pour préparer les inputs cachés
             function prepareHiddenInputs() {
@@ -618,4 +646,5 @@
         });
     </script>
 </body>
+
 </html>

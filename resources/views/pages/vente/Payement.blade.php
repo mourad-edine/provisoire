@@ -3,7 +3,6 @@
 @section('title', 'Accueil')
 
 @section('content')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 <style>
    
     a {
@@ -83,7 +82,7 @@
         </div> -->
 
     <!-- Tableau des paiements -->
-    <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white py-3 p-3">
+    <div class="card-header d-flex justify-content-between align-items-center bg-secondary text-white py-3 p-3">
         <h5 class="mb-0 font-weight-bold text-white">
             <i class="fas fa-receipt me-2"></i>VENTE - PAYEMENTS
         </h5>

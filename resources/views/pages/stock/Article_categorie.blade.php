@@ -30,8 +30,8 @@
     </ul>
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center bg-dark">
-            <h5 class="text-white">gestion de stock</h5>
+        <div class="card-header d-flex justify-content-between align-items-center bg-light">
+            <h6 class="text-dark fw-bold">ARTICLE CATEGORIE</h6>
             <a href="{{ url('/dashboard') }}" class="btn btn-primary btn-sm">
     <i class="fas fa-arrow-left mr-2"></i>Retour dashboard
 </a>           </div>

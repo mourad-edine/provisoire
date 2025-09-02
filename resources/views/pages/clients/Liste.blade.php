@@ -11,11 +11,15 @@
     <!-- DataTales Example -->
 
     <div class="card shadow mb-4">
-        <div class="card-header bg-dark d-flex justify-content-between align-items-center">
-            <h5 class="mb-2 text-white">Clients</h5>
-            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addArticleModal">
-    <i class="fas fa-plus-circle mr-2"></i>Ajouter client
-</button>        </div>
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <div class="d-flex">
+                <i class="fas fa-users fa-2x " style="font-size : 20px;"></i>
+                <h5 class="mb-2 text-dark fw-bold">CLIENTS</h5>
+            </div>
+            <button class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#addArticleModal">
+                <i class="fas fa-plus-circle mr-2"></i>Ajouter client
+            </button>
+        </div>
         <div class="d-flex flex-wrap align-items-center gap-2 mt-3 ml-3 mb-md-0">
             <form action="{{ route('client.liste') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2">
                 <!-- Champ de recherche principal -->
@@ -49,8 +53,8 @@
             </div>
             @endif
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
+                <table class="table table-striped table-hover table-bordered text-center align-middle" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-dark">
                         <tr>
                             <th>id</th>
                             <th>nom</th>
@@ -66,28 +70,59 @@
 
                         </tr>
                     </thead>
+                    <style>
+                        .clickable-row {
+                            cursor: pointer;
+                        }
 
+                        .clickable-row:hover {
+                            background-color: #f9f9f9;
+                        }
+                    </style>
                     <tbody>
                         @forelse($clients as $client)
 
-                        <tr>
-                            <td>{{$client['id']}}</td>
-                            <td>{{$client['nom']}}
-                            <td>{{$client['numero'] ? $client['numero']  :'pas de numero'}}
-                            <td>{{$client['reference'] ? $client['reference']  :'pas de reference'}}
-                            <td>{{$client['sum_btl']}}</td>
-                            <td>{{$client['sum_cgt'] + $client['conditionnement']}}</td>
-                            <td>{{ number_format($client['consignation_sum_prix'] + $client['consignation_sum_prix_cgt'] + ($client['conditionnement'] * $cgt), 0, ',', ' ') .'Ar'}}</td>
-                            <td>{{$client['reste_a_payer'].' Ar'}}</td>
+                        <tr class="clickable-row" data-href="{{route('client.commande' , ['id'=>$client['id']])}}">
+                            <td>
+                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}">{{$client['id']}}</i></button>
+                            </td>
+                            <td>
+                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}"> {{$client['nom']}}</button>
+
+                            <td>
+                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}"> {{$client['numero'] ? $client['numero']  :'pas de numero'}}</button>
+
+                            <td>
+                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}">{{$client['reference'] ? $client['reference']  :'pas de reference'}}</button>
+
+                            <td>
+                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}">{{$client['sum_btl']}}</button>
+                            </td>
+                            <td>
+                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}">{{$client['sum_cgt'] + $client['conditionnement']}}</button>
+                            </td>
+                            <td>
+                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}"> {{ number_format($client['consignation_sum_prix'] + $client['consignation_sum_prix_cgt'] + ($client['conditionnement'] * $cgt), 0, ',', ' ') .'Ar'}}</button>
+
+                            </td>
+                            <td>
+                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}"> {{$client['reste_a_payer'].' Ar'}}</button>
+
+                            </td>
 
                             <!-- <td>{{ number_format($client['commandes_total'], 0, ',', ' ') .'Ar'}}</td> -->
-                            <td ><a class="fw-bold text-{{$client['nombre_com_no_paye'] > 0 ? 'danger' : 'success'}}" href="{{route('client.commande' , ['id'=>$client['id']])}}">{{$client['nombre_com_no_paye']}}</a></td>
-
-                            <td>{{$client['created_at']}}</td>
                             <td>
-                                <a href="{{route('client.commande' , ['id'=>$client['id']])}}"><i class="fas fa-user-alt"></i></button>
+                                <a style="text-decoration: none;" class="fw-bold text-{{$client['nombre_com_no_paye'] > 0 ? 'danger' : 'success'}}" href="{{route('client.commande' , ['id'=>$client['id']])}}">{{$client['nombre_com_no_paye']}}</a>
+                            </td>
 
-                                    <a href="#" data-toggle="modal" data-target="#supprimerArticleModal{{$client['id']}}" class="ml-3"><i class="fas fa-trash-alt text-danger"></i></button>
+                            <td>
+                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}">{{$client['created_at']}}</button>
+                            </td>
+
+                            <td>
+                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}"><i class="fas fa-user-alt"></i></button>
+
+                                    <a style="text-decoration: none;" href="#" data-toggle="modal" data-target="#supprimerArticleModal{{$client['id']}}" class="ml-3"><i class="fas fa-trash-alt text-danger"></i></button>
 
                             </td>
                         </tr>
@@ -107,7 +142,7 @@
 
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                                            <a href="{{route('delete.client' , ['id' => $client['id'] ] )}}"><button type="button" class="btn btn-danger">supprimer</button></a>
+                                            <a style="text-decoration: none;" href="{{route('delete.client' , ['id' => $client['id'] ] )}}"><button type="button" class="btn btn-danger">supprimer</button></a>
 
                                         </div>
                                         </form>
@@ -179,7 +214,17 @@
         </div>
     </div>
 </div>
-
+<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+<script>
+    $(document).ready(function() {
+        $('.clickable-row').click(function(e) {
+            // Évite les conflits si on clique sur une icône ou un lien
+            if (!$(e.target).is('a, i, button')) {
+                window.location = $(this).data('href');
+            }
+        });
+    });
+</script>
 <script>
     document.getElementById('ref').addEventListener('change', function() {
         document.getElementById('referenceContainer').style.display = this.checked ? 'block' : 'none';

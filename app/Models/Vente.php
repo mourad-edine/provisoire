@@ -13,12 +13,14 @@ class Vente extends Model
         'quantite',
         'date_sortie',
         'prix',
+        'prix_cage',
         'type_achat',
         'btl',
         'cgt',
         'prix_cgt',
         'etat',
-        'client'
+        'client',
+        'cat'
     ];
 
     public function article(){

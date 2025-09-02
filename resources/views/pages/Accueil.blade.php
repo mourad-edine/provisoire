@@ -113,9 +113,8 @@
                                 <th>Nom</th>
                                 <th>Catégorie</th>
                                 <th>P. Vente Unité</th>
-                                <th>P. Vente Pack</th>
-                                <th>P. Achat Unité</th>
-                                <th>P. Achat Pack</th>
+                                <th>P. Vente cageot/Pack</th>
+                                <th>P. details</th>
                                 <th>Quantité</th>
                                 <th>Date</th>
                                 <th>Détails</th>
@@ -123,14 +122,13 @@
                         </thead>
                         <tbody>
                             @forelse($articles as $article)
-                            <tr>
+                            <tr data-toggle="modal" data-target="#editArticleModal{{$article['id']}}" class="text-secondary" style="cursor: pointer;">
                                 <td>{{ $article['id'] }}</td>
                                 <td>{{ \Illuminate\Support\Str::limit($article['nom'], 15) }}</td>
                                 <td>{{ $article['categorie'] }}</td>
                                 <td>{{ number_format($article['prix_unitaire'], 2) }} Ar</td>
-                                <td>{{ number_format($article['prix_unitaire'] * $article['conditionnement'], 2) }} Ar</td>
-                                <td>{{ number_format($article['prix_achat'], 2) }} Ar</td>
-                                <td>{{ number_format($article['prix_achat'] * $article['conditionnement'], 2) }} Ar</td>
+                                <td>{{ number_format($article['prix_conditionne'], 2) }} Ar</td>
+                                <td>{{ number_format($article['prix_gros'], 2) }} Ar</td>
                                 <td>
                                     @php
                                     $quotient = intdiv($article['quantite'], $article['conditionnement']);
@@ -226,19 +224,80 @@
 
                                                 </div>
 
-                                                <div class="form-group mt-2" id="consignation_field_{{ $article['id'] }}">
+                                                    <div style="display: flex; gap: 20px;" class="mt-2">
+                                                <div class="form-group" style="flex: 1;">
                                                     <label for="diff_{{ $article['id'] }}">Prix consignation</label>
-                                                    <input type="number" class="form-control" id="diff_{{ $article['id'] }}" name="diff_{{ $article['id'] }}" value="{{ $article['prix_consignation'] ?? '' }}" readonly>
+                                                    <input type="number"
+                                                        class="form-control"
+                                                        value="{{ $article['prix_consignation'] ?? '' }}"
+                                                        readonly
+                                                        name="prix_consignation">
                                                 </div>
 
-                                                <div class="form-group">
-                                                    <label for="prix_unitaire">Prix d'achat unité</label>
-                                                    <input value="{{number_format($article['prix_achat'], 2, '.', '')}}" type="number" class="form-control" id="prix_achat" name="prix_achat" readonly>
+                                                <div class="form-group" style="flex: 1;">
+                                                    <label for="diff_{{ $article['id'] }}">Nouveau prix consignation</label>
+                                                    <input type="number"
+                                                        class="form-control"
+                                                        id="diff_{{ $article['id'] }}"
+                                                        name="diff_{{ $article['id'] }}">
                                                 </div>
-                                                <div class="form-group">
-                                                    <label for="prix_unitaire">Prix de vente unité</label>
-                                                    <input value="{{$article['prix_unitaire']}}" type="number" class="form-control" id="prix_unitaire" name="prix_unitaire" readonly>
+                                            </div>
+
+
+                                            <div style="display: flex; gap: 20px;">
+                                                <div class="form-group" style="flex: 1;">
+                                                    <label for="prix_achat">Prix d'achat unité</label>
+                                                    <input value="{{ $article['prix_achat'] }}"
+                                                        type="number"
+                                                        class="form-control"
+                                                        id="prix_achat"
+                                                        name="prix_achat"
+                                                        readonly>
                                                 </div>
+
+                                                <div class="form-group" style="flex: 1;">
+                                                    <label for="prix_unitaire">Prix de gros unité</label>
+                                                    <input value="{{ $article['prix_unitaire'] }}"
+                                                        type="number"
+                                                        class="form-control"
+                                                        id="prix_unitaire"
+                                                        name="prix_unitaire"
+                                                        required>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; gap: 20px;">
+                                                <div id="" style=" flex: 1;">
+                                                    <div class="mb-3">
+                                                        <label for="prix_achat" class="form-label">Prix détails unité</label>
+                                                        <input value="{{ $article['prix_gros'] }}" type="number" class="form-control" id="prix_achat" name="prix_gros" step="0.01">
+                                                    </div>
+                                                </div>
+
+                                                <div id="" style="flex: 1;">
+                                                    <div class="mb-3">
+                                                        <label for="prix_conditionne" class="form-label">Prix de gros cageot/pack <span class="text-danger">*</span></label>
+                                                        <input value="{{ $article['prix_conditionne'] }}" type="number" class="form-control" id="prix_conditionne" name="prix_conditionne" step="0.01">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                              <div style="display: flex; gap : 20px;">
+                                                <div id="quantiteContainer" style=" flex: 1;">
+                                                    <div class="mb-3">
+                                                        <label for="quantite" class="form-label">
+                                                            Quantité en cageot/pack disponible
+                                                        </label>
+                                                        <input type="number" class="form-control" id="quantite" name="quantite" step="0.01" value="{{ intdiv($article['quantite'], $article['conditionnement']) }}">
+                                                    </div>
+                                                </div>
+                                                <div id="quantiteContainer" style=" flex: 1;">
+                                                    <div class="mb-3">
+                                                        <label for="quantite" class="form-label">
+                                                            Quantité en unité disponible
+                                                        </label>
+                                                        <input type="number" class="form-control" id="quantite" name="quantite_unite" step="0.01" value="{{ $article['quantite'] % $article['conditionnement'] }}">
+                                                    </div>
+                                                </div>
+                                            </div>
 
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">fermer</button>
@@ -294,7 +353,7 @@
                                         </div>
                                     </td>
                                     <td class="text-end pe-4 py-3 fw-bold text-primary">
-                                        {{ number_format($meilleu->achats_count, 0, ',', ' ') }}
+                                        {{ number_format($meilleu->ventes_count, 0, ',', ' ') }}
                                     </td>
                                 </tr>
                                 @empty

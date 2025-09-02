@@ -11,11 +11,11 @@ class FournisseurController extends Controller
     public function show(Request $request){
         //dd(Fournisseur::all());
         $search =  $request->input('search');
-        $query = Fournisseur::with('commandes');
+        $query = Fournisseur::with('commandes')->where('status' , 1);
         if ($search) {
             $query->where('nom', 'like', "%{$search}%");
         }
-        $fournisseurs = $query->orderby('id','DESC')->paginate(6);
+        $fournisseurs = $query->orderby('id','DESC')->paginate(10);
         return view('pages.fournisseur.Liste' ,[
             'fournisseurs' => $fournisseurs
         ]);
@@ -45,7 +45,8 @@ class FournisseurController extends Controller
         //dd($id);
         $fournisseur = Fournisseur::find($id);
         if ($fournisseur) {
-            $fournisseur->delete();
+            $fournisseur->status = 0; // Marquer comme supprimé
+            $fournisseur->save();
             return redirect()->back()->withSuccess('Success', 'fournisseur supprimé avec success success');
         }
 

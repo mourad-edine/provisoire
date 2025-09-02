@@ -9,26 +9,26 @@
 
     <ul class="nav nav-tabs border-bottom" id="parametresTabs" role="tablist">
         <li class="nav-item me-2" role="presentation">
-            <a href="{{ route('stock.liste') }}" class="nav-link {{ request()->routeIs('stock.liste') ? 'active' : '' }}">
+            <a href="{{ route('stock.liste') }}" class="nav-link  text-dark {{ request()->routeIs('stock.liste') ? 'active' : '' }}">
                 <i class="fas fa-warehouse me-1"></i>Listes globales
             </a>
         </li>
         <li class="nav-item me-2" role="presentation">
-            <a href="{{ route('stock.faible.liste') }}" class="nav-link {{ request()->routeIs('stock.faible.liste') ? 'active' : '' }}">
+            <a href="{{ route('stock.faible.liste') }}" class="nav-link  {{ request()->routeIs('stock.faible.liste') ? 'active' : '' }}">
                 <i class="fas fa-exclamation-triangle me-1"></i>Stocks faibles
             </a>
         </li>
         <li class="nav-item" role="presentation">
-            <a href="{{ route('stock.categorie.liste') }}" class="nav-link {{ request()->routeIs('stock.categorie.liste') ? 'active' : '' }}">
+            <a href="{{ route('stock.categorie.liste') }}" class="nav-link  text-dark {{ request()->routeIs('stock.categorie.liste') ? 'active' : '' }}">
                 <i class="fas fa-th-large me-1"></i>Catégories
             </a>
         </li>
     </ul>
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center bg-dark">
-            <h5 class="text-white">Stock faible</h5>
-            <a href="{{ url('/dashboard') }}" class="btn btn-primary btn-sm">
+        <div class="card-header d-flex justify-content-between align-items-center bg-light">
+            <h6 class="text-dark fw-bold">STOCK FAIBLE</h6>
+            <a  style="background-color: #4c4e5b;" href="{{ url('/dashboard') }}" class="btn text-white btn-sm">
     <i class="fas fa-arrow-left mr-2"></i>Retour dashboard
 </a>   
         </div>
@@ -61,8 +61,8 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
+                <table class="table table-striped table-hover table-bordered text-center align-middle" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-dark">
                         <tr>
                             <th>id</th>
                             <th>nom</th>

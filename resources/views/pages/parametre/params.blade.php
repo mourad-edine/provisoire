@@ -5,15 +5,15 @@
 @section('content')
 <div class="container-fluid px-0 bg-light" style="font-size : 0.85rem;">
     <!-- En-tête -->
-    <div class="bg-dark px-4 py-3 border-bottom border-dark">
+    <div class="bg-light px-4 py-3 border-bottom border-dark">
         <div class="d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 text-white">
-                <i class="fas fa-cog me-2 text-warning"></i>Paramètres système
+            <h5 class="mb-0 text-dark  fw-bold">
+                <i class="fas fa-cog me-2 text-warning"></i>PARAMETRES SYSTÈME
             </h5>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 bg-transparent small">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-warning">Dashboard</a></li>
-                    <li class="breadcrumb-item active text-muted ">Paramètres</li>
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-warning">DASHBOARD</a></li>
+                    <li class="breadcrumb-item active text-muted ">PARAMETRES</li>
                 </ol>
             </nav>
         </div>
@@ -33,12 +33,12 @@
         <ul class="nav nav-tabs border-dark mb-3" id="settingsTabs" role="tablist">
             <li class="nav-item">
                 <button class="nav-link active text-dark fw-bold" id="consignation-tab" data-bs-toggle="tab" data-bs-target="#consignation" role="tab">
-                    <i class="fas fa-wine-bottle me-2"></i>Consignation
+                    <i class="fas fa-wine-bottle me-2"></i>CONSIGNATION
                 </button>
             </li>
             <li class="nav-item">
                 <button class="nav-link text-dark fw-bold" id="utilisateur-tab" data-bs-toggle="tab" data-bs-target="#utilisateur" role="tab">
-                    <i class="fas fa-users me-2"></i>Utilisateurs
+                <i class="fas fa-users me-2"></i>UTILISATEURS
                 </button>
             </li>
         </ul>
@@ -56,7 +56,7 @@
                                     'Bouteille 30-33 cl' => $type33->prix_consignation ?? 0,
                                     'Bouteille 50-65 cl' => $type65->prix_consignation ?? 0,
                                     'Bouteille 100 cl' => $type100->prix_consignation ?? 0,
-                                    'Cageot' => $type33->prix_cgt ?? 0,
+                                    'Cageot' => $cageots->prix_cgt ?? 0,
                                 ];
                             @endphp
 
@@ -88,7 +88,7 @@
                                     </div>
                                 </div>
                             @endforeach
-                            <button type="submit" class="btn btn-dark w-100 mt-2">
+                            <button type="submit" class="btn btn-secondary w-100 mt-2">
                                 <i class="fas fa-save me-2"></i>Enregistrer
                             </button>
                         </form>
@@ -125,7 +125,7 @@
                                 <input class="form-check-input border-dark" type="checkbox" name="is_admin" id="is_admin">
                                 <label class="form-check-label text-dark" for="is_admin">Administrateur</label>
                             </div>
-                            <button type="submit" class="btn btn-dark w-100">
+                            <button type="submit" class="btn btn-secondary w-100" style="border-radius : none;">
                                 <i class="fas fa-plus me-2"></i>Créer
                             </button>
                         </form>
@@ -135,8 +135,8 @@
                     <div class="col-md-7">
                         <h6 class="text-dark fw-bold mb-3"><i class="fas fa-users me-2 text-dark"></i>Liste des utilisateurs ({{ count($users) }})</h6>
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover align-middle">
-                                <thead class="table-dark text-white">
+                            <table class="table table-striped table-hover table-bordered text-center align-middle" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-dark">
                                     <tr>
                                         <th>Nom</th>
                                         <th>Email</th>

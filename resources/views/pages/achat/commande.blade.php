@@ -9,7 +9,7 @@
 
     <!-- DataTales Example -->
     <ul class="nav nav-tabs mb-4" id="parametresTabs" role="tablist">
-    <li class="nav-item" role="presentation">
+        <li class="nav-item" role="presentation">
             <a style="text-decoration: none;" href="{{route('achat.commande')}}">
                 <button class="nav-link  active" id="utilisateur-tab" data-bs-toggle="tab" data-bs-target="#utilisateur" type="button" role="tab" aria-controls="utilisateur" aria-selected="false">
                     <i class="fas fa-user me-2"></i>Listes par commandes
@@ -25,15 +25,15 @@
         </li>
         <li class="nav-item" role="presentation">
             <a class="nav-link text-decoration-none p-0" href="{{route('achat.page')}}">
-                <button class="nav-link active bg-dark text-white">
+                <button style="background-color: #4c4e5b;" class="nav-link active text-white">
                     <i class="fas fa-cart-plus me-2 text-white"></i> Nouvel achat
                 </button>
             </a>
         </li>
-       
+
     </ul>
     <div class="card shadow mb-4">
-    <div class="p-3 mb-3 bg-light rounded shadow-sm">
+        <div class="p-3 mb-3 bg-light rounded shadow-sm">
             <form method="GET" action="{{ route('achat.commande') }}" class="row g-3 align-items-end">
                 <div class="col-md-2">
                     <label for="search" class="form-label">Nom|numero commande</label>
@@ -55,7 +55,7 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <button type="submit" class="btn btn-dark w-100"><i class="fa fa-search"></i>Rechercher</button>
+                    <button style="background-color: #4c4e5b;" type="submit" class="btn text-white w-100"><i class="fa fa-search"></i>Rechercher</button>
                 </div>
             </form>
         </div>
@@ -66,8 +66,8 @@
             </div>
             @endif
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
+                <table class="table table-striped table-hover table-bordered text-center align-middle" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-dark">
                         <tr>
                             <th>id</th>
                             <th>numero_commande</th>
@@ -99,10 +99,10 @@
                         </tr>
                         @empty
                         <tr>
-                        <div class="alert alert-warning mb-3">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Pas de donnée trouvé -- 
-                    </div>
+                            <div class="alert alert-warning mb-3">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Pas de donnée trouvé --
+                            </div>
                         </tr>
                         @endforelse
                     </tbody>
@@ -144,7 +144,7 @@
                                 </select>
                             </div>
                         </div>
-                        
+
 
                         <!-- Colonne 2 -->
                         <div class="col-md-6">

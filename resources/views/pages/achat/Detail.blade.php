@@ -22,7 +22,7 @@
         </li>
         <li class="nav-item" role="presentation">
             <a class="nav-link text-decoration-none p-0" href="{{route('achat.page')}}">
-                <button class="nav-link active bg-dark text-white">
+                <button class="nav-link active bg-secondary text-white">
                     <i class="fas fa-cart-plus me-2 text-white"></i> Nouvel achat
                 </button>
             </a>
@@ -31,7 +31,7 @@
     </ul>
 
     <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-dark text-white py-3">
+        <div class="card-header bg-secondary text-white py-3">
             <h5 class="mb-0 font-weight-bold text-white">
                 <i class="fas fa-user me-2"></i>INFORMATIONS FOURNISSEUR
             </h5>
@@ -58,7 +58,7 @@
             <h5 class="mb-2 text-white">ACHAT - DETAILS</h5>
 
             <div>
-                <button class="btn btn-outline-warning btn-sm mr-3"> <a class="text-white" href="{{route('pdf.achat' , ['id' => $id])}}"><i class="fas fa-print text-white mr-2"></i>facture</a></button>
+                 <a class="text-white" href="{{route('pdf.achat' , ['id' => $id])}}"><button class="btn btn-outline-warning btn-sm mr-3"><i class="fas fa-print text-white mr-2"></i>facture</button></a>
                 <a href="{{ url()->previous() }}"><button class="btn btn-dark btn-sm">retour</button></a>
             </div>
         </div>

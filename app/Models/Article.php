@@ -17,7 +17,9 @@ class Article extends Model
         'prix_unitaire',
         'prix_consignation',
         'prix_conditionne',
+        'prix_gros',
         'prix_achat',
+        'status',
         'prix_cgt',
         'quantite',
         'type_btl'

@@ -21,7 +21,7 @@ class AchatController extends Controller
         //dd(Auth::user()->id);
         $achats = Achat::with('articles', 'consignation_achat')
             ->orderBy('id', 'DESC')
-            ->paginate(6);
+            ->paginate(10);
 
         $achats->getCollection()->transform(function ($achat) {
             return [
@@ -46,20 +46,22 @@ class AchatController extends Controller
         return view('pages.achat.Liste', [
             'achats' => $achats,
             'articles' => Article::all(),
-            'fournisseurs' => Fournisseur::all(),
+            'fournisseurs' => Fournisseur::where('status' , 1)->get(),
         ]);
     }
 
     public function store(Request $request)
     {
+       
         $data = $request->validate([
             'articles' => 'required|array',
             'quantites' => 'nullable|array',
             'quantitesunite' => 'nullable|array',
             'prices' => 'required|array',
             'totals' => 'required|array',
+            'fournisseur_id' => 'required|exists:fournisseurs,id',
         ]);
-    
+      
         $commande = Commande::create([
             'user_id' => Auth::id(),
             'fournisseur_id' => $request->fournisseur_id,
@@ -84,7 +86,7 @@ class AchatController extends Controller
                 ]);
                 $article->prix_achat = $data['prices'][$index];
                 $article->quantite += $quantiteCageot * (int) $article->conditionnement;
-                $article->prix_conditionne = $data['prices'][$index] * $article->conditionnement;
+                //$article->prix_conditionne = $data['prices'][$index] * $article->conditionnement;
                 $article->save();
             }
     
@@ -104,7 +106,7 @@ class AchatController extends Controller
     
                 $article->quantite += $quantiteUnite;
                 $article->prix_achat = $data['totals'][$index] / $quantiteUnite;
-                $article->prix_conditionne = $article->conditionnement * ($data['totals'][$index] / $quantiteUnite);
+                //$article->prix_conditionne = $article->conditionnement * ($data['totals'][$index] / $quantiteUnite);
                 $article->save();
             }
     
@@ -173,7 +175,7 @@ class AchatController extends Controller
 
         $commandeQuery->orderBy('created_at', $tri);
 
-        $commande = $commandeQuery->paginate(6);
+        $commande = $commandeQuery->paginate(10);
 
         return view('pages.achat.commande', [
             'commandes' => $commande,
@@ -224,8 +226,8 @@ class AchatController extends Controller
     public function showachat()
     {
         return view('pages.achat.Achat', [
-            'articles' => Article::all(),
-            'fournisseurs' => Fournisseur::all(),
+            'articles' => Article::where('status', 1)->get(),
+            'fournisseurs' => Fournisseur::where('status' , 1)->get(),
         ]);
     }
 

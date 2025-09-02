@@ -35,11 +35,11 @@
 <div class="">
 <div class="d-flex justify-content-between align-items-center mb-4">
         <ul class="nav nav-tabs" id="clientTabs" role="tablist">
-            <li class="nav-item" role="presentation">
+            <!-- <li class="nav-item" role="presentation">
                 <a class="nav-link" href="{{ route('client.profil', ['id' => $client_id]) }}">
                     <i class="fas fa-id-card me-2"></i>Profil client et Emballage
                 </a>
-            </li>
+            </li> -->
             
             <li class="nav-item" role="presentation">
                 <a class="nav-link active" href="{{route('client.historique', ['id' => $client_id])}}">

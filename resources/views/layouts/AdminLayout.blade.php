@@ -22,7 +22,7 @@
 
         /* Navbar styles */
         .main-navbar {
-            background-color: #330705 !important;
+            background-color: #4c4e5b !important;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
@@ -40,12 +40,12 @@
         }
 
         .navbar-dark .dropdown-menu {
-            background-color: #343a40;
+            background-color: #6c757d;
             border: none;
         }
 
         .navbar-dark .dropdown-item:hover {
-            background-color: #495057;
+            background-color: #6c757d;
         }
 
         i {

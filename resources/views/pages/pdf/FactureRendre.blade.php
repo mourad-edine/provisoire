@@ -121,7 +121,7 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>ARTICLE</th>
+                <th>ARTICLE à rendre</th>
                 <th>BTL</th>
                 <th>CGT</th>
                 <th>QUANTITÉ</th>
@@ -142,7 +142,7 @@
                     {{ $vente['etat_cgt'] ? ($vente['consi_cgt'] == 0 ? 0 : $vente['prix_cgt'] / $vente['consi_cgt']) : '--' }}
                 </td>
                 <td>{{ $vente['quantite'] }} {{ $vente['type_achat'] }}</td>
-                <td class="text-right">{{ number_format( ($vente['type_achat'] == 'cageot' || $vente['type_achat'] == 'pack') ? $vente['prix_cage'] : $vente['prix_unitaire'], 0, ',', ' ') }} Ar</td>
+                <td class="text-right">{{ number_format($vente['prix_unitaire'], 0, ',', ' ') }} Ar</td>
                 <td class="text-right">
                     @if(($vente['consignation'] + $vente['prix_cgt']) > 0)
                         @if($vente['etat_client'] == 1)
@@ -159,7 +159,7 @@
                 <td class="text-right">
                     @php
                         $total = ($vente['type_achat'] === 'cageot' || $vente['type_achat'] === 'pack')
-                            ? ($vente['prix_cage'] * $vente['quantite']) + $vente['consignation'] + $vente['prix_cgt']
+                            ? ($vente['prix_unitaire'] * $vente['quantite'] * $vente['conditionnement']) + $vente['consignation'] + $vente['prix_cgt']
                             : ($vente['prix_unitaire'] * $vente['quantite']) + $vente['consignation'] + $vente['prix_cgt'];
 
                         if($commande->etat_client == 1) {
@@ -177,7 +177,7 @@
     <div class="section-spacer"></div>
 
 
-    <table class="table-active">
+    <!-- <table class="table-active">
         <tr>
             <td class="fw-bold">Bouteilles rendues:</td>
             <td>{{ $totals['rendu_btl'] }}</td>
@@ -263,7 +263,7 @@
         </tr>
     </table>
     
-    <div class="double-line"></div>
+    <div class="double-line"></div> -->
 
     <div style="margin-top: 40px; text-align: center; font-size: 12px;">
         <p>MERCI POUR VOTRE CONFIANCE</p>
@@ -272,158 +272,3 @@
     <div class="double-line"></div>
 </body>
 </html>
-
-
-
-
-<!-- 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Facture C-{{ $commande->id }}</title>
-    <style>
-        @page { margin: 0; padding: 0; size: 58mm auto; }
-        body { 
-            font-family: "Courier New", monospace;
-            font-size: 10px;
-            margin: 5px;
-            padding: 0;
-            width: 58mm;
-            color: black;
-            line-height: 1.2;
-        }
-        .header, .footer { text-align: center; }
-        .header { margin-bottom: 5px; }
-        .footer { margin-top: 10px; font-size: 9px; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 5px 0;
-        }
-        th, td {
-            padding: 3px 1px;
-            border-bottom: 1px dashed #aaa;
-        }
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        .text-danger { font-weight: bold; }
-        .text-success { font-weight: bold; }
-        .fw-bold { font-weight: bold; }
-        .divider {
-            border-top: 1px dashed black;
-            margin: 5px 0;
-        }
-        .double-divider {
-            border-top: 2px double black;
-            margin: 8px 0;
-        }
-        .item-qty { width: 15%; }
-        .item-price { width: 25%; text-align: right; }
-        .item-total { width: 30%; text-align: right; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <div class="fw-bold">Mourad Bars</div>
-        <div>Tél: {{ $company['phone'] }}</div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="fw-bold">FACTURE #F-{{ $commande->id }}</div>
-    <div>Date: {{ $date }}</div>
-    <div>Client: {{ $commande->client->nom ?? 'Non renseigné' }}</div>
-    <div>Statut: <span class="{{ $commande->etat_commande == 'payé' ? 'text-success' : 'text-danger' }}">
-        {{ $commande->etat_commande == 'payé' ? 'PAYÉ' : 'NON PAYÉ' }}
-    </span></div>
-
-    <div class="divider"></div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Article</th>
-                <th class="item-qty">Qty</th>
-                <th class="item-price">Prix</th>
-                <th class="item-total">Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($ventes as $vente)
-            <tr>
-                <td>{{ $vente['article'] }}</td>
-                <td class="item-qty">{{ $vente['quantite'] }}{{ $vente['type_achat'] == 'unité' ? '' : $vente['type_achat'][0] }}</td>
-                <td class="item-price">{{ number_format($vente['prix_unitaire'], 0, ',', ' ') }}</td>
-                <td class="item-total">{{ number_format($vente['prix_unitaire'] * $vente['quantite'], 0, ',', ' ') }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <div class="divider"></div>
-
-    <div class="fw-bold">CONSIGNATION</div>
-    <table>
-        <tr>
-            <td>Bouteilles rendues:</td>
-            <td class="text-right">{{ $totals['rendu_btl'] }}</td>
-        </tr>
-        <tr>
-            <td>Bouteilles cassées:</td>
-            <td class="text-right text-danger">{{ $totals['casse'] }}</td>
-        </tr>
-        <tr>
-            <td>Bouteilles consignées:</td>
-            <td class="text-right">{{ $totals['btl'] }}</td>
-        </tr>
-        @if($nombreCageots > 0)
-        <tr>
-            <td>Cageots consignés:</td>
-            <td class="text-right">{{ $nombreCageots }}</td>
-        </tr>
-        @endif
-    </table>
-
-    <div class="double-divider"></div>
-
-    <table>
-        <tr>
-            <td class="fw-bold">Total articles:</td>
-            <td class="text-right">{{ number_format($totals['global'] - $totals['consigne'] - $valeurCageots, 0, ',', ' ') }} Ar</td>
-        </tr>
-        <tr>
-            <td class="fw-bold">Total consignation:</td>
-            <td class="text-right">{{ number_format($totals['consigne'] + $valeurCageots, 0, ',', ' ') }} Ar</td>
-        </tr>
-        <tr>
-            <td class="fw-bold">TOTAL À PAYER:</td>
-            <td class="text-right fw-bold">{{ number_format($montantTotal, 0, ',', ' ') }} Ar</td>
-        </tr>
-        @if($commande->etat_commande == 'non payé' && $reste > 0)
-        <tr>
-            <td>Déjà payé:</td>
-            <td class="text-right">{{ number_format($reste, 0, ',', ' ') }} Ar</td>
-        </tr>
-        <tr>
-            <td class="fw-bold">RESTE À PAYER:</td>
-            <td class="text-right fw-bold text-danger">
-                {{ number_format($montantTotal - $reste, 0, ',', ' ') }} Ar
-            </td>
-        </tr>
-        @endif
-    </table>
-
-    <div class="double-divider"></div>
-
-    <div class="footer">
-        <div>Merci pour votre confiance</div>
-        <div>{{ config('app.name') }}</div>
-        <div>{{ $company['phone'] }}</div>
-    </div>
-</body>
-</html> -->
-
-
-
-

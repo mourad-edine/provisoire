@@ -6,7 +6,7 @@
 <div class="container-fluid">
     <!-- En-tête de page -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <button class="btn btn-dark shadow-sm" data-toggle="modal" data-target="#addExpenseModal">
+        <button class="btn btn-secondary shadow-sm" data-toggle="modal" data-target="#addExpenseModal">
             <i class="fas fa-plus-circle fa-sm text-white-50"></i> Nouvelle Dépense
         </button>
     </div>
@@ -14,12 +14,12 @@
     <!-- Cartes de synthèse -->
     <div class="row">
         <!-- Dépenses ce mois -->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-2">
             <div class="card minimal-card h-100">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
                         <div class="icon-square bg-soft-blue mr-3">
-                            <i class="fas fa-calendar-alt text-primary"></i> <!-- Calendrier -->
+                            <i class="fas fa-calendar-alt text-warning"></i> <!-- Calendrier -->
                         </div>
                         <div>
                             <p class="small text-muted mb-1">Dépenses ce mois</p>
@@ -31,12 +31,12 @@
         </div>
 
         <!-- Dépenses du jour -->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-2">
             <div class="card minimal-card h-100">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
                         <div class="icon-square bg-soft-green mr-3">
-                            <i class="fas fa-calendar-day text-success"></i> <!-- Journée -->
+                            <i class="fas fa-calendar-day text-warning"></i> <!-- Journée -->
                         </div>
                         <div>
                             <p class="small text-muted mb-1">Aujourd'hui</p>
@@ -48,7 +48,7 @@
         </div>
 
         <!-- Bouteille acheté aujourd'hui -->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-2">
             <div class="card minimal-card h-100">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
@@ -65,12 +65,12 @@
         </div>
 
         <!-- Bouteille acheté ce mois ci -->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-2">
             <div class="card minimal-card h-100">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
                         <div class="icon-square bg-soft-yellow mr-3">
-                            <i class="fas fa-wine-bottle text-info"></i> <!-- Bouteille -->
+                            <i class="fas fa-wine-bottle text-warning"></i> <!-- Bouteille -->
                         </div>
                         <div>
                             <p class="small text-muted mb-1">Bouteille acheté ce mois-ci</p>
@@ -82,12 +82,12 @@
         </div>
 
         <!-- Cageot acheté aujourd'hui -->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-2">
             <div class="card minimal-card h-100">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
                         <div class="icon-square bg-soft-orange mr-3">
-                            <i class="fas fa-box text-danger"></i> <!-- Cageot -->
+                            <i class="fas fa-box text-warning"></i> <!-- Cageot -->
                         </div>
                         <div>
                             <p class="small text-muted mb-1">Cageot acheté aujourd'hui</p>
@@ -99,12 +99,12 @@
         </div>
 
         <!-- Cageot acheté ce mois ci -->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-2">
             <div class="card minimal-card h-100">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
                         <div class="icon-square bg-soft-orange mr-3">
-                            <i class="fas fa-box-open text-primary"></i> <!-- Cageot -->
+                            <i class="fas fa-box-open text-warning"></i> <!-- Cageot -->
                         </div>
                         <div>
                             <p class="small text-muted mb-1">Cageot acheté ce mois-ci</p>
@@ -190,8 +190,8 @@
             @endif
 
             <div class="table-responsive">
-                <table class="table table-bordered" id="expensesTable" width="100%" cellspacing="0">
-                    <thead>
+               <table class="table table-striped table-hover table-bordered text-center align-middle" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-dark">
                         <tr>
                             <th>Date</th>
                             <th>Description</th>

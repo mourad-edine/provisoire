@@ -177,8 +177,8 @@ class ConsignationController extends Controller
                         ->with('highlighted_id', $vente_id);
                 }
                 return redirect()->back()
-                        ->with('success', 'Paiement enregistré avec succès.')
-                        ->with('highlighted_id', $request->vente->id);
+                    ->with('success', 'Paiement enregistré avec succès.')
+                    ->with('highlighted_id', $request->vente->id);
 
                 // Si aucun cas ne s'est déclenché
                 dd([
@@ -189,7 +189,6 @@ class ConsignationController extends Controller
                     'bouteille égalité ?' => $consignation->prix == $prix_bouteille,
                     'cageot égalité ?' => $consignation->prix_cgt == $prix_cageot,
                 ]);
-                
             }
 
             // Vérifier si toutes les ventes liées à la commande ont prix et prix_cgt égaux à 0
@@ -248,11 +247,11 @@ class ConsignationController extends Controller
         $articles = Article::whereIn('type_btl', [33, 65, 100])
             ->get()
             ->keyBy('type_btl');
-        //dd($articles);
         return view('pages.parametre.params', [
             'type33' => $articles->get(33),
             'type65' => $articles->get(65),
             'type100' => $articles->get(100),
+            'cageots' => Article::whereBetween('type_btl', [1, 65])->first(),
             'users' => User::all(),
         ]);
     }
@@ -324,22 +323,31 @@ class ConsignationController extends Controller
 
     public function rendrecondi(Request $request)
     {
+        //dd($request->all());
         if ($request->has('commande_id')) {
             $ventes = Vente::where('commande_id', $request->commande_id)->get();
             //dd($ventes[id);
             // Vérification et mise à jour des consignations associées
-            foreach ($ventes as $vente) {
-                if ($vente->consignation && $vente->consignation->etat_cgt === 'conditionné') {
-                    $vente->consignation->update(['etat_cgt' => 'rendu']);
-                }
-            }
+
 
             // Suppression du conditionnement s'il existe
             $conditionnement = Conditionnement::where('commande_id', $request->commande_id)->first();
+            if ($conditionnement->nombre_cageot == $request->quantite_cageot) {
+                foreach ($ventes as $vente) {
+                    if ($vente->consignation && $vente->consignation->etat_cgt === 'conditionné') {
+                        $vente->consignation->update(['etat_cgt' => 'rendu']);
+                    }
+                }
+            }else{
+                $conditionnement->nombre_cageot -= $request->quantite_cageot;
+                $conditionnement->save();
+                return redirect()->back()->with('success', 'Rendu avec succès.');
+
+            }
             $vente = Vente::where('commande_id', $request->commande_id)->first();
             if ($conditionnement) {
                 $consignation = Consignation::where('vente_id', $vente->id)->first();
-                if(!$consignation){
+                if (!$consignation) {
                     Consignation::create([
                         'vente_id' => $vente->id,
                         'prix' => 0,
@@ -349,7 +357,7 @@ class ConsignationController extends Controller
                         'rendu_btl' => 0,
                         'rendu_cgt' => $conditionnement->nombre_cageot,
                     ]);
-                }else{
+                } else {
                     $consignation->rendu_cgt += $conditionnement->nombre_cageot;
                     $consignation->save();
                 }
@@ -374,17 +382,17 @@ class ConsignationController extends Controller
         return redirect()->back()->with('success', 'Rendu avec succès.');
     }
 
-    public function ajour($vente_id ,$quantite){
+    public function ajour($vente_id, $quantite)
+    {
         $vente = Vente::find($vente_id);
         //dd($vente->quantite >= $vente->quantite - $quantite);
 
         if ($vente) {
-            if($vente->quantite != 0 ){
+            if ($vente->quantite != 0) {
                 $vente->quantite = $vente->quantite - $quantite;
                 $vente->save();
             }
         }
-        
     }
 
     public function rendrerendu(Request $request)
@@ -421,10 +429,10 @@ class ConsignationController extends Controller
                     $consignation->save();
                     $this->operation('casse_cageot', $request->commande_id, $request->mode_paye, ($request->cageot_casse * $article->prix_cgt));
                 }
-                if($vente->type_achat == 'cageot' || $vente->type_achat ==  'pack'){
-                    $this->ajour($vente_id ,$request->cageot_casse);
-                }else{
-                    $this->ajour($vente_id ,$request->casse);
+                if ($vente->type_achat == 'cageot' || $vente->type_achat ==  'pack') {
+                    $this->ajour($vente_id, $request->cageot_casse);
+                } else {
+                    $this->ajour($vente_id, $request->casse);
                 }
                 $this->verification($request->commande_id);
                 return redirect()->back()
@@ -436,7 +444,7 @@ class ConsignationController extends Controller
             //dd([$casse ,$casse_cageot]);
             $bouteille = $request->has('check_bouteille') ? 1 : 0;
             $cageot = $request->has('check_cageot') ? 1 : 0;
-            
+
             // dd([
             //     'bouteille' => $bouteille,
             //     'cageot' => $cageot,
@@ -464,10 +472,10 @@ class ConsignationController extends Controller
                 $totentrecgt = $request->total_cgt * $article->prix_cgt;
                 $this->operation('Déconsignation BTL', $request->commande_id, $request->mode_paye, $totentrebtl);
                 $this->operation('Déconsignation CGT', $request->commande_id, $request->mode_paye, $totentrecgt);
-                if($vente->type_achat == 'cageot' || $vente->type_achat ==  'pack'){
-                    $this->ajour($vente_id ,$request->total_cgt);
-                }else{  
-                    $this->ajour($vente_id ,$request->total_btl);
+                if ($vente->type_achat == 'cageot' || $vente->type_achat ==  'pack') {
+                    $this->ajour($vente_id, $request->total_cgt);
+                } else {
+                    $this->ajour($vente_id, $request->total_btl);
                 }
                 return redirect()->back()
                     ->with('success', 'Paiement enregistré avec succès.')
@@ -481,8 +489,8 @@ class ConsignationController extends Controller
                 $this->verification($request->commande_id);
                 $totentre = $request->total_cgt * $article->prix_cgt;
                 $this->operation('cageot', $request->commande_id, $request->mode_paye, $totentre);
-                $this->ajour($vente_id ,$request->total_cgt);
-                
+                $this->ajour($vente_id, $request->total_cgt);
+
                 return redirect()->back()
                     ->with('success', 'Paiement enregistré avec succès.')
                     ->with('highlighted_id', $vente_id);
@@ -496,7 +504,7 @@ class ConsignationController extends Controller
                 $this->verification($request->commande_id);
                 $totentre = $request->total_btl * $article->prix_consignation;
                 $this->operation('bouteille', $request->commande_id, $request->mode_paye, $totentre);
-                $this->ajour($vente_id ,$request->total_btl);
+                $this->ajour($vente_id, $request->total_btl);
                 return redirect()->back()
                     ->with('success', 'Paiement enregistré avec succès.')
                     ->with('highlighted_id', $vente_id);
@@ -534,10 +542,10 @@ class ConsignationController extends Controller
                     $consignation->save();
                     $this->operation('cageot_bouteille', $request->commande_id, $request->mode_paye, (($prix_bouteille * $article->prix_consignation) + ($prix_cageot * $article->prix_cgt)));
                     $this->verification($request->commande_id);
-                    if($vente->type_achat == 'cageot'){
-                        $this->ajour($vente_id ,$request->quantite_cageot);
-                    }else{
-                        $this->ajour($vente_id ,$request->quantite_buteille);
+                    if ($vente->type_achat == 'cageot') {
+                        $this->ajour($vente_id, $request->quantite_cageot);
+                    } else {
+                        $this->ajour($vente_id, $request->quantite_buteille);
                     }
                     return redirect()->back()
                         ->with('success', 'Paiement enregistré avec succès.')

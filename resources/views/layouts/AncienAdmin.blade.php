@@ -39,7 +39,7 @@
         }
 
         .navbar-dark .dropdown-menu {
-            background-color: #343a40;
+            background-color: #5a5c69 !important;
             border: none;
         }
 

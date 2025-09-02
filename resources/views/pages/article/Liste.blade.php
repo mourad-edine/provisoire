@@ -6,8 +6,9 @@
 <div class="container-fluid">
 
     <div class="card shadow mb-4">
-        <div class="bg-dark card-header">
-            <h5 class="mb-2 text-white">BOISSON</h5>
+        <div class="bg-light card-header d-flex">
+            <i class="fas fa-glass-cheers " style="font-size : 20px;"></i>
+            <h5 class="mb-2 text-dark fw-bold">BOISSON</h5>
         </div>
         <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-center bg-light">
             <!-- Barre de recherche avancée -->
@@ -40,7 +41,7 @@
 
             <!-- Bouton d'ajout -->
             <div>
-                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addArticleModal">
+                <button style="background-color: #4c4e5b;" class="btn text-white btn-sm" data-toggle="modal" data-target="#addArticleModal">
                     <i class="fas fa-plus-circle mr-2"></i>Ajouter boisson
                 </button>
             </div>
@@ -55,16 +56,16 @@
             <div class="table-responsive">
 
 
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
+                <table class="table table-striped table-hover table-bordered text-center align-middle" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-dark">
                         <tr>
                             <th>ID</th>
                             <th>Nom</th>
                             <th>Catégorie</th>
-                            <th>P.Vente unité</th>
+                            <th>P.Vente unité gros</th>
                             <th>p.vente cageot/pack</th>
+                            <th>Prix détails</th>
                             <th>P.Achat</th>
-                            <th>P.Achat cageot/pack</th>
                             <th>Quantité</th>
                             <th>Date</th>
                             <th>Options</th>
@@ -72,17 +73,18 @@
                     </thead>
                     <tbody>
                         @forelse($articles as $article)
-                        <tr>
-                            <td>{{ $article['id'] }}</td>
-                            <td>{{ \Illuminate\Support\Str::limit($article['nom'], 15) }}</td>
-                            <td>{{ $article['categorie'] }}</td>
-                            <td>{{ $article['prix_unitaire'] }} Ar</td>
-                            <td>{{$article['prix_unitaire'] * $article['conditionnement'] . 'Ar'}}</td>
+                        <tr style="cursor : pointer;">
+                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">{{ $article['id'] }}</td>
+                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">{{ \Illuminate\Support\Str::limit($article['nom'], 15) }}</td>
+                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">{{ $article['categorie'] }}</td>
+                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">{{ $article['prix_unitaire'] }} Ar</td>
+                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">{{$article['prix_conditionne']. 'Ar'}}</td>
                             <!-- <td>{{ number_format($article['prix_conditionne'] ? $article['prix_conditionne'] / $article['conditionnement'] : 0, 2) }} Ar</td> -->
-                            <td>{{$article['prix_achat']}}</td>
+                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">{{$article['prix_gros'] .' Ar'}}</td>
+
+                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">{{$article['prix_achat'] . ' Ar'}}</td>
                             <!-- <td>{{ $article['prix_conditionne'] ? $article['prix_conditionne'] : 'pas de prix' }} Ar</td> -->
-                            <td>{{$article['prix_achat'] * $article['conditionnement']}}</td>
-                            <td>
+                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">
                                 @php
                                 $quotient = intdiv($article['quantite'], $article['conditionnement']); // Division entière
                                 $reste = $article['quantite'] % $article['conditionnement']; // Reste de la division
@@ -90,7 +92,7 @@
                                 @endphp
                                 {{ $affichage }} cageot/pack{{ $affichage > 1 ? 's' : '' }} @if($reste> 0) et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}@endif
                             </td>
-                            <td>
+                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">
                                 @if (!empty($article['created_at']))
                                 {{ \Carbon\Carbon::createFromFormat('d/m/Y H:i:s', $article['created_at'])->format('Y-m-d') }}
                                 @else
@@ -186,24 +188,81 @@
                                                 </div>
                                                 @endif
                                             </div>
+                                            <div style="display: flex; gap: 20px;" class="mt-2">
+                                                <div class="form-group" style="flex: 1;">
+                                                    <label for="diff_{{ $article['id'] }}">Prix consignation</label>
+                                                    <input type="number"
+                                                        class="form-control"
+                                                        value="{{ $article['prix_consignation'] ?? '' }}"
+                                                        readonly
+                                                        name="prix_consignation">
+                                                </div>
 
-                                            <div class="form-group mt-2">
-                                                <label for="diff_{{ $article['id'] }}">Prix consignation</label>
-                                                <input type="number" class="form-control" value="{{ $article['prix_consignation'] ?? '' }}" readonly name="prix_consignation">
-                                            </div>
-                                            <div class="form-group mt-2">
-                                                <label for="diff_{{ $article['id'] }}">Nouveau prix consignation</label>
-                                                <input type="number" class="form-control" id="diff_{{ $article['id'] }}" name="diff_{{ $article['id'] }}">
+                                                <div class="form-group" style="flex: 1;">
+                                                    <label for="diff_{{ $article['id'] }}">Nouveau prix consignation</label>
+                                                    <input type="number"
+                                                        class="form-control"
+                                                        id="diff_{{ $article['id'] }}"
+                                                        name="diff_{{ $article['id'] }}">
+                                                </div>
                                             </div>
 
-                                            <div class="form-group">
-                                                <label for="prix_unitaire">Prix d'achat unité</label>
-                                                <input value="{{number_format($article['prix_achat'], 2, '.', '')}}" type="number" class="form-control" id="prix_achat" name="prix_achat" readonly>
+
+                                            <div style="display: flex; gap: 20px;">
+                                                <div class="form-group" style="flex: 1;">
+                                                    <label for="prix_achat">Prix d'achat unité</label>
+                                                    <input value="{{ $article['prix_achat'] }}"
+                                                        type="number"
+                                                        class="form-control"
+                                                        id="prix_achat"
+                                                        name="prix_achat"
+                                                        readonly>
+                                                </div>
+
+                                                <div class="form-group" style="flex: 1;">
+                                                    <label for="prix_unitaire">Prix de gros unité</label>
+                                                    <input value="{{ $article['prix_unitaire'] }}"
+                                                        type="number"
+                                                        class="form-control"
+                                                        id="prix_unitaire"
+                                                        name="prix_unitaire"
+                                                        required>
+                                                </div>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="prix_unitaire">Prix de vente unité</label>
-                                                <input value="{{$article['prix_unitaire']}}" type="number" class="form-control" id="prix_unitaire" name="prix_unitaire" required>
+                                            <div style="display: flex; gap: 20px;">
+                                                <div id="" style=" flex: 1;">
+                                                    <div class="mb-3">
+                                                        <label for="prix_achat" class="form-label">Prix détails unité</label>
+                                                        <input value="{{ $article['prix_gros'] }}" type="number" class="form-control" id="prix_achat" name="prix_gros" step="0.01">
+                                                    </div>
+                                                </div>
+
+                                                <div id="" style="flex: 1;">
+                                                    <div class="mb-3">
+                                                        <label for="prix_conditionne" class="form-label">Prix de gros cageot/pack <span class="text-danger">*</span></label>
+                                                        <input value="{{ $article['prix_conditionne'] }}" type="number" class="form-control" id="prix_conditionne" name="prix_conditionne" step="0.01">
+                                                    </div>
+                                                </div>
                                             </div>
+                                            <div style="display: flex; gap : 20px;">
+                                                <div id="quantiteContainer" style=" flex: 1;">
+                                                    <div class="mb-3">
+                                                        <label for="quantite" class="form-label">
+                                                            Quantité en cageot/pack
+                                                        </label>
+                                                        <input type="number" class="form-control" id="quantite" name="quantite" step="0.01" value="{{ intdiv($article['quantite'], $article['conditionnement']) }}">
+                                                    </div>
+                                                </div>
+                                                <div id="quantiteContainer" style=" flex: 1;">
+                                                    <div class="mb-3">
+                                                        <label for="quantite" class="form-label">
+                                                            Quantité en unité
+                                                        </label>
+                                                        <input type="number" class="form-control" id="quantite" name="quantite_unite" step="0.01" value="{{ $article['quantite'] % $article['conditionnement'] }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+
 
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
@@ -241,7 +300,7 @@
         <div class="modal-content">
             <div class="modal-header bg-dark text-white">
                 <h5 class="modal-title" id="addArticleModalLabel">Ajouter un article</h5>
-                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close text-white" data-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form action="{{ route('articles.store') }}" method="POST">
@@ -304,35 +363,59 @@
 
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="form-check mb-3">
+                            <!-- <div class="form-check mb-3">
                                 <input class="form-check-input" type="checkbox" id="checkCageot" name="checkCageot">
                                 <label class="form-check-label" for="checkCageot">
-                                    Ajouter un prix en cageot
+                                    Ajouter un prix
                                 </label>
-                            </div>
-                            <div class="" id="prix_achatcontainer" style="display: none;">
-                                <div class="mb-3">
-                                    <label for="prix_achat" class="form-label">Prix d'achat unité</label>
-                                    <input type="number" class="form-control" id="prix_achat" name="prix_achat" step="0.01">
+                            </div> -->
+                            <div style="display: flex; gap: 20px;">
+                                <div id="prix_achatcontainer" style=" flex: 1;">
+                                    <div class="mb-3">
+                                        <label for="prix_vente" class="form-label">Prix de gros unité</label>
+                                        <input type="number" class="form-control" id="prix_achat" name="prix_vente" step="0.01">
+                                    </div>
+                                </div>
+
+                                <div id="prixCageotContainer" style="flex: 1;">
+                                    <div class="mb-3">
+                                        <label for="prix_conditionne" class="form-label">Prix de gros cageot/pack <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="prix_conditionne" name="prix_conditionne" step="0.01">
+                                    </div>
                                 </div>
                             </div>
-                            <div id="prixCageotContainer" style="display:none;">
-                                <div class="mb-3">
-                                    <label for="prix_conditionne" class="form-label">Prix d'achat cageot (facultatif <span class="text-danger">*</span>)</label>
-                                    <input type="number" class="form-control" id="prix_conditionne" name="prix_conditionne" step="0.01">
+                            <div style="display: flex; gap: 20px;">
+                                <div id="prixGrosContainer" style=" flex: 1;">
+                                    <div class="mb-3">
+                                        <label for="prix_gros" class="form-label">
+                                            Prix détails unité
+                                        </label>
+                                        <input type="number" class="form-control" id="prix_gros" name="prix_gros" step="0.01">
+                                    </div>
+                                </div>
+                                <div id="quantiteContainer" style=" flex: 1;">
+                                    <div class="mb-3">
+                                        <label for="quantite" class="form-label">
+                                            Quantité initiale en cageot
+                                        </label>
+                                        <input type="number" class="form-control" id="quantite" name="quantite" step="0.01" value="">
+                                    </div>
+                                </div>
+                                <div id="quantiteContainer" style=" flex: 1;">
+                                    <div class="mb-3">
+                                        <label for="quantite" class="form-label">
+                                            Quantité initiale en unité
+                                        </label>
+                                        <input type="number" class="form-control" id="quantite" name="quantite_unite" step="0.01" value="">
+                                    </div>
                                 </div>
                             </div>
-                            <div id="quantiteContainer" style="display:none;">
-                                <div class="mb-3">
-                                    <label for="quantite" class="form-label">quantité initiale ( facultatif <span class="text-danger">*</span>)</label>
-                                    <input type="number" class="form-control" id="quantite" name="quantite" step="0.01" value="0">
-                                </div>
-                            </div>
+
                         </div>
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
                         <button type="submit" class="btn btn-primary">Ajouter</button>
                     </div>
                 </form>
@@ -363,37 +446,38 @@
             document.getElementById('prixCageotContainer').style.display = this.checked ? 'block' : 'none';
             document.getElementById('prix_achatcontainer').style.display = this.checked ? 'block' : 'none';
             document.getElementById('quantiteContainer').style.display = this.checked ? 'block' : 'none';
+            document.getElementById('prixGrosContainer').style.display = this.checked ? 'block' : 'none';
         });
     });
 </script>
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Pour chaque modal d'édition
-    document.querySelectorAll('[id^="editArticleModal"]').forEach(modal => {
-        const id = modal.id.replace('editArticleModal', '');
-        
-        // Gestion du changement de radio
-        const radios = modal.querySelectorAll(`input[name="choix_${id}"]`);
-        radios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                const reiniDiv = modal.querySelector(`#reini_${id}`).closest('div.mb-3');
-                
-                // Masquer "Réinitialiser" si "Pack" est sélectionné
-                if (this.value === 'pack') {
-                    reiniDiv.style.display = 'none';
-                } else {
-                    reiniDiv.style.display = 'flex';
-                }
-            });
-        });
+    document.addEventListener("DOMContentLoaded", function() {
+        // Pour chaque modal d'édition
+        document.querySelectorAll('[id^="editArticleModal"]').forEach(modal => {
+            const id = modal.id.replace('editArticleModal', '');
 
-        // Initialiser l'état au chargement
-        const checkedRadio = modal.querySelector(`input[name="choix_${id}"]:checked`);
-        const reiniDiv = modal.querySelector(`#reini_${id}`).closest('div.mb-3');
-        if (checkedRadio && checkedRadio.value === 'pack') {
-            reiniDiv.style.display = 'none';
-        }
+            // Gestion du changement de radio
+            const radios = modal.querySelectorAll(`input[name="choix_${id}"]`);
+            radios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const reiniDiv = modal.querySelector(`#reini_${id}`).closest('div.mb-3');
+
+                    // Masquer "Réinitialiser" si "Pack" est sélectionné
+                    if (this.value === 'pack') {
+                        reiniDiv.style.display = 'none';
+                    } else {
+                        reiniDiv.style.display = 'flex';
+                    }
+                });
+            });
+
+            // Initialiser l'état au chargement
+            const checkedRadio = modal.querySelector(`input[name="choix_${id}"]:checked`);
+            const reiniDiv = modal.querySelector(`#reini_${id}`).closest('div.mb-3');
+            if (checkedRadio && checkedRadio.value === 'pack') {
+                reiniDiv.style.display = 'none';
+            }
+        });
     });
-});
 </script>
 @endsection

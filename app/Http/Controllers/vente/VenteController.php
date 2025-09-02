@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Log;
 
 class VenteController extends Controller
 {
+    
     //public $nombre =  10;
     public function show()
     {
@@ -26,8 +27,11 @@ class VenteController extends Controller
 
         //dd($reste);
         $ventes = Vente::with(['article', 'consignation', 'commande'])
+            ->whereHas('commande', function ($query) {
+                $query->where('disposition', 0);
+            })
             ->orderBy('id', 'DESC')
-            ->paginate(6); // La pagination doit être ici
+            ->paginate(12);
 
         // Transformer chaque vente après la pagination
         $ventes->getCollection()->transform(function ($vente) {
@@ -267,14 +271,17 @@ class VenteController extends Controller
 
         $commandesQuery->orderBy('created_at', $tri);
 
-        $commandes = $commandesQuery->paginate(6);
+        $commandes = $commandesQuery->paginate(9);
 
         // Ajout des sommes personnalisées
         $total = 0;
         $commandes->each(function ($commande) {
             $commande->ventes_total = $commande->ventes->sum(function ($vente) {
-                $multiplicateur = ($vente->type_achat === 'cageot' || $vente->type_achat == 'pack') ? ($vente->article->conditionnement ?? 1) : 1;
-                return $vente->prix * $vente->quantite * $multiplicateur;
+                if ($vente->type_achat === 'cageot' || $vente->type_achat === 'pack') {
+                    return $vente->prix_cage * $vente->quantite;
+                } else {
+                    return $vente->prix * $vente->quantite;
+                }
             });
 
             $commande->ventes_consignation_sum_prix = $commande->ventes->sum(fn($vente) => optional($vente->consignation)->prix * $vente->article->prix_consignation ?? 0);
@@ -319,7 +326,7 @@ class VenteController extends Controller
                 'article' => $vente->article ? $vente->article->nom : null,
                 'article_id' => $vente->article ? $vente->article->id : null,
                 'consi_cgt' => $vente->article ? $vente->article->prix_cgt : null,
-                'prix_unitaire' => $vente->article ? $vente->article->prix_unitaire : null,
+                'prix_unitaire' => $vente->prix ? $vente->prix : null,
                 'reference' => $vente->article ? $vente->article->reference : null,
                 'numero_commande' => $vente->commande_id,
                 'consignation_id' => $vente->consignation ? $vente->consignation->id : null,
@@ -340,7 +347,10 @@ class VenteController extends Controller
                 'cgt' => $vente->cgt,
                 'commande_id' => $vente->commande_id,
                 'etat_payement' => $vente->etat,
-                'etat_client' => $vente->client
+                'etat_client' => $vente->client,
+                'cat' => $vente->cat ? $vente->cat : null,
+                'prix_gros' => $vente->prix ? $vente->prix : null,
+                'prix_cage' => $vente->prix_cage ? $vente->prix_cage : null,
             ];
         });
         //dd($reste);
@@ -362,8 +372,8 @@ class VenteController extends Controller
     public function Vente()
     {
         return view('pages.vente.Vente', [
-            'articles' => Article::all(),
-            'clients' => Client::all(),
+            'articles' => Article::where('status', 1)->get(),
+            'clients' => Client::where('status' , 1)->get(),
             'dernier' => Commande::latest()->first()
         ]);
     }
@@ -648,12 +658,14 @@ class VenteController extends Controller
                         'commande_id' => $commande->id,
                         'quantite' => $quantiteCageot,
                         'prix' => $index['prix_unitaire'],
-                        'type_achat' => ($article->prix_consignation == 0 && $article->prix_cgt == 0) || ($article->prix_consignation > 0 && $article->prix_cgt == 0)? 'pack' : 'cageot',
+                        'prix_cage' => $article->prix_conditionne,
+                        'type_achat' => ($article->prix_consignation == 0 && $article->prix_cgt == 0) || ($article->prix_consignation > 0 && $article->prix_cgt == 0) ? 'pack' : 'cageot',
                         'btl' => $bouteille,
                         'cgt' => $cageot,
                         'etat' => $request->has('payer') ? 1 : 0,
                         'client' => $request->has('fidele') ? 1 : 0,
                         'date_sortie' => now(),
+                        'cat' => $request->cat
                     ]);
 
                     // Créer une consignation si cageot non rendu
@@ -706,12 +718,15 @@ class VenteController extends Controller
                         'commande_id' => $commande->id,
                         'quantite' => $quantiteUnite,
                         'prix' => $index['prix_unitaire'],
+                        'prix_cage' => $article->prix_conditionne,
                         'type_achat' => 'bouteille',
                         'btl' => $bouteille,
                         'cgt' => $cageot,
                         'etat' => $request->has('payer') ? 1 : 0,
                         'client' => $request->has('fidele') ? 1 : 0,
                         'date_sortie' => now(),
+                        'cat' => $request->cat
+
                     ]);
 
                     if ($bouteille == 0 && $article->prix_consignation != 0) {
@@ -736,7 +751,7 @@ class VenteController extends Controller
                 'operation' => 'partiel',
             ]);
         }
-        return redirect()->route('commande.liste.vente.detail' , $commande->id)->with('success', 'Ventes enregistrées avec succès.');
+        return redirect()->route('commande.liste.vente.detail', $commande->id)->with('success', 'Ventes enregistrées avec succès.');
     }
 
     public function RendreStore(Request $request)
@@ -774,8 +789,8 @@ class VenteController extends Controller
                             'article_id' => $article->id,
                             'commande_id' => $vente->commande_id,
                             'quantite' => $cageots,
-                            'prix' => $article->prix_unitaire,
-                            'type_achat' => ($article->prix_consignation == 0 && $article->prix_cgt == 0 ) || ($article->prix_consignation > 0 && $article->prix_cgt == 0 )? 'pack' : 'cageot',
+                            'prix_cage' => $vente->prix_cage,
+                            'type_achat' => ($article->prix_consignation == 0 && $article->prix_cgt == 0) || ($article->prix_consignation > 0 && $article->prix_cgt == 0) ? 'pack' : 'cageot',
                             'btl' => $article->prix_consignation > 0 ? 0 : 1,
                             'cgt' => $article->prix_consignation > 0 ? 0 : 1,
                             'etat' => 0,
@@ -800,7 +815,7 @@ class VenteController extends Controller
                             'article_id' => $article->id,
                             'commande_id' => $vente->commande_id,
                             'quantite' => $unite,
-                            'prix' => $article->prix_unitaire,
+                            'prix' => $vente->prix,
                             'type_achat' => 'bouteille',
                             'btl' => 1,
                             'cgt' => 1,
@@ -831,8 +846,8 @@ class VenteController extends Controller
                             'article_id' => $article->id,
                             'commande_id' => $commande->id,
                             'quantite' => $resteCageots,
-                            'prix' => $article->prix_unitaire,
-                            'type_achat' => ($article->prix_consignation == 0 && $article->prix_cgt == 0 ) || ($article->prix_consignation > 0 && $article->prix_cgt == 0 )? 'pack' : 'cageot',
+                            'prix_cage' => $vente->prix_cage,
+                            'type_achat' => ($article->prix_consignation == 0 && $article->prix_cgt == 0) || ($article->prix_consignation > 0 && $article->prix_cgt == 0) ? 'pack' : 'cageot',
                             'btl' => $article->prix_consignation > 0 ? 0 : 1,
                             'cgt' => $article->prix_consignation > 0 ? 0 : 1,
                             'etat' => 0,
@@ -857,7 +872,7 @@ class VenteController extends Controller
                             'article_id' => $article->id,
                             'commande_id' => $commande->id,
                             'quantite' => $resteUnites,
-                            'prix' => $article->prix_unitaire,
+                            'prix' => $vente->prix,
                             'type_achat' => 'bouteille',
                             'btl' => 1,
                             'cgt' => 1,
@@ -878,7 +893,7 @@ class VenteController extends Controller
                     }
 
                     // Mise à jour du stock
-                    $article->quantite += $resteBouteilles;
+                    //$article->quantite += $resteBouteilles;
                     $article->save();
 
                     // Mise à jour de la consignation d'origine
@@ -897,46 +912,18 @@ class VenteController extends Controller
                 }
             } elseif ($isChecked && !$vente->consignation) {
                 // SANS CONSIGNATION
-                $quantiteRendue = $cageots > 0 ? $cageots : $unite;
-                $quantiteOriginale = $vente->quantite;
-                $reste = $quantiteOriginale - $quantiteRendue;
 
-                if ($quantiteRendue > 0) {
-                    // Mise à jour de la vente existante avec la quantité rendue
-                    $vente->update([
-                        'quantite' => $quantiteRendue,
-                        'etat' => 0,
-                        'client' => 0,
-                        'btl' => 1,
-                        'cgt' => 1,
-                    ]);
-                    $cons = Consignation::where('vente_id', $vente->id)->first();
-                    if ($cons) {
-                        $cons->update([
-                            'etat' => 'non consigné',
-                            'etat_cgt' => 'non consigné',
-                            'prix' => $quantiteRendue,
-                            'prix_cgt' => 0,
-                        ]);
-                    } else
-                        Consignation::create([
-                            'vente_id' => $vente->id,
-                            'etat' => 'non consigné',
-                            'etat_cgt' => 'non consigné',
-                            'prix' => 0,
-                            'prix_cgt' => 0,
-                            'date_consignation' => now(),
-                            'type_consignation' => true,
-                        ]);
-                }
+                // Quantités rendues
+                $unitesRendues = max(0, $unite);
+                $cageotsRendus = max(0, $cageots);
 
-                // Création d'une nouvelle vente pour le reste non rendu
-                if ($reste > 0 && $reste < $quantiteOriginale) {
-                    $new = Vente::create([
+                // Création de ventes pour la partie rendue
+                if ($cageotsRendus > 0) {
+                    Vente::create([
                         'article_id' => $article->id,
-                        'commande_id' => $commande->id,
-                        'quantite' => $reste,
-                        'prix' => $article->prix_unitaire,
+                        'commande_id' => $vente->commande_id,
+                        'quantite' => $cageotsRendus,
+                        'prix_cage' => $vente->prix_cage,
                         'type_achat' => $vente->type_achat,
                         'btl' => $vente->btl,
                         'cgt' => $vente->cgt,
@@ -944,20 +931,64 @@ class VenteController extends Controller
                         'client' => 0,
                         'date_sortie' => now(),
                     ]);
-                    Consignation::create([
-                        'vente_id' => $new->id,
-                        'etat' => 'non consigné',
-                        'etat_cgt' => 'non consigné',
-                        'prix' => 0,
-                        'prix_cgt' => 0,
-                        'date_consignation' => now(),
-                        'type_consignation' => true,
+                }
+
+                if ($unitesRendues > 0) {
+                    Vente::create([
+                        'article_id' => $article->id,
+                        'commande_id' => $vente->commande_id,
+                        'quantite' => $unitesRendues,
+                        'prix' => $vente->prix,
+                        'type_achat' => 'bouteille',
+                        'btl' => 1,
+                        'cgt' => 1,
+                        'etat' => 0,
+                        'client' => 0,
+                        'date_sortie' => now(),
                     ]);
                 }
 
-                // Remise dans le stock seulement la partie rendue
-                $article->quantite += $quantiteRendue;
+                // Calcul du reste
+                $resteBouteilles = $quantiteVenteBouteille - $totalRendu;
+                $resteCageots = intdiv($resteBouteilles, $article->conditionnement);
+                $resteUnites = $resteBouteilles % $article->conditionnement;
+
+                // Création des ventes pour le reste (même logique que consignation)
+                if ($resteCageots > 0) {
+                    Vente::create([
+                        'article_id' => $article->id,
+                        'commande_id' => $commande->id,
+                        'quantite' => $resteCageots,
+                        'prix_cage' => $vente->prix_cage,
+                        'type_achat' => $vente->type_achat,
+                        'btl' => $vente->btl,
+                        'cgt' => $vente->cgt,
+                        'etat' => 0,
+                        'client' => 0,
+                        'date_sortie' => now(),
+                    ]);
+                }
+
+                if ($resteUnites > 0) {
+                    Vente::create([
+                        'article_id' => $article->id,
+                        'commande_id' => $commande->id,
+                        'quantite' => $resteUnites,
+                        'prix' => $vente->prix,
+                        'type_achat' => 'bouteille',
+                        'btl' => 1,
+                        'cgt' => 1,
+                        'etat' => 0,
+                        'client' => 0,
+                        'date_sortie' => now(),
+                    ]);
+                }
+
+                // Mise à jour du stock
                 $article->save();
+
+                // Suppression de l'ancienne vente (comme pour la partie avec consignation)
+                $vente->delete();
             } else {
                 // Si la case n’est pas cochée, rattacher la vente à la nouvelle commande
                 $vente->commande_id = $commande->id;
@@ -999,7 +1030,7 @@ class VenteController extends Controller
                 'article' => $vente->article ? $vente->article->nom : null,
                 'article_id' => $vente->article ? $vente->article->id : null,
                 'consi_cgt' => $vente->article ? $vente->article->prix_cgt : null,
-                'prix_unitaire' => $vente->article ? $vente->article->prix_unitaire : null,
+                'prix_unitaire' => $vente->prix ? $vente->prix : null,
                 'reference' => $vente->article ? $vente->article->reference : null,
                 'numero_commande' => $vente->commande_id,
                 'consignation_id' => $vente->consignation ? $vente->consignation->id : null,
@@ -1020,7 +1051,8 @@ class VenteController extends Controller
                 'cgt' => $vente->cgt,
                 'commande_id' => $vente->commande_id,
                 'etat_payement' => $vente->etat,
-                'etat_client' => $vente->client
+                'etat_client' => $vente->client,
+                'prix_cage' => $vente->prix_cage,
             ];
         });
         //dd($reste);
@@ -1036,5 +1068,49 @@ class VenteController extends Controller
             'commande' => $commande,
             'reste' => $reste,
         ]);
+    }
+
+    public function delete(Request $request){
+        $id = $request->commande_id;
+        $commande = Commande::find($id);
+        if (!$commande) {
+            return redirect()->back()->with('error', 'Commande introuvable.');
+        }
+        try {
+            DB::beginTransaction();
+            foreach($commande->ventes as $vente) {
+                // Supprimer les consignations associées à la vente
+                $article = Article::find($vente->article_id);
+                //dd($article->conditionnement);
+
+                if($vente->type_achat == "cageot" || $vente->type_achat == "pack"){
+                    $article->quantite += $vente->quantite * (int)$article->conditionnement;
+                    $article->save();
+
+                }else{
+                    $article->quantite += $vente->quantite;
+                    $article->save();
+                }
+                Consignation::where('vente_id', $vente->id)->delete();
+                //dd($article->quantite);
+                $vente->delete();
+                
+            }
+
+            Payement::where('commande_id', $id)->delete();
+            // Supprimer la consignation associée à la commande
+            Conditionnement::where('commande_id' , $id)->delete();
+            // Supprimer la commande elle-même
+            Commande::where('commande_id', $id)->delete();
+            
+            $commande->delete();
+
+            DB::commit();
+            return redirect()->route('commande.liste.vente')->with('success', 'Commande supprimée avec succès.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur lors de la suppression de la commande : ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Une erreur est survenue lors de la suppression de la commande.');
+        }
     }
 }

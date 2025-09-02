@@ -57,14 +57,14 @@
         @endif
         <li class="nav-item" role="presentation">
             <a class="nav-link text-decoration-none p-0" href="{{route('vente.page')}}">
-                <button class="nav-link active bg-dark text-white">
+                <button class="nav-link active bg-secondary text-white">
                     <i class="fas fa-cart-plus me-2 text-white"></i> Nouvel vente
                 </button>
             </a>
         </li>
     </ul>
     <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-dark text-white py-3">
+        <div class="card-header bg-secondary text-white py-3">
             <h5 class="mb-0 font-weight-bold text-white">
                 <i class="fas fa-user me-2"></i>INFORMATIONS CLIENT
             </h5>
@@ -93,7 +93,7 @@
     <!-- Main Card -->
     <div class="card shadow-sm">
         <!-- Card Header -->
-        <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white py-3">
+        <div class="card-header d-flex justify-content-between align-items-center bg-secondary text-white py-3">
             <h5 class="mb-0 font-weight-bold text-white">
                 <i class="fas fa-receipt me-2"></i>VENTE - DETAILS C-{{$commande->id}}
             </h5>
@@ -109,7 +109,7 @@
 
         <!-- Card Body -->
         <div class="card-body p-4">
-            
+
             @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
@@ -143,10 +143,10 @@
                         $cageotNonRendu = $vente['etat_cgt'] == 'non rendu';
                         @endphp
 
-                        <tr id="row-{{$vente['id']}}" class="{{ $highlightedId == $vente['id'] ? 'bg-info' : '' }}">
-                            <td class="fw-bold">{{$vente['id']}}</td>
-                            <td>{{$vente['article']}}</td>
-                            <td>
+                        <tr style="cursor: pointer;" id="row-{{$vente['id']}}" class="{{ $highlightedId == $vente['id'] ? 'bg-info' : '' }}">
+                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}" class="fw-bold">{{$vente['id']}}</td>
+                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}">{{$vente['article']}}</td>
+                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}">
                                 @if(($vente['consignation'] ?? 0) + ($vente['prix_cgt'] ?? 0) > 0)
                                 @if($vente['etat_client'] == 1)
                                 <span class="fw-bold text-danger">à rendre</span>
@@ -161,48 +161,57 @@
                                 <span>--</span>
                                 @endif
                             </td>
-                            <td>
+                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}">
                                 <span class="badge {{ $vente['etat'] == 'non rendu' ? 'bg-danger text-white' : 'bg-success text-white' }}">
                                     {{ $vente['etat'] ?($vente['prix_consignation'] == 0 ? 0 : $vente['consignation'] / $vente['prix_consignation']) : '--' }}
                                 </span>
                             </td>
-                            <td>
+                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}">
                                 <span class="badge {{ in_array($vente['etat_cgt'], ['non rendu']) ? 'bg-danger text-white' : 'bg-success text-white' }}">
                                     {{ $vente['etat_cgt'] ?($vente['consi_cgt'] == 0 ? 0 : $vente['prix_cgt'] / $vente['consi_cgt']):'--' }}
                                 </span>
                             </td>
-                            <td>
+                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}">
                                 <span class="badge {{ $vente['etat_payement'] == 0 ? 'bg-danger-light text-danger' : 'bg-success-light text-success' }}">
                                     <i class="fas {{ $vente['etat_payement'] == 0 ? 'fa-times-circle text-danger' : 'fa-check-circle text-success' }} me-1"></i>
                                     {{ $vente['etat_payement'] == 0 ? '' : '' }}
                                 </span>
                             </td>
-                            <td class="fw-bold">{{$vente['quantite']}} {{$vente['type_achat']}}</td>
-                            <td>
-                                {{ number_format($vente['prix_unitaire'], 0, ',', ' ') }} Ar
+                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}" class="fw-bold">{{$vente['quantite']}} {{$vente['type_achat']}}</td>
+                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}">
+                                <span>
+                                    {{ number_format(($vente['type_achat'] == 'cageot' || $vente['type_achat'] == 'pack') ? $vente['prix_cage']  : $vente['prix_unitaire'], 0, ',', ' ') }} Ar
+                                </span>
                                 @unless($vente['etat_client'] == 1 || $vente['etat'] == 'rendu' || $vente['etat'] == 'non consigné' || !isset($vente['etat']))
                                 + {{ number_format($vente['prix_consignation'], 0, ',', ' ') }} Ar
                                 @endunless
                             </td>
-                            <td>
+                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}">
                                 @php
-                                $prix_total = ($vente['type_achat'] === 'cageot' || $vente['type_achat'] === 'pack')
-                                ? ($vente['prix_unitaire'] * $vente['quantite'] * $vente['conditionnement']) + $vente['consignation'] + $vente['prix_cgt']
-                                : ($vente['prix_unitaire'] * $vente['quantite']) + $vente['consignation'] + $vente['prix_cgt'];
+                                $prix_base = $vente['cat'] == 'gros' ? $vente['prix_unitaire'] : $vente['prix_gros'];
 
-                                if($commande->etat_client == 1) {
+                                $prix_total = ($vente['type_achat'] === 'cageot' || $vente['type_achat'] === 'pack')
+                                ? ($vente['quantite'] * $vente['prix_cage']) + $vente['consignation'] + $vente['prix_cgt']
+                                : ($prix_base * $vente['quantite']) + $vente['consignation'] + $vente['prix_cgt'];
+
+                                if ($commande->etat_client == 1) {
                                 $prix_total -= $vente['consignation'] + $vente['prix_cgt'];
                                 }
+
                                 $prix_total_deconsigne = ($vente['type_achat'] === 'cageot' || $vente['type_achat'] === 'pack')
-                                ? ($vente['prix_unitaire'] * $vente['quantite'] * $vente['conditionnement'])
-                                : ($vente['prix_unitaire'] * $vente['quantite']);
+                                ? ($vente['quantite'] * $vente['prix_cage'])
+                                : ($prix_base * $vente['quantite']);
+
                                 $casse += $vente['casse'];
                                 $casse_cgt += $vente['casse_cgt'];
                                 $rendu_cgt += $vente['rendu_cgt'];
                                 $rendu_btl += $vente['rendu_btl'];
+
                                 $prix_total_consigne = $vente['consignation'] + $vente['prix_cgt'];
+
                                 $totalbtl += $vente['prix_consignation'] == 0 ? 0 : $vente['consignation'] / $vente['prix_consignation'];
                                 $totalcgt += $vente['consi_cgt'] == 0 ? 0 : $vente['prix_cgt'] / $vente['consi_cgt'];
+
                                 $totalconsigne += $prix_total_consigne;
                                 $deconsigneglobale += $prix_total_deconsigne;
                                 $prixGlobale += $prix_total;
@@ -210,6 +219,7 @@
 
                                 {{ number_format($prix_total, 0, ',', ' ') }} Ar
                             </td>
+
                             <td class="text-end">
                                 @if($vente['etat_client_commande'] != 2)
                                 <a href="#" data-toggle="modal" data-target="#venteModal2{{$vente['id']}}" class="text-warning">
@@ -223,7 +233,7 @@
                         <div class="modal fade" id="venteModal2{{$vente['id']}}" tabindex="-1" role="dialog" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered modal-lg">
                                 <div class="modal-content border-0 shadow-lg rounded-3">
-                                    <div class="modal-header bg-dark text-white border-bottom-0">
+                                    <div class="modal-header bg-secondary text-white border-bottom-0">
                                         <h5 class="modal-title">Déconsignation</h5>
                                         <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"></button>
                                     </div>
@@ -319,7 +329,9 @@
                                             }
                                             @endphp -->
 
-                                            <button type="submit" class="btn btn-primary">Valider</button>
+                                            <button type="submit" class="btn btn-primary" id="validerBtn">
+                                                Valider
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -424,7 +436,7 @@
 
                 <div class="table-responsive mb-4">
                     <table class="table table-bordered">
-                        @if($conditionnement != null)
+                        @if(optional($conditionnement->conditionnement)->id)
                         <thead class="table-secondary">
                             <tr>
                                 <th>ID</th>
@@ -484,23 +496,47 @@
 <div class="modal fade" id="venteModal2" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header bg-dark text-white">
+            <div class="modal-header bg-secondary text-white">
                 <h5 class="modal-title">Déconsignaton cageot</h5>
                 <button type="button" class="close" data-dismiss="modal">
                     <span>&times;</span>
                 </button>
             </div>
-            <form action="{{(route('payer.condi'))}}" method="POST">
+            <form action="{{ route('payer.condi') }}" method="POST">
                 @csrf
+
                 <div class="modal-body">
-                    <input type="hidden" name="commande_id" value="{{$commande_id}}">
-                    <p>Confirmer cette action?</p>
+                    <input type="hidden" name="commande_id" value="{{ $commande_id }}">
+                    <p>Confirmer cette action ?</p>
+
+                    <!-- Champs cachés liés au conditionnement -->
+                    <input type="hidden" name="conditionnement_id" value="{{ optional($conditionnement->conditionnement)->id ?? '' }}">
+                    <input type="hidden" name="cgt" value="{{ $cgt }}">
+                    <input type="hidden" name="nombre_cageot" value="{{ optional($conditionnement->conditionnement)->nombre_cageot ?? 0 }}">
+                    <input type="hidden" name="montant_total" value="{{ (optional($conditionnement->conditionnement)->nombre_cageot ?? 0) * $cgt }}">
+                    <input type="hidden" name="montant_tot" value="{{ $montantTotal }}">
+                    <input type="hidden" name="totalconsigne"
+                        value="{{ $totalconsigne + ((optional($conditionnement->conditionnement)->nombre_cageot ?? 0) * $cgt) }}">
+                    <input type="hidden" name="reste" value="{{ $reste }}">
+                    <input type="hidden" name="prixGlobale" value="{{ $prixGlobale }}">
+
+                    <!-- Quantité à rendre -->
+                    <input
+                        type="number"
+                        name="quantite_cageot"
+                        class="form-control"
+                        placeholder="Quantité de cageots à rendre"
+                        min="0"
+                        step="1"
+                        value="{{ optional($conditionnement->conditionnement)->nombre_cageot ?? 0 }}">
                 </div>
+
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">rendre</button>
+                    <button type="submit" class="btn btn-primary">Rendre</button>
                 </div>
             </form>
+
         </div>
     </div>
 </div>
@@ -509,7 +545,7 @@
         <div class="modal-content">
 
             <!-- Modal Header -->
-            <div class="modal-header bg-dark text-white">
+            <div class="modal-header bg-secondary text-white">
                 <h5 class="modal-title">Régler le paiement</h5>
                 <button type="button" class="close" data-dismiss="modal">
                     <span>&times;</span>
@@ -671,6 +707,13 @@
 </style>
 
 <script>
+    document.getElementById('achatForm').addEventListener('submit', function(e) {
+        const button = document.getElementById('validerBtn');
+        if (button) {
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Traitement...';
+        }
+    });
     document.addEventListener("DOMContentLoaded", function() {
         const montantRecu = document.getElementById("montant-recu");
         const montantRendu = document.getElementById("montant-rendu");
@@ -757,7 +800,7 @@
                 const value = parseFloat(this.value) || 0;
 
                 if (value > max) {
-                    this.value = max;
+                    this.value = '';
                     alert(`Le montant ne peut pas dépasser ${max} Ar`);
                 }
             });

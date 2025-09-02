@@ -7,10 +7,10 @@
     <title>Facture</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            color: rgb(0 0 0 / 80%)
+            font-family: "courier", sans-serif;
+            color: rgb(0 0 0 / 80%);
+            font-weight: bold;
         }
-
         .header {
             text-align: center;
             font-size: 18px;
@@ -97,13 +97,18 @@
             <strong>Date de commande :</strong><br>
             {{ \Carbon\Carbon::parse($commande->created_at)->format('d/m/Y') }}
         </div>
+        <br>
+        <div style="margin-top: 10px; margin-bottom: 10px;">
+                    ------------------------------------------------------------------------
+
+        </div>
     </div>
 
     <table>
         <thead>
             <tr>
                 <th>Article</th>
-                <th>Prix / unité</th>
+                <th>Prix unité</th>
                 <th>Quantité</th>
                 <th>Prix Total</th>
                 
@@ -121,28 +126,29 @@
             @endforeach
         </tbody>
     </table>
+        ------------------------------------------------------------------------
 
     <div class="summary-section">
         <div class="summary-row">
-            <span><strong>Montant liquide :</strong></span>
+            <span><strong>| Montant liquide :</strong></span>
             <span>{{ number_format($total, 2, ',', ' ') }} Ar</span>
         </div>
     </div>
 
     <div class="fin">
         <div>
-            <strong>Total TTC :</strong> {{ number_format($total, 2, ',', ' ') }} Ar
+            <strong>| Total TTC :</strong> {{ number_format($total, 2, ',', ' ') }} Ar
         </div>
         <div>
-            <strong>Total quantité cageots :</strong>
+            <strong>| Total quantité cageots :</strong>
             {{ $achats->where('type_achat', 'cageot')->sum('quantite') }} cageots,
         </div>
         <div>
-            <strong>Total quantité packs :</strong>
+            <strong>| Total quantité packs :</strong>
             {{ $achats->where('type_achat', 'pack')->sum('quantite') }} packs,
         </div>
         <div>
-            <strong>Total quantité bouteilles :</strong>
+            <strong>| Total quantité bouteilles :</strong>
             {{ $achats->where('type_achat', 'bouteilles')->sum('quantite') }} unités
 
         </div>

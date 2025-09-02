@@ -44,7 +44,7 @@
             </a>
         </li>
         @endif
-        @if($commande->etat_commande == 'non payé' && $commande->etat_client != 2)
+        <!-- @if($commande->etat_commande == 'non payé' && $commande->etat_client != 2)
         <li class="nav-item" role="presentation">
             <a class="nav-link text-decoration-none p-0" href="#" data-toggle="modal" data-target="#payement">
                 <button class="nav-link active bg-success text-white">
@@ -59,18 +59,18 @@
                     <i class="fas fa-cart-plus me-2 text-white"></i> Nouvel vente
                 </button>
             </a>
-        </li>
+        </li> -->
     </ul>
 
     <!-- Main Card -->
     <div class="card shadow-sm">
         <!-- Card Header -->
-        <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white py-3">
+        <div class="card-header d-flex justify-content-between align-items-center bg-secondary text-white py-3">
             <h5 class="mb-0 font-weight-bold text-white">
-                <i class="fas fa-receipt me-2"></i>ARTICLE - RENDU C-{{$commande->id}}
+                <i class="fas fa-receipt me-2"></i>ARTICLE - A RENDRE C-{{$commande->id}}
             </h5>
             <div class="d-flex gap-2">
-                <a href="{{route('pdf.download',['id' => $commande_id])}}" class="btn btn-warning btn-sm text-white">
+                <a href="{{route('rendrepdf.download',['id' => $commande->id ])}}" class="btn btn-warning btn-sm text-white">
                     <i class="fas fa-print me-1 text-white"></i>Facture
                 </a>
                 <a href="{{ url()->previous() }}" class="btn btn-primary btn-sm">
@@ -147,7 +147,7 @@
                             </td>
                             <td class="fw-bold">{{$vente['quantite']}} {{$vente['type_achat']}}</td>
                             <td>
-                                {{ number_format($vente['prix_unitaire'], 0, ',', ' ') }} Ar
+                                {{ number_format( ($vente['type_achat'] == 'cageot' || $vente['type_achat'] == 'pack') ? $vente['prix_cage'] : $vente['prix_unitaire'] , 0, ',', ' ') }} Ar
                                 @unless($vente['etat_client'] == 1 || $vente['etat'] == 'rendu' || $vente['etat'] == 'non consigné' || !isset($vente['etat']))
                                 + {{ number_format($vente['prix_consignation'], 0, ',', ' ') }} Ar
                                 @endunless
@@ -155,14 +155,14 @@
                             <td>
                                 @php
                                 $prix_total = ($vente['type_achat'] === 'cageot' || $vente['type_achat'] === 'pack')
-                                ? ($vente['prix_unitaire'] * $vente['quantite'] * $vente['conditionnement']) + $vente['consignation'] + $vente['prix_cgt']
+                                ? ($vente['prix_cage'] * $vente['quantite']) + $vente['consignation'] + $vente['prix_cgt']
                                 : ($vente['prix_unitaire'] * $vente['quantite']) + $vente['consignation'] + $vente['prix_cgt'];
 
                                 if($commande->etat_client == 1) {
                                 $prix_total -= $vente['consignation'] + $vente['prix_cgt'];
                                 }
                                 $prix_total_deconsigne = ($vente['type_achat'] === 'cageot' || $vente['type_achat'] === 'pack')
-                                ? ($vente['prix_unitaire'] * $vente['quantite'] * $vente['conditionnement'])
+                                ? ($vente['prix_cage'] * $vente['quantite'])
                                 : ($vente['prix_unitaire'] * $vente['quantite']);
                                 $casse += $vente['casse'];
                                 $casse_cgt += $vente['casse_cgt'];
@@ -176,20 +176,20 @@
                                 $prixGlobale += $prix_total;
                                 @endphp
 
-                                <!-- {{ number_format($prix_total, 0, ',', ' ') }} Ar -->
+                                {{ number_format($prix_total, 0, ',', ' ') }} Ar
                             </td>
                             <td class="text-end">
-                                @if($vente['etat_client_commande'] != 2 && $vente['prix_consignation'] > 0)
+                                <!-- @if($vente['etat_client_commande'] != 2 && $vente['prix_consignation'] > 0)
                                 <a href="#" data-toggle="modal" data-target="#venteModal2{{$vente['id']}}" class="text-warning">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                
+
                                 @endif
                                 @if($vente['prix_consignation'] == 0 && $vente['consi_cgt'] == 0)
                                 <a href="#" data-toggle="modal" data-target="#venteModal3{{$vente['id']}}" class="text-warning">
                                     <i class="fas fa-edit text-info"></i>
                                 </a>
-                                @endif
+                                @endif -->
                             </td>
                         </tr>
 
@@ -378,11 +378,11 @@
                                                 <div class="form-check mb-2">
                                                     <input class="form-check-input" type="checkbox" name="check_bouteille" id="check_bouteille{{$vente['id']}}">
                                                     <label class="form-check-label" for="check_bouteille{{$vente['id']}}">
-                                                    ({{ $vente['quantite'] ? $vente['quantite']: 0 }} {{$vente['type_achat']}}(s))</label>
-                                                    </div>
+                                                        ({{ $vente['quantite'] ? $vente['quantite']: 0 }} {{$vente['type_achat']}}(s))</label>
+                                                </div>
                                                 <input type="number" name="quantite_buteille" class="form-control" placeholder="nombre de bouteille à rendre"
                                                     max="{{ $vente['quantite'] ? $vente['quantite'] : 0 }}" min="1" step="1">
-                                                    @else
+                                                @else
                                                 <p class="">Déjà rendu</p>
                                                 @endif
                                             </div>
@@ -392,9 +392,9 @@
                                             <div class="mb-3" id="cageot_container">
                                                 @if($vente['type_achat'] == 'cageot' || $vente['type_achat'] == 'pack' && $vente['quantite'] != 0)
                                                 <div class="form-check mb-2">
-                                                    <input class="form-check-input" type="checkbox" name="check_cageot" id="check_cageot{{$vente['id']}}" >
+                                                    <input class="form-check-input" type="checkbox" name="check_cageot" id="check_cageot{{$vente['id']}}">
                                                     <label class="form-check-label" for="check_cageot{{$vente['id']}}">
-                                                         ({{$vente['quantite'] }} {{$vente['type_achat']}}(s))
+                                                        ({{$vente['quantite'] }} {{$vente['type_achat']}}(s))
                                                     </label>
                                                 </div>
                                                 <input type="number"
@@ -403,8 +403,7 @@
                                                     placeholder="nombre cageot à rendre"
                                                     max="{{ isset($vente['prix_cgt']) && isset($vente['consi_cgt']) && $vente['consi_cgt'] > 0 ? floor($vente['prix_cgt'] / $vente['consi_cgt']) : 0 }}"
                                                     min="0"
-                                                    step="1"
-                                                    >
+                                                    step="1">
                                                 @else
                                                 <p class="">Déjà rendu</p>
                                                 @endif
@@ -414,7 +413,7 @@
                                         <div class="modal-footer border-top-0">
                                             <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
                                             <button type="submit" class="btn btn-primary" {{$vente['quantite'] == 0 ? 'disabled' : ''}}>Rendre</button>
-                                           
+
                                         </div>
                                     </form>
                                 </div>
@@ -468,7 +467,7 @@
                             <td>{{$totalcgt + optional($conditionnement->conditionnement)->nombre_cageot}}</td>
                             <td></td>
                             <td>Total consignation:</td>
-                            <td colspan="2">{{ number_format($totalconsigne + (optional($conditionnement->conditionnement)->nombre_cageot * $cgt), 0, ',', ' ') }} Ar</td>
+                            <td colspan="2"></td>
                         </tr>
                         @php
                         // Calcul sécurisé avec gestion des valeurs nulles
@@ -477,38 +476,7 @@
                         $totalConsigne = ($totalconsigne ?? 0) + $valeurCageots;
                         $montantTotal = ($deconsigneglobale - $reste < 0 ? 0 : $deconsigneglobale - $reste) + $totalConsigne;
                             @endphp
-                            <tr class="table-active fw-bold">
-                            <td colspan="6" class="text-end"></td>
-                            <td></td>
-                            <td colspan="" class="text-danger">
-                                @if($commande->etat_commande == 'non payé' && $totalConsigne > 0)
-                                Reste à payer
-                                @elseif($commande->etat_commande == 'payé' && $totalConsigne == 0)
-                                <span class="text-success">rendu</span>
-
-                                @elseif($commande->etat_commande == 'non payé' && $totalConsigne == 0)
-                                <span class="text-success">reglé</span>
-                                @else
-                                <span class="text-success">reglé</span>
-                                @endif
-                            </td>
-                            <!-- <td colspan="2">{{ number_format($deconsigneglobale - $reste, 0, ',', ' ') }} Ar</td> -->
-                            <td colspan="2" class="text-end pe-4 fw-bold">
-
-
-                                <!-- Affichage détaillé -->
-                                <div class="d-flex flex-column">
-                                    <!-- <span>{{ $deconsigneglobale - $reste < 0 ? 0 : $deconsigneglobale - $reste }} Ar (déconsigne)</span> -->
-                                    <span class="text-success">+ {{ number_format($totalconsigne ?? 0, 0, ',', ' ') }} Ar (consigne bouteilles)</span>
-                                    @if($nombreCageots > 0)
-                                    <span class="text-info">+ {{ number_format($valeurCageots, 0, ',', ' ') }} Ar ({{ $nombreCageots }} cageots)</span>
-                                    @endif
-                                    <div class="border-top mt-1 pt-1">
-                                        <span class="fw-bolder">= {{ number_format($totalconsigne, 0, ',', ' ') }} Ar (total)</span>
-                                    </div>
-                                </div>
-                            </td>
-                            </tr>
+                            
                     </tbody>
                 </table>
 
@@ -626,17 +594,17 @@
                     <input type="hidden" name="montant_tot"
                         value="{{ $montantTotal}}">
                     @if($deconsigneglobale - $reste <= 0)
-                    <p class="text-danger">Le payement a déjà pour l'eau a déjà été fait.</p>
-                    @else
-                    <p>voulez-vous regler le payement de cette commande {{$commande_id}}? somme restant à payer <span class="text-danger">{{$deconsigneglobale - $reste}}</span> Ar </p>
-                    <input type="number" name="somme" class="form-control" placeholder="montant" max="{{$prixGlobale - $reste}}" >
-                    @endif
-                    <div class="m-5 form-group">
-                        <input type="checkbox" id="all" name="all" class="form-check-input">
-                        <label for="all">Tout regler en Argent (Avec BTL + CGT) <br>
-                        <span class="fw-bold text-success">{{$montantTotal}} Ar</span>
-                    </label>
-                    </div>
+                        <p class="text-danger">Le payement a déjà pour l'eau a déjà été fait.</p>
+                        @else
+                        <p>voulez-vous regler le payement de cette commande {{$commande_id}}? somme restant à payer <span class="text-danger">{{$deconsigneglobale - $reste}}</span> Ar </p>
+                        <input type="number" name="somme" class="form-control" placeholder="montant" max="{{$prixGlobale - $reste}}">
+                        @endif
+                        <div class="m-5 form-group">
+                            <input type="checkbox" id="all" name="all" class="form-check-input">
+                            <label for="all">Tout regler en Argent (Avec BTL + CGT) <br>
+                                <span class="fw-bold text-success">{{$montantTotal}} Ar</span>
+                            </label>
+                        </div>
                 </div>
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
@@ -671,56 +639,56 @@
         });
     });
     document.addEventListener('DOMContentLoaded', function() {
-    // Gestion de la checkbox "Tout régler"
-    const allCheckbox = document.getElementById('all');
-    const sommeInput = document.querySelector('input[name="somme"]');
-    
-    if (allCheckbox && sommeInput) {
-        allCheckbox.addEventListener('change', function() {
-            if (this.checked) {
-                // Remplir automatiquement avec le montant max quand "Tout régler" est coché
-                sommeInput.value = '';
-                sommeInput.readOnly = true;
-            } else {
-                sommeInput.value = '';
-                sommeInput.readOnly = false;
-            }
-        });
+        // Gestion de la checkbox "Tout régler"
+        const allCheckbox = document.getElementById('all');
+        const sommeInput = document.querySelector('input[name="somme"]');
 
-        // Validation du montant saisi
-        sommeInput.addEventListener('input', function() {
-            const max = parseFloat(this.max);
-            const value = parseFloat(this.value) || 0;
-            
-            if (value > max) {
-                this.value = max;
-                alert(`Le montant ne peut pas dépasser ${max} Ar`);
-            }
-        });
-    }
-
-    // Gestion soumission du formulaire
-    const paymentForm = document.querySelector('.modal-body').closest('form');
-    if (paymentForm) {
-        paymentForm.addEventListener('submit', function(e) {
-            const reste = parseFloat("{{$deconsigneglobale - $reste}}");
-            
-            if (reste > 0) {
-                const montantSaisi = parseFloat(sommeInput.value) || 0;
-                if (montantSaisi <= 0) {
-                    e.preventDefault();
-                    alert('Veuillez saisir un montant valide');
-                    return;
+        if (allCheckbox && sommeInput) {
+            allCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    // Remplir automatiquement avec le montant max quand "Tout régler" est coché
+                    sommeInput.value = '';
+                    sommeInput.readOnly = true;
+                } else {
+                    sommeInput.value = '';
+                    sommeInput.readOnly = false;
                 }
-            }
-            
-            // Afficher un loader pendant le traitement
-            const submitBtn = paymentForm.querySelector('[type="submit"]');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
-        });
-    }
-});
+            });
+
+            // Validation du montant saisi
+            sommeInput.addEventListener('input', function() {
+                const max = parseFloat(this.max);
+                const value = parseFloat(this.value) || 0;
+
+                if (value > max) {
+                    this.value = max;
+                    alert(`Le montant ne peut pas dépasser ${max} Ar`);
+                }
+            });
+        }
+
+        // Gestion soumission du formulaire
+        const paymentForm = document.querySelector('.modal-body').closest('form');
+        if (paymentForm) {
+            paymentForm.addEventListener('submit', function(e) {
+                const reste = parseFloat("{{$deconsigneglobale - $reste}}");
+
+                if (reste > 0) {
+                    const montantSaisi = parseFloat(sommeInput.value) || 0;
+                    if (montantSaisi <= 0) {
+                        e.preventDefault();
+                        alert('Veuillez saisir un montant valide');
+                        return;
+                    }
+                }
+
+                // Afficher un loader pendant le traitement
+                const submitBtn = paymentForm.querySelector('[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
+            });
+        }
+    });
 </script>
 
 
