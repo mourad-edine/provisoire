@@ -3,96 +3,71 @@
 @section('title', 'Gestion des stocks')
 
 @section('content')
-<div class="container-fluid">
+<div class="w-full px-4">
 
     <!-- Onglets -->
-    <ul class="nav nav-tabs mb-1 border-bottom" id="parametresTabs" role="tablist">
-        <li class="nav-item me-2" role="presentation">
-            <a href="{{ route('stock.liste') }}" class="nav-link {{ request()->routeIs('stock.liste') ? 'active' : '' }}">
-                <i class="fas fa-warehouse me-1"></i>Listes globales
+    <ul class="flex border-b mb-3" id="parametresTabs" role="tablist">
+        <li class="mr-2" role="presentation">
+            <a href="{{ route('stock.liste') }}" 
+               class="inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium 
+                      {{ request()->routeIs('stock.liste') ? 'border-black text-black' : 'border-transparent text-gray-600 hover:text-black hover:border-gray-300' }}">
+                <i class="fas fa-warehouse mr-2"></i> Listes globales
             </a>
         </li>
-        <li class="nav-item me-2" role="presentation">
-            <a href="{{ route('stock.faible.liste') }}" class="nav-link {{ request()->routeIs('stock.faible.liste') ? 'active' : '' }}">
-                <i class="fas fa-exclamation-triangle me-1"></i>Stocks faibles
+        <li class="mr-2" role="presentation">
+            <a href="{{ route('stock.faible.liste') }}" 
+               class="inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium 
+                      {{ request()->routeIs('stock.faible.liste') ? 'border-black text-black' : 'border-transparent text-gray-600 hover:text-black hover:border-gray-300' }}">
+                <i class="fas fa-exclamation-triangle mr-2"></i> Stocks faibles
             </a>
         </li>
-        <li class="nav-item" role="presentation">
-            <a href="{{ route('stock.categorie.liste') }}" class="nav-link {{ request()->routeIs('stock.categorie.liste') ? 'active' : '' }}">
-                <i class="fas fa-th-large me-1"></i>Catégories
+        <li role="presentation">
+            <a href="{{ route('stock.categorie.liste') }}" 
+               class="inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium 
+                      {{ request()->routeIs('stock.categorie.liste') ? 'border-black text-black' : 'border-transparent text-gray-600 hover:text-black hover:border-gray-300' }}">
+                <i class="fas fa-th-large mr-2"></i> Catégories
             </a>
         </li>
     </ul>
 
     <!-- Cartes -->
-    <div class="row">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         @forelse($categories as $categorie)
         @php
             $iconList = ['box-open', 'warehouse', 'cubes', 'pallet'];
             $icon = $iconList[$loop->index % count($iconList)];
         @endphp
 
-        <div class="col-xl-3 col-md-6 mb-2">
-            <a href="{{ route('stock.liste.id', ['id' => $categorie->id]) }}" class="text-decoration-none text-reset">
-                <div class="card h-100 border border-secondary-subtle shadow-sm hover-lift">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted text-uppercase small mb-1">{{ $categorie->nom }}</h6>
-                                <h4 class="mb-0 fw-semibold">{{ $categorie->articles_count }} <small class="text-muted">articles</small></h4>
-                            </div>
-                           
+        <a href="{{ route('stock.liste.id', ['id' => $categorie->id]) }}" class="block">
+            <div class="bg-white h-full border border-gray-200 rounded shadow-sm transform transition hover:-translate-y-1 hover:shadow-md">
+                <div class="p-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h6 class="text-gray-500 uppercase text-xs mb-1">{{ $categorie->nom }}</h6>
+                            <h4 class="text-lg font-semibold">
+                                {{ $categorie->articles_count }}
+                                <small class="text-gray-500">articles</small>
+                            </h4>
                         </div>
                     </div>
                 </div>
-            </a>
-        </div>
+            </div>
+        </a>
+
         @empty
-        <div class="col-12">
-            <div class="card text-center shadow-sm border">
-                <div class="card-body py-5">
-                    <i class="fas fa-box-open fa-3x text-secondary mb-3"></i>
-                    <h5 class="fw-semibold">Aucune catégorie disponible</h5>
-                    <p class="text-muted">Vous n'avez pas encore créé de catégories pour vos articles.</p>
-                    <a href="#" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
-                        <i class="fas fa-plus me-1"></i>Ajouter une catégorie
-                    </a>
-                </div>
+        <div class="col-span-full">
+            <div class="bg-white border border-gray-200 rounded shadow-sm text-center p-8">
+                <i class="fas fa-box-open text-4xl text-gray-400 mb-4"></i>
+                <h5 class="text-lg font-semibold">Aucune catégorie disponible</h5>
+                <p class="text-gray-500 mb-4">Vous n'avez pas encore créé de catégories pour vos articles.</p>
+                <a href="#" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-400 rounded text-gray-700 hover:bg-gray-100 transition"
+                   data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                    <i class="fas fa-plus mr-2"></i> Ajouter une catégorie
+                </a>
             </div>
         </div>
         @endforelse
     </div>
 </div>
-
-<style>
-    .hover-lift {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-   
-
-    .icon-square {
-        width: 2.75rem;
-        height: 2.75rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 0.25rem;
-        font-size: 1.25rem;
-    }
-
-    .nav-tabs .nav-link {
-        color: #333;
-        font-weight: 500;
-    }
-
-    .nav-tabs .nav-link.active {
-        background-color: #f8f9fa;
-        border-bottom: 2px solid #000;
-    }
-
-    .card {
-        border-radius: 0px;
-    }
-</style>
 @endsection

@@ -3,231 +3,182 @@
 @section('title', 'Accueil')
 
 @section('content')
-<div class="container-fluid">
-
-    <!-- Page Heading -->
-
-
-    <!-- DataTales Example -->
-
-    <div class="card shadow mb-4">
-        <div class="card-header bg-light d-flex justify-content-between align-items-center">
-            <div class="d-flex">
-                <i class="fas fa-users fa-2x " style="font-size : 20px;"></i>
-                <h5 class="mb-2 text-dark fw-bold">CLIENTS</h5>
+<div class="container mx-auto px-4 py-6">
+    <!-- Client Table -->
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="bg-gray-100 p-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-users text-xl text-gray-800 mr-2"></i>
+                <h5 class="text-lg font-bold text-gray-800">CLIENTS</h5>
             </div>
-            <button class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#addArticleModal">
+            <button class="bg-gray-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-gray-600" onclick="openModal('addArticleModal')">
                 <i class="fas fa-plus-circle mr-2"></i>Ajouter client
             </button>
         </div>
-        <div class="d-flex flex-wrap align-items-center gap-2 mt-3 ml-3 mb-md-0">
-            <form action="{{ route('client.liste') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2">
-                <!-- Champ de recherche principal -->
-                <div class="position-relative">
-                    <input type="text" class="form-control form-control-sm" name="search" placeholder="Rechercher..." value="{{ old('search', request('search')) }}">
+        <div class="p-4 flex flex-wrap gap-4">
+            <form action="{{ route('client.liste') }}" method="GET" class="flex flex-wrap gap-4">
+                <div class="relative">
+                    <input type="text" name="search" class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Rechercher..." value="{{ old('search', request('search')) }}">
                 </div>
-
-                <!-- Filtres supplémentaires -->
-
-
-                <!-- Tri des résultats -->
-                <div class="dropdown">
-                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-sort me-1"></i> Trier par
+                <div class="relative">
+                    <button type="button" class="border rounded-lg px-3 py-2 text-sm bg-white text-gray-600 hover:bg-gray-50 flex items-center" onclick="toggleSortDropdown()">
+                        <i class="fas fa-sort mr-1"></i>Trier par
                     </button>
-                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-                        <li><button class="dropdown-item" type="submit" value="nom_asc">Nom (A-Z)</button></li>
-                        <li><button class="dropdown-item" type="submit" value="nom_desc">Nom (Z-A)</button></li>
-                        <li><button class="dropdown-item" type="submit" value="prix_asc">Prix (Croissant)</button></li>
-                        <li><button class="dropdown-item" type="submit" value="prix_desc">Prix (Décroissant)</button></li>
-                        <li><button class="dropdown-item" type="submit" value="stock_asc">Stock (Croissant)</button></li>
-                        <li><button class="dropdown-item" type="submit" value="stock_desc">Stock (Décroissant)</button></li>
-                    </ul>
+                    <div id="sortDropdown" class="absolute hidden mt-2 w-48 bg-white border rounded-lg shadow-lg z-10">
+                        <button type="submit" name="sort" value="nom_asc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Nom (A-Z)</button>
+                        <button type="submit" name="sort" value="nom_desc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Nom (Z-A)</button>
+                        <button type="submit" name="sort" value="prix_asc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Prix (Croissant)</button>
+                        <button type="submit" name="sort" value="prix_desc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Prix (Décroissant)</button>
+                        <button type="submit" name="sort" value="stock_asc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Stock (Croissant)</button>
+                        <button type="submit" name="sort" value="stock_desc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Stock (Décroissant)</button>
+                    </div>
                 </div>
             </form>
         </div>
-        <div class="card-body">
+        <div class="p-4">
             @if(session('success'))
-            <div class="alert alert-success">
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4">
                 {{ session('success') }}
             </div>
             @endif
-            <div class="table-responsive">
-                <table class="table table-striped table-hover table-bordered text-center align-middle" id="dataTable" width="100%" cellspacing="0">
-                    <thead class="thead-dark">
+            <div class="overflow-x-auto">
+                <table class="w-full text-center border-collapse">
+                    <thead class="bg-gray-800 text-white">
                         <tr>
-                            <th>id</th>
-                            <th>nom</th>
-                            <th>numero</th>
-                            <th>reference</th>
-                            <th>bouteille(s)</th>
-                            <th>cageot(s)</th>
-                            <th>créance BTL+CGT</th>
-                            <th>Reste à payer</th>
-                            <th>Commande non payé</th>
-                            <th>date creation</th>
-                            <th>options</th>
-
+                            <th class="p-3">id</th>
+                            <th class="p-3">nom</th>
+                            <th class="p-3">numero</th>
+                            <th class="p-3">reference</th>
+                            <th class="p-3">bouteille(s)</th>
+                            <th class="p-3">cageot(s)</th>
+                            <th class="p-3">créance BTL+CGT</th>
+                            <th class="p-3">Reste à payer</th>
+                            <th class="p-3">Commande non payé</th>
+                            <th class="p-3">date creation</th>
+                            <th class="p-3">options</th>
                         </tr>
                     </thead>
-                    <style>
-                        .clickable-row {
-                            cursor: pointer;
-                        }
-
-                        .clickable-row:hover {
-                            background-color: #f9f9f9;
-                        }
-                    </style>
                     <tbody>
                         @forelse($clients as $client)
-
-                        <tr class="clickable-row" data-href="{{route('client.commande' , ['id'=>$client['id']])}}">
-                            <td>
-                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}">{{$client['id']}}</i></button>
-                            </td>
-                            <td>
-                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}"> {{$client['nom']}}</button>
-
-                            <td>
-                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}"> {{$client['numero'] ? $client['numero']  :'pas de numero'}}</button>
-
-                            <td>
-                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}">{{$client['reference'] ? $client['reference']  :'pas de reference'}}</button>
-
-                            <td>
-                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}">{{$client['sum_btl']}}</button>
-                            </td>
-                            <td>
-                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}">{{$client['sum_cgt'] + $client['conditionnement']}}</button>
-                            </td>
-                            <td>
-                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}"> {{ number_format($client['consignation_sum_prix'] + $client['consignation_sum_prix_cgt'] + ($client['conditionnement'] * $cgt), 0, ',', ' ') .'Ar'}}</button>
-
-                            </td>
-                            <td>
-                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}"> {{$client['reste_a_payer'].' Ar'}}</button>
-
-                            </td>
-
-                            <!-- <td>{{ number_format($client['commandes_total'], 0, ',', ' ') .'Ar'}}</td> -->
-                            <td>
-                                <a style="text-decoration: none;" class="fw-bold text-{{$client['nombre_com_no_paye'] > 0 ? 'danger' : 'success'}}" href="{{route('client.commande' , ['id'=>$client['id']])}}">{{$client['nombre_com_no_paye']}}</a>
-                            </td>
-
-                            <td>
-                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}">{{$client['created_at']}}</button>
-                            </td>
-
-                            <td>
-                                <a style="text-decoration: none;" href="{{route('client.commande' , ['id'=>$client['id']])}}"><i class="fas fa-user-alt"></i></button>
-
-                                    <a style="text-decoration: none;" href="#" data-toggle="modal" data-target="#supprimerArticleModal{{$client['id']}}" class="ml-3"><i class="fas fa-trash-alt text-danger"></i></button>
-
+                        <tr class="hover:bg-gray-50 cursor-pointer clickable-row" data-href="{{ route('client.commande', ['id' => $client['id']]) }}">
+                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['id'] }}</a></td>
+                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['nom'] }}</a></td>
+                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['numero'] ? $client['numero'] : 'pas de numero' }}</a></td>
+                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['reference'] ? $client['reference'] : 'pas de reference' }}</a></td>
+                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['sum_btl'] }}</a></td>
+                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['sum_cgt'] + $client['conditionnement'] }}</a></td>
+                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ number_format($client['consignation_sum_prix'] + $client['consignation_sum_prix_cgt'] + ($client['conditionnement'] * $cgt), 0, ',', ' ') }} Ar</a></td>
+                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['reste_a_payer'] }} Ar</a></td>
+                            <td class="p-3"><a class="font-bold {{ $client['nombre_com_no_paye'] > 0 ? 'text-red-500' : 'text-green-500' }} hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['nombre_com_no_paye'] }}</a></td>
+                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['created_at'] }}</a></td>
+                            <td class="p-3">
+                                <a class="text-gray-600 hover:text-gray-800" href="{{ route('client.commande', ['id' => $client['id']]) }}"><i class="fas fa-user-alt"></i></a>
+                                <a class="text-red-500 hover:text-red-700 ml-3" href="#" onclick="openDeleteModal('supprimerArticleModal{{ $client['id'] }}')"><i class="fas fa-trash-alt"></i></a>
                             </td>
                         </tr>
-                        <div class="modal fade" id="supprimerArticleModal{{$client['id']}}" tabindex="-1" aria-labelledby="supprimerArticleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="addArticleModalLabel">suppression </h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="form-group">
-                                            <p>voulez-vous vraiment supprimer ce client ?</p>
-                                        </div>
-
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                                            <a style="text-decoration: none;" href="{{route('delete.client' , ['id' => $client['id'] ] )}}"><button type="button" class="btn btn-danger">supprimer</button></a>
-
-                                        </div>
-                                        </form>
-                                    </div>
+                        <!-- Delete Modal -->
+                        <div id="supprimerArticleModal{{ $client['id'] }}" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+                            <div class="bg-white rounded-lg w-full max-w-md">
+                                <div class="bg-gray-800 text-white p-4 rounded-t-lg flex justify-between items-center">
+                                    <h5 class="text-lg font-bold">Suppression</h5>
+                                    <button onclick="closeModal('supprimerArticleModal{{ $client['id'] }}')" class="text-white hover:text-gray-200">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="p-4">
+                                    <p>Voulez-vous vraiment supprimer ce client ?</p>
+                                </div>
+                                <div class="p-4 bg-gray-100 rounded-b-lg flex justify-end gap-2">
+                                    <button type="button" onclick="closeModal('supprimerArticleModal{{ $client['id'] }}')" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Annuler</button>
+                                    <a href="{{ route('delete.client', ['id' => $client['id']]) }}" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Supprimer</a>
                                 </div>
                             </div>
                         </div>
                         @empty
                         <tr>
-
-                            <td class="text-warning" colspan="11">
-                                <div class="alert alert-warning mb-3">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>
-                                    Pas de donnée trouvé --
+                            <td colspan="11" class="p-4">
+                                <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>Pas de donnée trouvée
                                 </div>
                             </td>
                         </tr>
                         @endforelse
-
                     </tbody>
                 </table>
-                <div class="d-flex justify-content-start mt-3">
-                    {{ $clients->links('pagination::bootstrap-4') }} <!-- Ou 'pagination::bootstrap-5' -->
+                <div class="mt-4">
+                    {{ $clients->links('pagination::bootstrap-4') }}
                 </div>
             </div>
         </div>
     </div>
 
-</div>
-
-
-<!-- Modal d'ajout d'article -->
-<div class="modal fade" id="addArticleModal" tabindex="-1" aria-labelledby="addArticleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addArticleModalLabel">Ajouter un client</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+    <!-- Add Client Modal -->
+    <div id="addArticleModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg w-full max-w-md">
+            <div class="bg-gray-800 text-white p-4 rounded-t-lg flex justify-between items-center">
+                <h5 class="text-lg font-bold">Ajouter un client</h5>
+                <button onclick="closeModal('addArticleModal')" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="p-4">
                 <form action="{{ route('client.store') }}" method="POST">
                     @csrf
-                    <div class="form-group">
-                        <label for="nom">Nom client</label>
-                        <input type="text" class="form-control" id="nom" name="nom" required>
+                    <div class="mb-4">
+                        <label for="nom" class="block text-sm font-semibold text-gray-700">Nom client</label>
+                        <input type="text" id="nom" name="nom" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     </div>
-                    <div class="form-group">
-                        <label for="categorie">numero</label>
-                        <input type="text" class="form-control" id="numero" name="numero" required>
+                    <div class="mb-4">
+                        <label for="numero" class="block text-sm font-semibold text-gray-700">Numéro</label>
+                        <input type="text" id="numero" name="numero" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     </div>
-
-                    <div class="form-group">
-                        <input type="checkbox" id="ref" name="ref">
-                        <label for="ref">Ajouter une reference</label>
+                    <div class="mb-4">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="ref" name="ref" class="mr-2">
+                            <label for="ref" class="text-sm text-gray-700">Ajouter une référence</label>
+                        </div>
                     </div>
-                    <div class="form-group" id="referenceContainer" style="display:none;">
-                        <label for="reference">reference</label>
-                        <input type="text" class="form-control" id="reference" name="reference">
+                    <div id="referenceContainer" class="mb-4 hidden">
+                        <label for="reference" class="block text-sm font-semibold text-gray-700">Référence</label>
+                        <input type="text" id="reference" name="reference" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-primary">Ajouter</button>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" onclick="closeModal('addArticleModal')" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Annuler</button>
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Ajouter</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+
 <script>
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    function openDeleteModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+    }
+
+    function toggleSortDropdown() {
+        document.getElementById('sortDropdown').classList.toggle('hidden');
+    }
+
     $(document).ready(function() {
         $('.clickable-row').click(function(e) {
-            // Évite les conflits si on clique sur une icône ou un lien
             if (!$(e.target).is('a, i, button')) {
                 window.location = $(this).data('href');
             }
         });
-    });
-</script>
-<script>
-    document.getElementById('ref').addEventListener('change', function() {
-        document.getElementById('referenceContainer').style.display = this.checked ? 'block' : 'none';
+
+        document.getElementById('ref').addEventListener('change', function() {
+            document.getElementById('referenceContainer').classList.toggle('hidden', !this.checked);
+        });
     });
 </script>
 @endsection

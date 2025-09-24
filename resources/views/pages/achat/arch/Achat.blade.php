@@ -195,68 +195,66 @@
 
 
     <!-- Main Content -->
-    <div class="container mx-auto px-10 py-6">
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-            <!-- Header -->
-            <div class=" text-dark p-4 flex justify-between items-center border-b-gray-600 border-2">
-                <h5 class="text-lg font-bold flex items-center"><i class="fas fa-cash-register mr-2"></i>Nouvelle achat</h5>
-                <a href="{{ url()->previous() }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+    <div class="container mx-auto px-40 py-6">
+        <div class="bg-white shadow-lg rounded-lg p-4">
+            <div class="bg-gray-600 text-white p-4 rounded-t-lg flex justify-between items-center">
+                <h5 class="text-lg font-bold"><i class="fas fa-cash-register mr-2"></i>Nouvelle achat</h5>
+                <a href="{{ url()->previous() }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 flex items-center">
                     <i class="fas fa-arrow-left mr-2"></i>Retour
                 </a>
             </div>
-
-
-            <!-- Messages d'erreur -->
-            @if(session('error') || $errors->any())
+            @if(session('error'))
             <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 flex justify-between items-center">
-                <div>
-                    <strong>Erreur!</strong> {{ session('error') ?? 'Veuillez remplir tous les champs requis.' }}
-                </div>
+                <div><strong>Erreur!</strong> {{ session('error') }}</div>
                 <button onclick="this.parentElement.style.display='none'" class="text-red-700 hover:text-red-900">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             @endif
-
-            <!-- Formulaire -->
+            @if($errors->any())
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 flex justify-between items-center">
+                <div><strong>Erreur!</strong> Veuillez remplir tous les champs requis.</div>
+                <button onclick="this.parentElement.style.display='none'" class="text-red-700 hover:text-red-900">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            @endif
             <form id="achatForm" method="POST" action="{{ route('achat.store') }}">
                 @csrf
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Numéro de commande</label>
-                        <input type="text" name="numero" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <label for="numero_commande" class="block text-sm font-semibold text-gray-700 mb-1">Numéro de commande</label>
+                        <input type="text" id="numero_commande" name="numero" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Date</label>
-                        <input type="date" name="dateachat" value="{{ date('Y-m-d') }}" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <label for="dateachat" class="block text-sm font-semibold text-gray-700 mb-1">Date</label>
+                        <input type="date" id="dateachat" name="dateachat" value="{{ date('Y-m-d') }}" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Fournisseur</label>
-                        <select name="fournisseur_id" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 select2" required>
+                        <label for="fournisseur" class="block text-sm font-semibold text-gray-700 mb-1">Fournisseur</label>
+                        <select id="fournisseur" name="fournisseur_id" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 select2" required>
                             @foreach($fournisseurs as $fournisseur)
                             <option value="{{ $fournisseur->id }}">{{ $fournisseur->nom }}</option>
                             @endforeach
                         </select>
                     </div>
                 </div>
-
-                <!-- Tableau articles -->
-                <div class="overflow-x-auto px-4 mb-4">
-                    <table class="w-full table-auto border border-gray-500 rounded-lg bg-gray-50">
-                        <thead class="bg-gray-600 text-white">
+                <div class="overflow-x-auto mb-6">
+                    <table class="w-full text-center border-collapse bg-gray-50 rounded-lg">
+                        <thead class="bg-gray-800 text-white">
                             <tr>
-                                <th class="p-3 border border-gray-500">Article</th>
-                                <th class="p-3 border border-gray-500">Quantité (Cageot/Pack)</th>
-                                <th class="p-3 border border-gray-500">Quantité (Unité)</th>
-                                <th class="p-3 border border-gray-500">Total (Ar)</th>
-                                <th class="p-3 border border-gray-500">Prix unité (Ar)</th>
-                                <th class="p-3 border border-gray-500">Action</th>
+                                <th class="p-3">Article</th>
+                                <th class="p-3">Quantité (Cageot/Pack)</th>
+                                <th class="p-3">Quantité (Unité)</th>
+                                <th class="p-3">Total (Ar)</th>
+                                <th class="p-3">Prix unité (Ar)</th>
+                                <th class="p-3">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="articlesContainer" class="divide-y divide-gray-400">
+                        <tbody id="articlesContainer">
                             <tr class="article-row hover:bg-gray-100">
-                                <td class="p-3 border border-gray-400">
-                                    <select class="w-full border border-gray-400 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 select2 article-select" data-index="0">
+                                <td class="p-3">
+                                    <select class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 select2 article-select" data-index="0">
                                         @foreach($articles as $article)
                                         <option value="{{ $article->id }}"
                                             data-prix="{{ $article->prix_achat }}"
@@ -268,19 +266,19 @@
                                         @endforeach
                                     </select>
                                 </td>
-                                <td class="p-3 border border-gray-400">
-                                    <input type="number" class="w-full border border-gray-400 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 quantite-input" data-index="0" min="1">
+                                <td class="p-3">
+                                    <input type="number" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 quantite-input" data-index="0" min="1">
                                 </td>
-                                <td class="p-3 border border-gray-400">
-                                    <input type="number" class="w-full border border-gray-400 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 quantiteunite-input" data-index="0" min="1">
+                                <td class="p-3">
+                                    <input type="number" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 quantiteunite-input" data-index="0" min="1">
                                 </td>
-                                <td class="p-3 border border-gray-400">
-                                    <input type="number" class="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-100 total-input" data-index="0">
+                                <td class="p-3">
+                                    <input type="number" class="w-full border rounded-lg px-3 py-2 bg-gray-100 total-input" data-index="0">
                                 </td>
-                                <td class="p-3 border border-gray-400">
-                                    <input type="number" class="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-100 prixunite-input" data-index="0" min="1" step="0.01" readonly>
+                                <td class="p-3">
+                                    <input type="number" class="w-full border rounded-lg px-3 py-2 bg-gray-100 prixunite-input" data-index="0" min="1" step="0.01" readonly>
                                 </td>
-                                <td class="p-3 text-center border border-gray-400">
+                                <td class="p-3">
                                     <button type="button" class="text-red-500 hover:text-red-700 remove-article" data-index="0">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -289,21 +287,16 @@
                         </tbody>
                     </table>
                 </div>
-
-
-                <!-- Ajouter article + Total -->
-                <div class="flex justify-between items-center px-4 mb-4">
-                    <button type="button" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center" id="ajouterArticleBtn">
+                <div class="flex justify-between items-center mb-6">
+                    <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 flex items-center" id="ajouterArticleBtn">
                         <i class="fas fa-plus mr-2"></i>Ajouter un article
                     </button>
                     <div class="text-lg font-bold text-green-600">
                         <span id="grandTotal">0</span> Ar
                     </div>
                 </div>
-
-                <!-- Bouton valider -->
-                <div class="flex justify-end px-4 mb-4">
-                    <button type="button" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center" id="validerCommande">
+                <div class="flex justify-end">
+                    <button type="button" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 flex items-center" id="validerCommande">
                         <i class="fas fa-check-circle mr-2"></i>Valider la commande
                     </button>
                 </div>
@@ -311,12 +304,14 @@
             </form>
         </div>
 
-        <!-- Modal confirmation -->
-        <div id="validationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <!-- Validation Modal -->
+        <div id="validationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-[1070]">
             <div class="bg-white rounded-lg shadow-lg max-w-md w-full">
-                <div class="bg-gray-800 text-white p-4 flex justify-between items-center rounded-t-lg">
-                    <h5 class="text-lg font-bold flex items-center"><i class="fas fa-check-circle mr-2"></i>Confirmation de commande</h5>
-                    <button onclick="closeModal('validationModal')" class="text-white hover:text-gray-200"><i class="fas fa-times"></i></button>
+                <div class="bg-gray-800 text-white p-4 rounded-t-lg flex justify-between items-center">
+                    <h5 class="text-lg font-bold"><i class="fas fa-check-circle mr-2"></i>Confirmation de commande</h5>
+                    <button onclick="closeModal('validationModal')" class="text-white hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
                 <div class="p-4 text-center">
                     <i class="fas fa-question-circle text-4xl text-yellow-500 mb-4"></i>
@@ -337,7 +332,6 @@
             </div>
         </div>
     </div>
-
 
     <script>
         function toggleNavbar() {
@@ -420,39 +414,38 @@
             $('#ajouterArticleBtn').click(function() {
                 articleIndex++;
                 const newRow = `
-                        <tr class="article-row hover:bg-gray-100">
-            <td class="p-3 border border-gray-400">
-                <select class="w-full border border-gray-400 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 select2 article-select" data-index="${articleIndex}">
-                    @foreach($articles as $article)
-                    <option value="{{ $article->id }}"
-                            data-prix="{{ $article->prix_achat }}"
-                            data-condi="{{ $article->conditionnement }}"
-                            data-prixcgt="{{ $article->prix_cgt }}"
-                            data-consignation="{{ $article->prix_consignation }}">
-                        {{ $article->nom }}
-                    </option>
-                    @endforeach
-                </select>
-            </td>
-            <td class="p-3 border border-gray-400">
-                <input type="number" class="w-full border border-gray-400 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 quantite-input" data-index="${articleIndex}" min="1">
-            </td>
-            <td class="p-3 border border-gray-400">
-                <input type="number" class="w-full border border-gray-400 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 quantiteunite-input" data-index="${articleIndex}" min="1">
-            </td>
-            <td class="p-3 border border-gray-400">
-                <input type="number" class="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-100 total-input" data-index="${articleIndex}">
-            </td>
-            <td class="p-3 border border-gray-400">
-                <input type="number" class="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-100 prixunite-input" data-index="${articleIndex}" min="1" step="0.01" readonly>
-            </td>
-            <td class="p-3 text-center border border-gray-400">
-                <button type="button" class="text-red-500 hover:text-red-700 remove-article" data-index="${articleIndex}">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </td>
-        </tr>
-`;
+                    <tr class="article-row hover:bg-gray-100">
+                        <td class="p-3">
+                            <select class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 select2 article-select" data-index="${articleIndex}">
+                                @foreach($articles as $article)
+                                <option value="{{ $article->id }}"
+                                        data-prix="{{ $article->prix_achat }}"
+                                        data-condi="{{ $article->conditionnement }}"
+                                        data-prixcgt="{{ $article->prix_cgt }}"
+                                        data-consignation="{{ $article->prix_consignation }}">
+                                    {{ $article->nom }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </td>
+                        <td class="p-3">
+                            <input type="number" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 quantite-input" data-index="${articleIndex}" min="1">
+                        </td>
+                        <td class="p-3">
+                            <input type="number" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 quantiteunite-input" data-index="${articleIndex}" min="1">
+                        </td>
+                        <td class="p-3">
+                            <input type="number" class="w-full border rounded-lg px-3 py-2 bg-gray-100 total-input" data-index="${articleIndex}">
+                        </td>
+                        <td class="p-3">
+                            <input type="number" class="w-full border rounded-lg px-3 py-2 bg-gray-100 prixunite-input" data-index="${articleIndex}" min="1" step="0.01" readonly>
+                        </td>
+                        <td class="p-3">
+                            <button type="button" class="text-red-500 hover:text-red-700 remove-article" data-index="${articleIndex}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`;
                 $('#articlesContainer').append(newRow);
                 $(`.article-select[data-index="${articleIndex}"]`).select2();
                 handleQuantiteExclusivity(articleIndex);

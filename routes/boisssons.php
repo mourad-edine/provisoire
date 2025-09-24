@@ -35,6 +35,8 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
 
     Route::get('/ventes', [VenteController::class, 'show'])->name('vente.liste');
     Route::get('/ventes-rendu/{id}', [VenteController::class, 'rendu'])->name('vente.rendu');
+    Route::get('/vente_reglement/{id}', [VenteController::class, 'reglement'])->name('reglement.index');
+    Route::get('/pay/{id}', [VenteController::class, 'pay'])->name('pay.index');
 
     Route::post('/ventes', [VenteController::class, 'store'])->name('vente.store');
 
@@ -85,6 +87,8 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
     Route::get('/stock-faible', [StockController::class, 'faible'])->name('stock.faible.liste');
     Route::get('/stock-by-id/{id}', [StockController::class, 'stockbyCategorie'])->name('stock.liste.id');
     Route::get('/statistique', [StatController::class, 'show'])->name('stat');
+    Route::get('/statistique_sortie', [StatController::class, 'sortie'])->name('sortie.stat');
+
     Route::get('/depense', [AchatController::class, 'depense'])->name('depense');
     Route::post('/depense_store', [DepenseController::class, 'store'])->name('depense.store');
     Route::delete('/depense_delete/{id}', [DepenseController::class, 'destroy'])->name('depense.destroy');

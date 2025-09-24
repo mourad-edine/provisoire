@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\vente;
 
-use App\Http\Controllers\Controller;
-use App\Models\Article;
-use App\Models\Client;
-use App\Models\Commande;
-use App\Models\Conditionnement;
-use App\Models\Consignation;
-use App\Models\Payement;
-use App\Models\Vente;
 use Carbon\Carbon;
+use App\Models\Vente;
+use App\Models\Client;
+use App\Models\Article;
+use App\Models\Commande;
+use App\Models\Payement;
+use App\Models\Consignation;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Conditionnement;
+use App\Models\HistoriqueVente;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class VenteController extends Controller
 {
@@ -572,6 +573,8 @@ class VenteController extends Controller
         // ->toArray());
 
         return view('pages.vente.Payement', [
+            'exist' => Commande::where('commande_id', $id)->exists(),
+
             'commande' => Commande::with(['payements', 'client'])
                 ->where('id', $id)
                 ->orderBy('id', 'DESC')
@@ -583,6 +586,7 @@ class VenteController extends Controller
                 ->payements()
                 ->orderBy('id', 'DESC')
                 ->paginate(6),
+                ''
             // La pagination doit être ici
         ]);
     }
@@ -599,8 +603,26 @@ class VenteController extends Controller
         ]);
     }
 
+    public function historiquestore($id_article , $quantite , $vente_id , $prix , $total)
+    {   
+        $article = Article::find($id_article);
+        $te = HistoriqueVente::create([
+            'id_article' => $id_article,
+            'id_vente' => $vente_id,
+            'quantite_initiale' => $article->quantite,
+            'quantite_enleve' => $quantite,
+            'quantite_finale' => $article->quantite - $quantite,
+            'type_historique' => 0,
+            'prix' => $prix,
+            'total' => $total,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+    }
+
     public function store(Request $request)
     {
+        
         //
         //dd($request->all());
         if ($request->nouveau) {
@@ -667,6 +689,7 @@ class VenteController extends Controller
                         'date_sortie' => now(),
                         'cat' => $request->cat
                     ]);
+                    $this->historiquestore($article->id , $quantiteCageot * $article->conditionnement , $venteCageot->id , $index['prix_unitaire'] , $index['prix_unitaire'] * $quantiteCageot);
 
                     // Créer une consignation si cageot non rendu
                     if ($cageot == 0 && $article->prix_cgt != 0) {
@@ -728,6 +751,7 @@ class VenteController extends Controller
                         'cat' => $request->cat
 
                     ]);
+                    $this->historiquestore($article->id , $quantiteUnite , $venteUnite->id , $index['prix_unitaire'] , $index['prix_unitaire'] * $quantiteUnite);
 
                     if ($bouteille == 0 && $article->prix_consignation != 0) {
                         Consignation::create([
@@ -1113,4 +1137,135 @@ class VenteController extends Controller
             return redirect()->back()->with('error', 'Une erreur est survenue lors de la suppression de la commande.');
         }
     }
+
+
+      public function reglement($id)
+
+    {
+        $article = Article::first();
+        $cgt = $article->prix_cgt;
+        $commande = Commande::with('payements')->find($id);
+        $reste = $commande->payements()->where('operation', 'partiel')->sum('somme');
+        //dd($reste);
+        $ventes = Vente::with(['article', 'consignation', 'commande'])
+            ->where('commande_id', $id)
+            ->orderBy('id', 'DESC')
+            ->paginate(10); // La pagination doit être ici
+
+        // Transformer chaque vente après la pagination
+        $ventes->getCollection()->transform(function ($vente) {
+            return [
+                'id' => $vente->id,
+                'etat_client_commande' => $vente->commande ? $vente->commande->etat_client : null,
+                'article' => $vente->article ? $vente->article->nom : null,
+                'article_id' => $vente->article ? $vente->article->id : null,
+                'consi_cgt' => $vente->article ? $vente->article->prix_cgt : null,
+                'prix_unitaire' => $vente->prix ? $vente->prix : null,
+                'reference' => $vente->article ? $vente->article->reference : null,
+                'numero_commande' => $vente->commande_id,
+                'consignation_id' => $vente->consignation ? $vente->consignation->id : null,
+                'casse' => $vente->consignation ? $vente->consignation->casse : null,
+                'rendu_btl' => $vente->consignation ? $vente->consignation->rendu_btl : null,
+                'rendu_cgt' => $vente->consignation ? $vente->consignation->rendu_cgt : null,
+                'casse_cgt' => $vente->consignation ? $vente->consignation->casse_cgt : null,
+                'consignation' => $vente->consignation ? $vente->consignation->prix * $vente->article->prix_consignation : null,
+                'etat' => $vente->consignation ? $vente->consignation->etat : null,
+                'etat_cgt' => $vente->consignation ? $vente->consignation->etat_cgt : null,
+                'quantite' => $vente->quantite,
+                'type_achat' => $vente->type_achat,
+                'created_at' => Carbon::parse($vente->created_at)->format('d/m/Y H:i:s'),
+                'prix_consignation' => $vente->article ? $vente->article->prix_consignation : null,
+                'prix_cgt' => $vente->consignation ? $vente->consignation->prix_cgt * $vente->article->prix_cgt : null,
+                'conditionnement' => $vente->article ? $vente->article->conditionnement : null,
+                'btl' => $vente->btl,
+                'cgt' => $vente->cgt,
+                'commande_id' => $vente->commande_id,
+                'etat_payement' => $vente->etat,
+                'etat_client' => $vente->client,
+                'cat' => $vente->cat ? $vente->cat : null,
+                'prix_gros' => $vente->prix ? $vente->prix : null,
+                'prix_cage' => $vente->prix_cage ? $vente->prix_cage : null,
+            ];
+        });
+        //dd($reste);
+        //dd($ventes->toArray());
+        $conditionnement = Commande::with('conditionnement')->where('id', $id)->first();
+
+        $exist = Commande::where('commande_id', $id)->exists();
+        return view('pages.vente.Reglement', [
+            'ventes' => $ventes,
+            'commande_id' => $id,
+            'conditionnement' => $conditionnement,
+            'cgt' => $cgt,
+            'commande' => $commande,
+            'reste' => $reste,
+            'exist' => $exist,
+        ]);
+    }
+
+    public function pay($id)
+
+    {
+        $article = Article::first();
+        $cgt = $article->prix_cgt;
+        $commande = Commande::with('payements')->find($id);
+        $reste = $commande->payements()->where('operation', 'partiel')->sum('somme');
+        //dd($reste);
+        $ventes = Vente::with(['article', 'consignation', 'commande'])
+            ->where('commande_id', $id)
+            ->orderBy('id', 'DESC')
+            ->paginate(10); // La pagination doit être ici
+
+        // Transformer chaque vente après la pagination
+        $ventes->getCollection()->transform(function ($vente) {
+            return [
+                'id' => $vente->id,
+                'etat_client_commande' => $vente->commande ? $vente->commande->etat_client : null,
+                'article' => $vente->article ? $vente->article->nom : null,
+                'article_id' => $vente->article ? $vente->article->id : null,
+                'consi_cgt' => $vente->article ? $vente->article->prix_cgt : null,
+                'prix_unitaire' => $vente->prix ? $vente->prix : null,
+                'reference' => $vente->article ? $vente->article->reference : null,
+                'numero_commande' => $vente->commande_id,
+                'consignation_id' => $vente->consignation ? $vente->consignation->id : null,
+                'casse' => $vente->consignation ? $vente->consignation->casse : null,
+                'rendu_btl' => $vente->consignation ? $vente->consignation->rendu_btl : null,
+                'rendu_cgt' => $vente->consignation ? $vente->consignation->rendu_cgt : null,
+                'casse_cgt' => $vente->consignation ? $vente->consignation->casse_cgt : null,
+                'consignation' => $vente->consignation ? $vente->consignation->prix * $vente->article->prix_consignation : null,
+                'etat' => $vente->consignation ? $vente->consignation->etat : null,
+                'etat_cgt' => $vente->consignation ? $vente->consignation->etat_cgt : null,
+                'quantite' => $vente->quantite,
+                'type_achat' => $vente->type_achat,
+                'created_at' => Carbon::parse($vente->created_at)->format('d/m/Y H:i:s'),
+                'prix_consignation' => $vente->article ? $vente->article->prix_consignation : null,
+                'prix_cgt' => $vente->consignation ? $vente->consignation->prix_cgt * $vente->article->prix_cgt : null,
+                'conditionnement' => $vente->article ? $vente->article->conditionnement : null,
+                'btl' => $vente->btl,
+                'cgt' => $vente->cgt,
+                'commande_id' => $vente->commande_id,
+                'etat_payement' => $vente->etat,
+                'etat_client' => $vente->client,
+                'cat' => $vente->cat ? $vente->cat : null,
+                'prix_gros' => $vente->prix ? $vente->prix : null,
+                'prix_cage' => $vente->prix_cage ? $vente->prix_cage : null,
+            ];
+        });
+        //dd($reste);
+        //dd($ventes->toArray());
+        $conditionnement = Commande::with('conditionnement')->where('id', $id)->first();
+
+        $exist = Commande::where('commande_id', $id)->exists();
+        return view('pages.vente.Pay', [
+            'ventes' => $ventes,
+            'commande_id' => $id,
+            'conditionnement' => $conditionnement,
+            'cgt' => $cgt,
+            'commande' => $commande,
+            'reste' => $reste,
+            'exist' => $exist,
+        ]);
+    }
 }
+
+

@@ -3,167 +3,142 @@
 @section('title', 'Accueil')
 
 @section('content')
-<div class="container-fluid">
-
-    <!-- Page Heading -->
-    <!-- DataTales Example -->
-    <div class="card shadow mb-4">
-        <div class="card-header bg-light d-flex justify-content-between align-items-center">
-            <div class="d-flex">
-                <i class="fas fa-truck fa-2x"></i>
-                <h5 class="mb-2 text-dark">fournisseurs</h5>
-
+<div class="container mx-auto px-4 py-6">
+    <!-- Supplier Table -->
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="bg-gray-100 p-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-truck text-xl text-gray-800 mr-2"></i>
+                <h5 class="text-lg font-bold text-gray-800">FOURNISSEURS</h5>
             </div>
-            <button class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#addArticleModal">
+            <button class="bg-gray-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-gray-600" onclick="openModal('addArticleModal')">
                 <i class="fas fa-plus-circle mr-2"></i>Ajouter fournisseur
             </button>
         </div>
-        <div class="d-flex flex-wrap align-items-center gap-2 mt-3 ml-3 mb-md-0">
-            <form action="{{ route('fournisseur.liste') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2">
-                <!-- Champ de recherche principal -->
-                <div class="position-relative">
-                    <input type="text" class="form-control form-control-sm" name="search" placeholder="Rechercher..." value="{{ old('search', request('search')) }}">
+        <div class="p-4 flex flex-wrap gap-4">
+            <form action="{{ route('fournisseur.liste') }}" method="GET" class="flex flex-wrap gap-4">
+                <div class="relative">
+                    <input type="text" name="search" class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Rechercher..." value="{{ old('search', request('search')) }}">
                 </div>
-
-                <!-- Filtres supplémentaires -->
-
-
-                <!-- Tri des résultats -->
-                <div class="dropdown">
-                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-sort me-1"></i> Trier par
+                <div class="relative">
+                    <button type="button" class="border rounded-lg px-3 py-2 text-sm bg-white text-gray-600 hover:bg-gray-50 flex items-center" onclick="toggleSortDropdown()">
+                        <i class="fas fa-sort mr-1"></i>Trier par
                     </button>
-                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-                        <li><button class="dropdown-item" type="submit" value="nom_asc">Nom (A-Z)</button></li>
-                        <li><button class="dropdown-item" type="submit" value="nom_desc">Nom (Z-A)</button></li>
-                        <li><button class="dropdown-item" type="submit" value="prix_asc">Prix (Croissant)</button></li>
-                        <li><button class="dropdown-item" type="submit" value="prix_desc">Prix (Décroissant)</button></li>
-                        <li><button class="dropdown-item" type="submit" value="stock_asc">Stock (Croissant)</button></li>
-                        <li><button class="dropdown-item" type="submit" value="stock_desc">Stock (Décroissant)</button></li>
-                    </ul>
+                    <div id="sortDropdown" class="absolute hidden mt-2 w-48 bg-white border rounded-lg shadow-lg z-10">
+                        <button type="submit" name="sort" value="nom_asc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Nom (A-Z)</button>
+                        <button type="submit" name="sort" value="nom_desc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Nom (Z-A)</button>
+                        <button type="submit" name="sort" value="prix_asc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Prix (Croissant)</button>
+                        <button type="submit" name="sort" value="prix_desc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Prix (Décroissant)</button>
+                        <button type="submit" name="sort" value="stock_asc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Stock (Croissant)</button>
+                        <button type="submit" name="sort" value="stock_desc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Stock (Décroissant)</button>
+                    </div>
                 </div>
             </form>
         </div>
-        <div class="card-body">
+        <div class="p-4">
             @if(session('success'))
-            <div class="alert alert-success">
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4">
                 {{ session('success') }}
             </div>
             @endif
-            <div class="table-responsive">
-                <table class="table table-striped table-hover table-bordered text-center align-middle" id="dataTable" width="100%" cellspacing="0">
-                    <thead class="thead-dark">
+            <div class="overflow-x-auto">
+                <table class="w-full text-center border-collapse">
+                    <thead class="bg-gray-800 text-white">
                         <tr>
-                            <th>id</th>
-                            <th>nom</th>
-                            <th>numero</th>
-                            <th>reference</th>
-                            <th>Dette founisseur</th>
-                            <th>date creation</th>
-                            <th>options</th>
-
+                            <th class="p-3">id</th>
+                            <th class="p-3">nom</th>
+                            <th class="p-3">numero</th>
+                            <th class="p-3">reference</th>
+                            <th class="p-3">Dette fournisseur</th>
+                            <th class="p-3">date creation</th>
+                            <th class="p-3">options</th>
                         </tr>
                     </thead>
-
                     <tbody>
                         @forelse($fournisseurs as $fournisseur)
-
-                        <tr>
-                            <td>{{$fournisseur->id}}</td>
-                            <td>{{$fournisseur->nom}}
-                            <td>{{$fournisseur->numero ? $fournisseur->numero  :'pas de numero'}}
-                            <td>{{$fournisseur->reference ? $fournisseur->reference  :'pas de reference'}}
-                            <td>---</td>
-                            <td>{{$fournisseur->date_entre}}
-                            <td>
-                                <!-- Icônes d'options -->
-
-
-                                <a href="#" data-toggle="modal" data-target="#supprimerArticleModal{{$fournisseur->id}}"><i class="fas fa-trash-alt text-danger"></i></a>
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-3">{{ $fournisseur->id }}</td>
+                            <td class="p-3">{{ $fournisseur->nom }}</td>
+                            <td class="p-3">{{ $fournisseur->numero ? $fournisseur->numero : 'pas de numero' }}</td>
+                            <td class="p-3">{{ $fournisseur->reference ? $fournisseur->reference : 'pas de reference' }}</td>
+                            <td class="p-3">---</td>
+                            <td class="p-3">{{ $fournisseur->date_entre }}</td>
+                            <td class="p-3">
+                                <a class="text-red-500 hover:text-red-700" href="#" onclick="openDeleteModal('supprimerArticleModal{{ $fournisseur->id }}')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
                             </td>
                         </tr>
-                        <div class="modal fade" id="supprimerArticleModal{{$fournisseur->id}}" tabindex="-1" aria-labelledby="supprimerArticleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="addArticleModalLabel">suppression </h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="form-group">
-                                            <p>voulez-vous vraiment supprimer ce fournisseur ?</p>
-                                            <input value="{{$fournisseur->nom}}" type="hidden" class="form-control" id="nom" name="nom" required>
-                                        </div>
-
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                                            <a href="{{route('delete.fournisseur', ['id' => $fournisseur->id])}}"><button type="button" class="btn btn-danger">supprimer</button></a>
-                                        </div>
-                                        </form>
-                                    </div>
+                        <!-- Delete Modal -->
+                        <div id="supprimerArticleModal{{ $fournisseur->id }}" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+                            <div class="bg-white rounded-lg w-full max-w-md">
+                                <div class="bg-gray-800 text-white p-4 rounded-t-lg flex justify-between items-center">
+                                    <h5 class="text-lg font-bold">Suppression</h5>
+                                    <button onclick="closeModal('supprimerArticleModal{{ $fournisseur->id }}')" class="text-white hover:text-gray-200">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="p-4">
+                                    <p>Voulez-vous vraiment supprimer ce fournisseur ?</p>
+                                    <input value="{{ $fournisseur->nom }}" type="hidden" name="nom" class="hidden">
+                                </div>
+                                <div class="p-4 bg-gray-100 rounded-b-lg flex justify-end gap-2">
+                                    <button type="button" onclick="closeModal('supprimerArticleModal{{ $fournisseur->id }}')" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Annuler</button>
+                                    <a href="{{ route('delete.fournisseur', ['id' => $fournisseur->id]) }}" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Supprimer</a>
                                 </div>
                             </div>
                         </div>
                         @empty
                         <tr>
-
-                            <td class="text-warning" colspan="7">
-                                <div class="alert alert-warning mb-3">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>
-                                    Pas de donnée trouvé --
+                            <td colspan="7" class="p-4">
+                                <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>Pas de donnée trouvée
                                 </div>
                             </td>
                         </tr>
                         @endforelse
-
                     </tbody>
                 </table>
-                <div class="d-flex justify-content-start mt-3">
-                    {{ $fournisseurs->links('pagination::bootstrap-4') }} <!-- Ou 'pagination::bootstrap-5' -->
+                <div class="mt-4">
+                    {{ $fournisseurs->links('pagination::bootstrap-4') }}
                 </div>
             </div>
         </div>
     </div>
 
-</div>
-
-
-<!-- Modal d'ajout d'article -->
-<div class="modal fade" id="addArticleModal" tabindex="-1" aria-labelledby="addArticleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addArticleModalLabel">Ajouter un fournisseur</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+    <!-- Add Supplier Modal -->
+    <div id="addArticleModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg w-full max-w-md">
+            <div class="bg-gray-800 text-white p-4 rounded-t-lg flex justify-between items-center">
+                <h5 class="text-lg font-bold">Ajouter un fournisseur</h5>
+                <button onclick="closeModal('addArticleModal')" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="p-4">
                 <form action="{{ route('fournisseur.store') }}" method="POST">
                     @csrf
-                    <div class="form-group">
-                        <label for="nom">Nom fournisseur</label>
-                        <input type="text" class="form-control" id="nom" name="nom" required>
+                    <div class="mb-4">
+                        <label for="nom" class="block text-sm font-semibold text-gray-700">Nom fournisseur</label>
+                        <input type="text" id="nom" name="nom" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     </div>
-                    <div class="form-group">
-                        <label for="categorie">numero</label>
-                        <input type="text" class="form-control" id="numero" name="numero" required>
+                    <div class="mb-4">
+                        <label for="numero" class="block text-sm font-semibold text-gray-700">Numéro</label>
+                        <input type="text" id="numero" name="numero" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     </div>
-
-                    <div class="form-group">
-                        <input type="checkbox" id="ref" name="ref">
-                        <label for="ref">Ajouter une reference</label>
+                    <div class="mb-4">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="ref" name="ref" class="mr-2">
+                            <label for="ref" class="text-sm text-gray-700">Ajouter une référence</label>
+                        </div>
                     </div>
-                    <div class="form-group" id="referenceContainer" style="display:none;">
-                        <label for="reference">reference</label>
-                        <input type="text" class="form-control" id="reference" name="reference">
+                    <div id="referenceContainer" class="mb-4 hidden">
+                        <label for="reference" class="block text-sm font-semibold text-gray-700">Référence</label>
+                        <input type="text" id="reference" name="reference" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-primary">Ajouter</button>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" onclick="closeModal('addArticleModal')" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Annuler</button>
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Ajouter</button>
                     </div>
                 </form>
             </div>
@@ -172,8 +147,24 @@
 </div>
 
 <script>
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    function openDeleteModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+    }
+
+    function toggleSortDropdown() {
+        document.getElementById('sortDropdown').classList.toggle('hidden');
+    }
+
     document.getElementById('ref').addEventListener('change', function() {
-        document.getElementById('referenceContainer').style.display = this.checked ? 'block' : 'none';
+        document.getElementById('referenceContainer').classList.toggle('hidden', !this.checked);
     });
 </script>
 @endsection

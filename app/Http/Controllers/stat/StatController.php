@@ -4,6 +4,7 @@ namespace App\Http\Controllers\stat;
 
 use App\Http\Controllers\Controller;
 use App\Models\Achat;
+use App\Models\Article;
 use App\Models\Depense;
 use App\Models\Vente;
 use Illuminate\Http\Request;
@@ -156,6 +157,19 @@ class StatController extends Controller
             'beneficeMois' => $beneficeMois,
             'depensemois' => $depensesDuMois->sum('montant'),
             'depensejour' => $depensesAujourdhui->sum('montant')
+        ]);
+    }
+
+    public function sortie()
+    {
+        $articles = Article::whereHas('historiqueventes', function ($query) {
+            $query->whereDate('created_at', now());
+        })->with(['historiqueventes' => function ($query) {
+            $query->whereDate('created_at', now());
+        }])->get();
+        //dd($articles->toArray());
+        return view('pages.stat.sortie', [
+            'articles' => $articles
         ]);
     }
 }

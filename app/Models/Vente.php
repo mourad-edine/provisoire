@@ -33,4 +33,7 @@ class Vente extends Model
     public function consignation(){
         return $this->hasOne(Consignation::class , 'vente_id');
     }
+    public function historiquevente(){
+        return $this->hasMany(HistoriqueVente::class , 'id_vente');
+    }
 }

@@ -1,834 +1,414 @@
 @extends('layouts.AdminLayout')
 
-@section('title', 'Accueil')
+@section('title', 'Détails de la vente')
 
 @section('content')
-<div class="">
-
-    <!-- Navigation Tabs -->
-    <ul class="nav nav-tabs mb-4" id="parametresTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <a class="nav-link text-decoration-none p-0" href="{{ route('commande.liste.vente') }}">
-                <button class="nav-link" id="commandes-tab">
-                    <i class="fas fa-list-alt me-2"></i> Listes par commandes
-                </button>
-            </a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link text-decoration-none p-0" href="{{ route('vente.liste') }}">
-                <button class="nav-link active">
-                    <i class="fas fa-shopping-cart me-2"></i> Listes ventes
-                </button>
-            </a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link text-decoration-none p-0" href="{{ route('paiment.boissons' ,['id' => $commande_id ]) }}">
-                <button class="nav-link">
-                    <i class="fas fa-history me-2"></i> Historique des paiements
-                </button>
-            </a>
-        </li>
-        @if($exist == true)
-        <li class="nav-item" role="presentation">
-            <a class="nav-link text-decoration-none p-0" href="{{ route('vente.rendu' ,['id' => $commande_id ]) }}">
-                <button class="nav-link">
-                    <i class="fas fa-list me-2"></i>Article à rendre
-                </button>
-            </a>
-        </li>
-        @endif
-        @if($commande->etat_client == 2)
-        <li class="nav-item" role="presentation">
-            <a class="nav-link text-decoration-none p-0" href="{{ route('rendre.boissons',['id' => $commande_id ]) }}">
-                <button class="nav-link">
-                    <i class="fas fa-file-alt me-2"></i> Compte rendu
-                </button>
-            </a>
-        </li>
-        @endif
-        @if($commande->etat_commande == 'non payé' && $commande->etat_client != 2)
-        <li class="nav-item" role="presentation">
-            <a class="nav-link text-decoration-none p-0" href="#" data-toggle="modal" data-target="#payement">
-                <button class="nav-link active bg-success text-white">
-                    <i class="fas fa-credit-card me-2 text-white"></i> Payement
-                </button>
-            </a>
-        </li>
-        @endif
-        <li class="nav-item" role="presentation">
-            <a class="nav-link text-decoration-none p-0" href="{{route('vente.page')}}">
-                <button class="nav-link active bg-secondary text-white">
-                    <i class="fas fa-cart-plus me-2 text-white"></i> Nouvel vente
-                </button>
-            </a>
-        </li>
-    </ul>
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-secondary text-white py-3">
-            <h5 class="mb-0 font-weight-bold text-white">
-                <i class="fas fa-user me-2"></i>INFORMATIONS CLIENT
-            </h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-4">
-                    <p><strong>Nom :</strong> {{ $commande->client->nom ?? 'N/A' }}</p>
-                    <p><strong>État commande :</strong>
-                        <span class="ml-2 text-{{ $commande->etat_commande == 'non payé' ? 'danger' : 'success' }}">
-                            {{ $commande->etat_commande }}
-                        </span>
-                    </p>
-                </div>
-                <div class="col-md-4">
-                    <p><strong>Téléphone :</strong> {{ $commande->client->telephone ?? 'N/A' }}</p>
-                    <p><strong>Email :</strong> {{ $commande->client->email ?? 'N/A' }}</p>
-                </div>
-                <div class="col-md-4">
-                    <p><strong>Adresse :</strong> {{ $commande->client->adresse ?? 'N/A' }}</p>
-                    <p><strong>Date commande :</strong> {{ $commande->created_at}}</p>
+<div class="container mx-auto px-4">
+    <!-- Header avec breadcrumb -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
+        <div class="w-full">
+            <div class="bg-white shadow-sm">
+                <div class="flex flex-wrap gap-2 justify-start">
+                    <a href="{{ route('commande.liste.vente.detail', ['id' => $commande_id]) }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
+                        <i class="fas fa-file-alt mr-2"></i>Détails commande
+                    </a>
+                    <a href="{{ route('paiment.boissons', ['id' => $commande_id]) }}" class="border border-blue-600 text-blue-600 hover:bg-blue-50 px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
+                        <i class="fas fa-history mr-2"></i>Historique des paiements
+                    </a>
+                    @if($exist == true)
+                    <a href="{{ route('vente.rendu', ['id' => $commande_id]) }}" class="border border-yellow-500 text-yellow-600 hover:bg-yellow-50 px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
+                        <i class="fas fa-undo mr-2"></i>Articles à rendre
+                    </a>
+                    @endif
+                    @if($commande->etat_client == 2)
+                    <a href="{{ route('rendre.boissons', ['id' => $commande_id]) }}" class="border border-blue-400 text-blue-500 hover:bg-blue-50 px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
+                        <i class="fas fa-clipboard-list mr-2"></i>Compte rendu
+                    </a>
+                    @endif
+                    @if($commande->etat_commande == 'non payé' && $commande->etat_client != 2)
+                    <a href="{{ route('pay.index', ['id' => $commande_id]) }}" class="border border-green-600 text-green-600 hover:bg-green-50 px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
+                        <i class="fas fa-credit-card mr-2"></i>Paiement
+                    </a>
+                    @endif
+                    <a href="{{ route('reglement.index', ['id' => $commande_id]) }}" class="border border-green-600 text-green-600 hover:bg-green-50 px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
+                        <i class="fas fa-exchange-alt mr-2"></i>Déconsignation
+                    </a>
+                    <a href="{{ route('vente.page') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
+                        <i class="fas fa-cart-plus mr-2"></i>Nouvelle vente
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Main Card -->
-    <div class="card shadow-sm">
-        <!-- Card Header -->
-        <div class="card-header d-flex justify-content-between align-items-center bg-secondary text-white py-3">
-            <h5 class="mb-0 font-weight-bold text-white">
-                <i class="fas fa-receipt me-2"></i>VENTE - DETAILS C-{{$commande->id}}
-            </h5>
-            <div class="d-flex gap-2">
-                <a href="{{route('pdf.download',['id' => $commande_id])}}" class="btn btn-warning btn-sm text-white">
-                    <i class="fas fa-print me-1 text-white"></i>Facture
-                </a>
-                <a href="{{ url()->previous() }}" class="btn btn-primary btn-sm">
-                    <i class="fas fa-arrow-left me-1 text-white"></i>Retour
-                </a>
+
+    <div class="mb-6">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="{{ route('dashboard') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                        Tableau de bord
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <a href="{{ route('commande.liste.vente') }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2">Commandes</a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">C-{{ $commande->id }}</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Client Information -->
+    <div class="mb-6">
+        <div class="bg-white shadow-sm  border-l-4 border-t-gray-500 border-b-gray-500 border-t-1 border-b-1  border-blue-500">
+            <!-- <div class="px-6 py-4 flex flex-wrap items-center justify-between border-b border-gray-200">
+                <h6 class="font-semibold text-gray-700">
+                    <i class="fas fa-user-circle mr-2 text-blue-500"></i>Informations Client
+                </h6>
+                <span class="px-3 py-1 rounded-full text-xs font-medium bg-{{ $commande->etat_commande == 'non payé' ? 'red' : 'green' }}-100 text-{{ $commande->etat_commande == 'non payé' ? 'red' : 'green' }}-800">
+                    {{ $commande->etat_commande }}
+                </span>
+            </div> -->
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+                    <div class="flex items-center">
+                        <div class="bg-blue-500 p-2 rounded mr-3">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div>
+                            <small class="text-gray-500 text-sm">Nom</small>
+                            <p class="font-semibold text-gray-800">{{ $commande->client->nom ?? 'N/A' }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="bg-blue-400 p-2 rounded mr-3">
+                            <i class="fas fa-phone text-white"></i>
+                        </div>
+                        <div>
+                            <small class="text-gray-500 text-sm">Téléphone</small>
+                            <p class="font-semibold text-gray-800">{{ $commande->client->telephone ?? 'N/A' }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="bg-green-500 p-2 rounded mr-3">
+                            <i class="fas fa-envelope text-white"></i>
+                        </div>
+                        <div>
+                            <small class="text-gray-500 text-sm">Email</small>
+                            <p class="font-semibold text-gray-800">{{ $commande->client->email ?? 'N/A' }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="bg-yellow-500 p-2 rounded mr-3">
+                            <i class="fas fa-calendar text-white"></i>
+                        </div>
+                        <div>
+                            <small class="text-gray-500 text-sm">Date commande</small>
+                            <p class="font-semibold text-gray-800">{{ $commande->created_at }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="bg-green-500 p-2 rounded mr-3">
+                            <i class="fas fa-dollar text-white"></i>
+                        </div>
+                        <div>
+                            <small class="text-gray-500 text-sm">Net à payer</small>
+                            <p class="font-semibold text-gray-800">{{ $commande->created_at }}</p>
+                        </div>
+                    </div>
+                </div>
+                @if($commande->client->adresse)
+                <div class="flex items-center mt-4">
+                    <div class="bg-gray-500 p-2 rounded mr-3">
+                        <i class="fas fa-map-marker-alt text-white"></i>
+                    </div>
+                    <div>
+                        <small class="text-gray-500 text-sm">Adresse</small>
+                        <p class="font-semibold text-gray-800">{{ $commande->client->adresse }}</p>
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- Calculate Totals for Net à Payer -->
+    @php
+    $prixGlobale = 0;
+    $deconsigneglobale = 0;
+    $totalconsigne = 0;
+    $totalbtl = 0;
+    $totalcgt = 0;
+    $casse = 0;
+    $casse_cgt = 0;
+    $rendu_btl = 0;
+    $rendu_cgt = 0;
+
+    foreach ($ventes as $vente) {
+    $prix_base = $vente['cat'] == 'gros' ? $vente['prix_unitaire'] : $vente['prix_gros'];
+    $prix_total = ($vente['type_achat'] === 'cageot' || $vente['type_achat'] === 'pack')
+    ? ($vente['quantite'] * $vente['prix_cage']) + ($vente['consignation'] ?? 0) + ($vente['prix_cgt'] ?? 0)
+    : ($prix_base * $vente['quantite']) + ($vente['consignation'] ?? 0) + ($vente['prix_cgt'] ?? 0);
+
+    if ($commande->etat_client == 1) {
+    $prix_total -= ($vente['consignation'] ?? 0) + ($vente['prix_cgt'] ?? 0);
+    }
+
+    $prix_total_deconsigne = ($vente['type_achat'] === 'cageot' || $vente['type_achat'] === 'pack')
+    ? ($vente['quantite'] * $vente['prix_cage'])
+    : ($prix_base * $vente['quantite']);
+
+    $casse += $vente['casse'] ?? 0;
+    $casse_cgt += $vente['casse_cgt'] ?? 0;
+    $rendu_cgt += $vente['rendu_cgt'] ?? 0;
+    $rendu_btl += $vente['rendu_btl'] ?? 0;
+    $prix_total_consigne = ($vente['consignation'] ?? 0) + ($vente['prix_cgt'] ?? 0);
+
+    $totalbtl += $vente['prix_consignation'] == 0 ? 0 : $vente['consignation'] / $vente['prix_consignation'];
+    $totalcgt += $vente['consi_cgt'] == 0 ? 0 : $vente['prix_cgt'] / $vente['consi_cgt'];
+    $totalconsigne += $prix_total_consigne;
+    $deconsigneglobale += $prix_total_deconsigne;
+    $prixGlobale += $prix_total;
+    }
+
+    $nombreCageots = optional($conditionnement->conditionnement)->nombre_cageot ?? 0;
+    $valeurCageots = $nombreCageots * ($cgt ?? 0);
+    $totalConsigne = ($totalconsigne ?? 0) + $valeurCageots;
+    $montantTotal = ($deconsigneglobale - ($reste ?? 0) < 0 ? 0 : $deconsigneglobale - ($reste ?? 0)) + $totalConsigne;
+        $netAPayer=$commande->etat_client == 1
+        ? $prixGlobale
+        : ($prixGlobale + ($cgt * $nombreCageots));
+        @endphp
+
+        <!-- Net à Payer Card -->
+        <!-- <div class="mb-6">
+            <div class="bg-gray-700 text-white shadow">
+                <div class="p-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between">
+                        <h5 class="text-white font-semibold mb-2 md:mb-0">
+                            <i class="fas fa-wallet mr-2"></i>Net à payer
+                        </h5>
+                        <h5 class="font-bold text-2xl">{{ number_format($netAPayer, 0, ',', ' ') }} Ar</h5>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+
+        <!-- Success Message -->
+        @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span class="block sm:inline">{{ session('success') }}</span>
+            </div>
+            <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none'">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        @endif
+
+        <!-- Actions Bar -->
+        <div class="mb-6">
+            <div class="bg-gray-200  shadow-sm">
+                <div class="px-6 py-4">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                        <h5 class="font-semibold text-gray-800 mb-2 md:mb-0">
+                            <i class="fas fa-receipt mr-2 text-blue-500"></i>Détails de la vente C-{{ $commande->id }}
+                        </h5>
+                        <div class="flex gap-2">
+                            <a href="{{ route('pdf.download', ['id' => $commande_id]) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
+                                <i class="fas fa-print mr-1"></i> Facture
+                            </a>
+                            <a href="{{ url()->previous() }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
+                                <i class="fas fa-arrow-left mr-1"></i> Retour
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Card Body -->
-        <div class="card-body p-4">
-
-            @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            @endif
-
-            <!-- Ventes Table -->
-            <div class="table-responsive mb-4">
-                <table class="table table-bordered table-hover" id="dataTable">
-                    <thead class="table-secondary">
+        <!-- Sales Table -->
+        <div class="bg-white  shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-600">
                         <tr>
-                            <th>ID</th>
-                            <th>Article</th>
-                            <th>CGT/BTL</th>
-                            <th>BTL</th>
-                            <th>CGT</th>
-                            <th>Statut</th>
-                            <th>Quantité</th>
-                            <th>Prix</th>
-                            <th>Total</th>
-                            <th class="text-end">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">Article</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">Consignation</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">Bouteille</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">Cageot</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">Statut</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">Quantité</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">Prix unitaire</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">Total</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @php $prixGlobale = 0;$deconsigneglobale = 0 ; $totalconsigne = 0; $totalbtl = 0; $totalcgt = 0; $casse = 0 ; $casse_cgt = 0 ;$rendu_btl=0 ; $rendu_cgt = 0; @endphp
+                    <tbody class="bg-white divide-y divide-gray-200">
                         @forelse($ventes as $vente)
                         @php
                         $highlightedId = session('highlighted_id');
                         $bouteilleNonRendu = $vente['etat'] == 'non rendu';
                         $cageotNonRendu = $vente['etat_cgt'] == 'non rendu';
                         @endphp
-
-                        <tr style="cursor: pointer;" id="row-{{$vente['id']}}" class="{{ $highlightedId == $vente['id'] ? 'bg-info' : '' }}">
-                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}" class="fw-bold">{{$vente['id']}}</td>
-                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}">{{$vente['article']}}</td>
-                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}">
+                        <tr id="row-{{ $vente['id'] }}" class="{{ $highlightedId == $vente['id'] ? 'bg-blue-50' : 'hover:bg-gray-50' }}">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="text-sm font-medium text-gray-900">{{ $vente['article'] }}</div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
                                 @if(($vente['consignation'] ?? 0) + ($vente['prix_cgt'] ?? 0) > 0)
                                 @if($vente['etat_client'] == 1)
-                                <span class="fw-bold text-danger">à rendre</span>
-                                @elseif($vente['etat_client_commande'] == 2 )
-                                <span class="fw-bold text-danger">à disposition</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    À rendre
+                                </span>
+                                @elseif($vente['etat_client_commande'] == 2)
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    À disposition
+                                </span>
                                 @else
-                                <span class="badge bg-light text-dark">
+                                <span class="font-semibold text-blue-600">
                                     {{ number_format(($vente['consignation'] ?? 0) + ($vente['prix_cgt'] ?? 0), 0, ',', ' ') }} Ar
                                 </span>
                                 @endif
                                 @else
-                                <span>--</span>
+                                <span class="text-gray-400">--</span>
                                 @endif
                             </td>
-                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}">
-                                <span class="badge {{ $vente['etat'] == 'non rendu' ? 'bg-danger text-white' : 'bg-success text-white' }}">
-                                    {{ $vente['etat'] ?($vente['prix_consignation'] == 0 ? 0 : $vente['consignation'] / $vente['prix_consignation']) : '--' }}
-                                </span>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ $vente['etat'] ? ($vente['prix_consignation'] == 0 ? 0 : $vente['consignation'] / $vente['prix_consignation']) : '--' }}
                             </td>
-                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}">
-                                <span class="badge {{ in_array($vente['etat_cgt'], ['non rendu']) ? 'bg-danger text-white' : 'bg-success text-white' }}">
-                                    {{ $vente['etat_cgt'] ?($vente['consi_cgt'] == 0 ? 0 : $vente['prix_cgt'] / $vente['consi_cgt']):'--' }}
-                                </span>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ $vente['etat_cgt'] ? ($vente['consi_cgt'] == 0 ? 0 : $vente['prix_cgt'] / $vente['consi_cgt']) : '--' }}
                             </td>
-                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}">
-                                <span class="badge {{ $vente['etat_payement'] == 0 ? 'bg-danger-light text-danger' : 'bg-success-light text-success' }}">
-                                    <i class="fas {{ $vente['etat_payement'] == 0 ? 'fa-times-circle text-danger' : 'fa-check-circle text-success' }} me-1"></i>
-                                    {{ $vente['etat_payement'] == 0 ? '' : '' }}
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($vente['etat_payement'] == 0)
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    <i class="fas fa-times mr-1"></i> Impayé
                                 </span>
-                            </td>
-                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}" class="fw-bold">{{$vente['quantite']}} {{$vente['type_achat']}}</td>
-                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}">
-                                <span>
-                                    {{ number_format(($vente['type_achat'] == 'cageot' || $vente['type_achat'] == 'pack') ? $vente['prix_cage']  : $vente['prix_unitaire'], 0, ',', ' ') }} Ar
+                                @else
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <i class="fas fa-check mr-1"></i> Payé
                                 </span>
-                                @unless($vente['etat_client'] == 1 || $vente['etat'] == 'rendu' || $vente['etat'] == 'non consigné' || !isset($vente['etat']))
-                                + {{ number_format($vente['prix_consignation'], 0, ',', ' ') }} Ar
-                                @endunless
+                                @endif
                             </td>
-                            <td data-toggle="modal" data-target="#venteModal2{{$vente['id']}}">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm font-semibold text-gray-900">
+                                    {{ $vente['quantite'] }}
+                                </span>
+                                <small class="text-gray-500 ml-1">{{ $vente['type_achat'] }}</small>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <div class="flex justify-center">
+                                    <div>{{ number_format(($vente['type_achat'] == 'cageot' || $vente['type_achat'] == 'pack') ? $vente['prix_cage'] : $vente['prix_unitaire'], 0, ',', ' ') }} Ar</div>
+                                    @unless($vente['etat_client'] == 1 || $vente['etat'] == 'rendu' || $vente['etat'] == 'non consigné' || !isset($vente['etat']))
+                                    <small class="text-blue-500">+ {{ number_format($vente['prix_consignation'], 0, ',', ' ') }} Ar consigne</small>
+                                    @endunless
+                                </div>
+                            </td>
+                            <td class=" whitespace-nowrap text-sm font-semibold text-blue-600">
                                 @php
                                 $prix_base = $vente['cat'] == 'gros' ? $vente['prix_unitaire'] : $vente['prix_gros'];
-
                                 $prix_total = ($vente['type_achat'] === 'cageot' || $vente['type_achat'] === 'pack')
-                                ? ($vente['quantite'] * $vente['prix_cage']) + $vente['consignation'] + $vente['prix_cgt']
-                                : ($prix_base * $vente['quantite']) + $vente['consignation'] + $vente['prix_cgt'];
+                                ? ($vente['quantite'] * $vente['prix_cage']) + ($vente['consignation'] ?? 0) + ($vente['prix_cgt'] ?? 0)
+                                : ($prix_base * $vente['quantite']) + ($vente['consignation'] ?? 0) + ($vente['prix_cgt'] ?? 0);
 
                                 if ($commande->etat_client == 1) {
-                                $prix_total -= $vente['consignation'] + $vente['prix_cgt'];
+                                $prix_total -= ($vente['consignation'] ?? 0) + ($vente['prix_cgt'] ?? 0);
                                 }
-
-                                $prix_total_deconsigne = ($vente['type_achat'] === 'cageot' || $vente['type_achat'] === 'pack')
-                                ? ($vente['quantite'] * $vente['prix_cage'])
-                                : ($prix_base * $vente['quantite']);
-
-                                $casse += $vente['casse'];
-                                $casse_cgt += $vente['casse_cgt'];
-                                $rendu_cgt += $vente['rendu_cgt'];
-                                $rendu_btl += $vente['rendu_btl'];
-
-                                $prix_total_consigne = $vente['consignation'] + $vente['prix_cgt'];
-
-                                $totalbtl += $vente['prix_consignation'] == 0 ? 0 : $vente['consignation'] / $vente['prix_consignation'];
-                                $totalcgt += $vente['consi_cgt'] == 0 ? 0 : $vente['prix_cgt'] / $vente['consi_cgt'];
-
-                                $totalconsigne += $prix_total_consigne;
-                                $deconsigneglobale += $prix_total_deconsigne;
-                                $prixGlobale += $prix_total;
                                 @endphp
-
-                                {{ number_format($prix_total, 0, ',', ' ') }} Ar
-                            </td>
-
-                            <td class="text-end">
-                                @if($vente['etat_client_commande'] != 2)
-                                <a href="#" data-toggle="modal" data-target="#venteModal2{{$vente['id']}}" class="text-warning">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                @endif
+                                <div class="flex justify-end px-5">
+                                    {{ number_format($prix_total, 0, ',', ' ') }} Ar
+                                </div>
                             </td>
                         </tr>
-
-                        <!-- Modal for each vente -->
-                        <div class="modal fade" id="venteModal2{{$vente['id']}}" tabindex="-1" role="dialog" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-lg">
-                                <div class="modal-content border-0 shadow-lg rounded-3">
-                                    <div class="modal-header bg-secondary text-white border-bottom-0">
-                                        <h5 class="modal-title">Déconsignation</h5>
-                                        <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-
-                                    <form action="{{ route('payer.consignation') }}" method="POST">
-                                        @csrf
-                                        <div class="modal-body px-4 py-3">
-
-                                            <!-- Champs cachés -->
-                                            <input type="hidden" name="vente_id" value="{{ $vente['id'] }}">
-                                            <input type="hidden" name="commande_id" value="{{ $vente['numero_commande'] }}">
-                                            <input type="hidden" name="consignation_id" value="{{ $vente['consignation_id'] }}">
-                                            <input type="hidden" name="article_id" value="{{ $vente['article_id'] }}">
-                                            <input type="hidden" name="total_btl" value="{{ $vente['prix_consignation'] != 0 ? $vente['consignation'] / $vente['prix_consignation'] : 0 }}">
-                                            <input type="hidden" name="total_cgt" value="{{ $vente['consi_cgt'] != 0 ? $vente['prix_cgt'] / $vente['consi_cgt'] : 0 }}">
-
-                                            <!-- Section bouteilles et cageots -->
-                                            <div class="row">
-                                                <div class="col-md-6 mb-4">
-                                                    <label class="form-label fw-bold">Bouteilles</label>
-                                                    <div class="form-check mb-2">
-
-                                                        <input class="form-check-input" type="checkbox" name="check_bouteille" id="check_bouteille{{$vente['id']}}" {{ $vente['prix_consignation'] != 0 ? ($vente['consignation'] / $vente['prix_consignation'] == 0 ? 'disabled' : '') : 'disabled' }}>
-                                                        <label class="form-check-label" for="check_bouteille{{$vente['id']}}">
-                                                            À rendre - {{ $vente['prix_consignation'] != 0 ? ($vente['consignation'] / $vente['prix_consignation']) : 0 }}
-                                                        </label>
-                                                    </div>
-                                                    <input type="number" name="quantite_buteille" class="form-control" placeholder="Quantité" min="0" step="1"
-                                                        {{ $vente['prix_consignation'] != 0 ? ($vente['consignation'] / $vente['prix_consignation'] == 0 ? 'readonly' : '') : 'readonly' }}>
-                                                </div>
-
-                                                <div class="col-md-6 mb-4">
-                                                    <label class="form-label fw-bold">Cageots</label>
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input" type="checkbox" name="check_cageot" id="check_cageot{{$vente['id']}}" {{ $vente['consi_cgt'] != 0 ? ($vente['prix_cgt'] / $vente['consi_cgt'] == 0 ? 'disabled' : '') : 'disabled' }}>
-                                                        <label class="form-check-label" for="check_cageot{{$vente['id']}}">
-                                                            À rendre - {{ $vente['consi_cgt'] != 0 ? ($vente['prix_cgt'] / $vente['consi_cgt']) : 0 }}
-                                                        </label>
-                                                    </div>
-                                                    <input type="number" name="quantite_cageot" class="form-control" placeholder="Quantité" min="0" step="1"
-                                                        {{ $vente['consi_cgt'] != 0 ? ($vente['prix_cgt'] / $vente['consi_cgt'] == 0 ? 'readonly' : '') : 'readonly' }}>
-                                                </div>
-                                            </div>
-
-                                            <!-- Casse -->
-                                            <div class="row">
-                                                <div class="col-md-6 mb-4">
-                                                    <label class="form-label fw-bold">Casse - Bouteilles</label>
-                                                    <!-- <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" name="check_bouteille_casse" id="check_bouteille_casse{{$vente['id']}}">
-                                <label class="form-check-label" for="check_bouteille_casse{{$vente['id']}}">
-                                    Casse ou perte
-                                </label>
-                            </div> -->
-                                                    <input type="number" name="casse" class="form-control" placeholder="Quantité cassée" min="0" step="1" {{ $vente['prix_consignation'] != 0 ? ($vente['consignation'] / $vente['prix_consignation'] == 0 ? 'readonly' : '') : 'readonly' }}>
-                                                </div>
-
-                                                <div class="col-md-6 mb-4">
-                                                    <label class="form-label fw-bold">Casse - Cageots</label>
-                                                    <input type="number" name="cageot_casse" class="form-control" placeholder="Quantité cassée" min="0" step="1" {{ $vente['consi_cgt'] != 0 ? ($vente['prix_cgt'] / $vente['consi_cgt'] == 0 ? 'readonly' : '') : 'readonly' }}>
-                                                </div>
-                                            </div>
-
-                                            <!-- État rendu -->
-                                            <div class="row">
-                                                <div class="col-md-6 mb-3">
-                                                    <div class="alert {{ $vente['etat'] == 'avec BTL' ? 'alert-warning' : 'alert-success' }}">
-                                                        <strong>Bouteille</strong>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-6 mb-3">
-                                                    <div class="alert {{ in_array($vente['etat_cgt'], ['avec CGT', 'non condi°']) ? 'alert-warning' : 'alert-success' }}">
-                                                        <strong>Cageot</strong>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Footer -->
-                                        <div class="modal-footer border-top-0 px-4 pb-4">
-                                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
-                                            <!-- @php
-                                            $disabled = true;
-
-                                            if ($vente['prix_consignation'] != 0 && $vente['consi_cgt'] != 0) {
-                                            $ratio1 = $vente['consignation'] / $vente['prix_consignation'];
-                                            $ratio2 = $vente['prix_cgt'] / $vente['consi_cgt'];
-
-                                            if (!($ratio1 == 0 && $ratio2 == 0)) {
-                                            $disabled = false;
-                                            }
-                                            }
-                                            @endphp -->
-
-                                            <button type="submit" class="btn btn-primary" id="validerBtn">
-                                                Valider
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
                         @empty
                         <tr>
-                            <td colspan="11" class="text-center text-muted py-4">
-                                <i class="fas fa-exclamation-circle me-2"></i>Aucune donnée disponible
+                            <td colspan="8" class="px-6 py-8 text-center">
+                                <div class="flex flex-col items-center text-gray-400">
+                                    <i class="fas fa-exclamation-circle text-3xl mb-2"></i>
+                                    <p class="text-lg">Aucune donnée disponible</p>
+                                </div>
                             </td>
                         </tr>
                         @endforelse
-
-                        <!-- Total Row -->
-                        <tr class="table-active fw-bold">
-                            <td colspan="" class="text-end"></td>
-                            <td>Cageot rendu</td>
-                            <td>{{$rendu_cgt}}</td>
-                            <td colspan="2">Bouteille rendu</td>
-                            <td>{{$rendu_btl}}</td>
-                            <td></td>
-                            <td colspan="">Total :</td>
-                            <td colspan="2">{{ number_format($prixGlobale, 0, ',', ' ') }} Ar</td>
-
+                    </tbody>
+                    <tfoot class="bg-gray-50">
+                        <!-- Summary Rows -->
+                        <tr class="bg-gray-100">
+                            <td colspan="2" class="px-6 py-3 text-right font-semibold text-gray-900">Cageot rendu:</td>
+                            <td class="px-6 py-3 font-semibold text-right text-gray-900">{{ $rendu_cgt }}</td>
+                            <td colspan="2" class="px-6 py-3 text-right font-semibold text-gray-900">Bouteille rendue:</td>
+                            <td class="px-6 py-3 font-semibold text-right text-gray-900">{{ $rendu_btl }}</td>
+                            <td class="px-6 py-3 text-right font-semibold text-gray-900">Total consignation:</td>
+                            <td class="px-6 py-3 font-semibold text-right text-gray-900">{{ number_format($totalconsigne + ($nombreCageots * $cgt), 0, ',', ' ') }} Ar</td>
                         </tr>
-                        <tr class="table-active fw-bold">
-                            <td colspan="" class="text-end"></td>
-                            <td>Bouteille cassé :</td>
-                            <td>{{$casse}}</td>
-                            <td colspan="2">Bouteille consigné :</td>
-                            <td>{{$totalbtl}}</td>
-                            <td></td>
-                            <td>Total déconsigné:</td>
-                            <td colspan="2">{{ number_format($deconsigneglobale, 0, ',', ' ') }} Ar</td>
+                        <tr class="bg-gray-100">
+                            <td colspan="2" class="px-6 py-3 text-right font-semibold text-gray-900">Bouteille cassée:</td>
+                            <td class="px-6 py-3 font-semibold text-red-600 text-right">{{ $casse }}</td>
+                            <td colspan="2" class="px-6 py-3 text-right font-semibold text-gray-900">Bouteille consignée:</td>
+                            <td class="px-6 py-3 font-semibold text-right text-gray-900">{{ $totalbtl }}</td>
+                            <td class="px-6 py-3 text-right font-semibold text-gray-900">Total déconsigné:</td>
+                            <td class="px-6 py-3 font-semibold text-right text-gray-900">{{ number_format($deconsigneglobale, 0, ',', ' ') }} Ar</td>
                         </tr>
-                        <tr class="table-active fw-bold">
-                            <td colspan="" class="text-end"></td>
-                            <td>Cageot endomagé / perdu :</td>
-                            <td>{{$casse_cgt}}</td>
-                            <td colspan="2">Cageot consigné :</td>
-                            <td>{{$totalcgt + optional($conditionnement->conditionnement)->nombre_cageot}}</td>
-                            <td></td>
-                            <td>Total consignation:</td>
-                            <td colspan="2">{{ number_format($totalconsigne + (optional($conditionnement->conditionnement)->nombre_cageot * $cgt), 0, ',', ' ') }} Ar</td>
+                        <tr class="bg-gray-100">
+                            <td colspan="2" class="px-6 py-3 text-right font-semibold text-gray-900">Cageot perdu:</td>
+                            <td class="px-6 py-3 font-semibold text-red-600 text-right">{{ $casse_cgt }}</td>
+                            <td colspan="2" class="px-6 py-3 text-right font-semibold text-gray-900">Cageot consigné:</td>
+                            <td class="px-6 py-3 font-semibold text-right text-gray-900">{{ $totalcgt + $nombreCageots }}</td>
+                            <td class="px-6 py-3 text-right font-semibold text-gray-900">Total:</td>
+                            <td class="px-6 py-3 font-semibold text-blue-600 text-right">{{ number_format($prixGlobale, 0, ',', ' ') }} Ar</td>
                         </tr>
-                        @php
-                        // Calcul sécurisé avec gestion des valeurs nulles
-                        $nombreCageots = optional($conditionnement->conditionnement)->nombre_cageot ?? 0;
-                        $valeurCageots = $nombreCageots * ($cgt ?? 0);
-                        $totalConsigne = ($totalconsigne ?? 0) + $valeurCageots;
-                        $montantTotal = ($deconsigneglobale - $reste < 0 ? 0 : $deconsigneglobale - $reste) + $totalConsigne;
-                            @endphp
-                            <tr class="table-active fw-bold">
-                            <td colspan="6" class="text-end"></td>
-                            <td></td>
-                            <td colspan="" class="text-danger">
-                                @if($commande->etat_commande == 'non payé' && $totalConsigne > 0)
-                                Reste à payer
-                                @elseif($commande->etat_commande == 'payé' && $totalConsigne > 0)
-                                <span class="text-success">Bouteille déconsignable</span>
+                        <tr class="font-semibold bg-gray-50">
+                            <!-- Statut commande -->
+                           
 
-                                @elseif($commande->etat_commande == 'non payé' && $totalConsigne == 0)
-                                <span class="text-danger">Reste à payer</span>
-                                @else
-                                <span class="text-success">reglé</span>
-                                @endif
-                            </td>
-                            <!-- <td colspan="2">{{ number_format($deconsigneglobale - $reste, 0, ',', ' ') }} Ar</td> -->
-                            <td colspan="2" class="text-end pe-4 fw-bold">
-
-
-                                <!-- Affichage détaillé -->
-                                <div class="d-flex flex-column">
-                                    <span>{{ $deconsigneglobale - $reste < 0 ? 0 : $deconsigneglobale - $reste }} Ar (déconsigne)</span>
-                                    <span class="text-success">+ {{ number_format($totalconsigne ?? 0, 0, ',', ' ') }} Ar (consigne bouteilles)</span>
+                            <!-- Récapitulatif -->
+                            <td colspan="8" class="px-1 py-3 text-right align-top">
+                                <div class="border border-gray-200 p-4 bg-white shadow-sm rounded-md">
+                                    <div class="flex justify-between items-center py-1">
+                                        <span class="text-gray-700 text-sm">Déconsigne :</span>
+                                        <span class="text-gray-900 text-sm">{{ $deconsigneglobale - ($reste ?? 0) < 0 ? 0 : $deconsigneglobale - ($reste ?? 0) }} Ar</span>
+                                    </div>
+                                    <div class="flex justify-between items-center py-1 pt-2 mt-2 border-t border-gray-200">
+                                        <span class="text-gray-700 text-sm">Consigne bouteilles :</span>
+                                        <span class="text-green-600 text-sm">+ {{ number_format($totalconsigne ?? 0, 0, ',', ' ') }} Ar</span>
+                                    </div>
                                     @if($nombreCageots > 0)
-                                    <span class="text-info">+ {{ number_format($valeurCageots, 0, ',', ' ') }} Ar ({{ $nombreCageots }} cageots)</span>
+                                    <div class="flex justify-between items-center py-1 pt-2 mt-2 border-t border-gray-200">
+                                        <span class="text-gray-700 text-sm">Cageots ({{ $nombreCageots }}) :</span>
+                                        <span class="text-blue-500 text-sm">+ {{ number_format($valeurCageots, 0, ',', ' ') }} Ar</span>
+                                    </div>
                                     @endif
-                                    <div class="border-top mt-1 pt-1">
-                                        <span class="fw-bolder">= {{ number_format($montantTotal, 0, ',', ' ') }} Ar (total)</span>
+                                    <div class="flex justify-between items-center py-2 pt-2 mt-2 border-t border-gray-200 font-bold">
+                                        <span class="text-gray-900 text-sm">Reste à payer :</span>
+                                        <span class="text-blue-600 text-sm">{{ number_format($montantTotal, 0, ',', ' ') }} Ar</span>
                                     </div>
                                 </div>
                             </td>
-                            </tr>
-                    </tbody>
-                </table>
-
-                <!-- Pagination -->
-                <div class="d-flex justify-content-center mt-3">
-                    {{ $ventes->links('pagination::bootstrap-4') }}
-                </div>
-            </div>
-
-            <!-- Conditionnement Section -->
-            <div class="mt-4">
-                <!-- <h5 class="d-flex align-items-center text-uppercase fw-bold mb-3">
-                    <img src="{{ asset('assets/images/enter.png') }}" alt="Conditionnement" width="24" class="me-2">
-                    Conditionnement
-                </h5> -->
-                <hr class="mt-0">
-
-                <div class="table-responsive mb-4">
-                    <table class="table table-bordered">
-                        @if(optional($conditionnement->conditionnement)->id)
-                        <thead class="table-secondary">
-                            <tr>
-                                <th>ID</th>
-                                <th>Prix Cageot</th>
-                                <th>Nombre Cageot</th>
-                                <th>Total</th>
-                                <th>État</th>
-                                <th>Date</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>{{ optional($conditionnement->conditionnement)->id ?? 'N/A' }}</td>
-                                <td>{{ optional($conditionnement->conditionnement)->id ? $cgt .' Ar/CGT' : 'N/A' }}</td>
-                                <td>{{ optional($conditionnement->conditionnement)->nombre_cageot ? optional($conditionnement->conditionnement)->nombre_cageot. ' CGT' : 'N/A' }}</td>
-                                <td>{{ optional($conditionnement->conditionnement)->nombre_cageot ? number_format(optional($conditionnement->conditionnement)->nombre_cageot * $cgt, 0, ',', ' ') .' Ar' : 'N/A' }}</td>
-                                <td>{{ optional($conditionnement->conditionnement)->etat ?? 'N/A' }}</td>
-                                <td>{{ optional($conditionnement->conditionnement)->created_at ? optional($conditionnement->conditionnement)->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
-                                <td>
-                                    @if(optional($conditionnement->conditionnement)->id)
-                                    <a href="#" data-toggle="modal" data-target="#venteModal2" class="text-warning">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    @endif
-                                </td>
-                            </tr>
-                        </tbody>
-                        @else
-                        <tbody>
-                            <tr>
-                                <td colspan="7" class="text-center text-muted py-3">
-                                    <i class="fas fa-info-circle me-2"></i>Aucun conditionnement enregistré
-                                </td>
-                            </tr>
-                        </tbody>
-                        @endif
-                        <tr class="table-active fw-bold">
-                            <td colspan="6" class="text-end uppercase">Net à payer :</td>
-                            <td class=""><span class="">@if($commande->etat_client == 1)
-                                    {{ number_format($prixGlobale, 0, ',', ' ') }} Ar
-                                    @else
-                                    {{ number_format(optional($conditionnement->conditionnement)->id ? $prixGlobale + ($cgt * optional($conditionnement->conditionnement)->nombre_cageot) : $prixGlobale, 0, ',', ' ') }} Ar
-                                    @endif</span>
-                            </td>
                         </tr>
-                    </table>
-                </div>
-
-                <!-- Global Total -->
-
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="venteModal2" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-secondary text-white">
-                <h5 class="modal-title">Déconsignaton cageot</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <form action="{{ route('payer.condi') }}" method="POST">
-                @csrf
-
-                <div class="modal-body">
-                    <input type="hidden" name="commande_id" value="{{ $commande_id }}">
-                    <p>Confirmer cette action ?</p>
-
-                    <!-- Champs cachés liés au conditionnement -->
-                    <input type="hidden" name="conditionnement_id" value="{{ optional($conditionnement->conditionnement)->id ?? '' }}">
-                    <input type="hidden" name="cgt" value="{{ $cgt }}">
-                    <input type="hidden" name="nombre_cageot" value="{{ optional($conditionnement->conditionnement)->nombre_cageot ?? 0 }}">
-                    <input type="hidden" name="montant_total" value="{{ (optional($conditionnement->conditionnement)->nombre_cageot ?? 0) * $cgt }}">
-                    <input type="hidden" name="montant_tot" value="{{ $montantTotal }}">
-                    <input type="hidden" name="totalconsigne"
-                        value="{{ $totalconsigne + ((optional($conditionnement->conditionnement)->nombre_cageot ?? 0) * $cgt) }}">
-                    <input type="hidden" name="reste" value="{{ $reste }}">
-                    <input type="hidden" name="prixGlobale" value="{{ $prixGlobale }}">
-
-                    <!-- Quantité à rendre -->
-                    <input
-                        type="number"
-                        name="quantite_cageot"
-                        class="form-control"
-                        placeholder="Quantité de cageots à rendre"
-                        min="0"
-                        step="1"
-                        value="{{ optional($conditionnement->conditionnement)->nombre_cageot ?? 0 }}">
-                </div>
-
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">Rendre</button>
-                </div>
-            </form>
-
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="payement" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-
-            <!-- Modal Header -->
-            <div class="modal-header bg-secondary text-white">
-                <h5 class="modal-title">Régler le paiement</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                    </tfoot>
+                </table>
             </div>
 
-            <!-- Modal Form -->
-            <form action="{{ route('regler.payement') }}" method="POST">
-                @csrf
-
-                <!-- Hidden Inputs -->
-                <input type="hidden" name="commande_id" value="{{ $commande_id }}">
-                <input type="hidden" name="montant_total" value="{{ $deconsigneglobale }}">
-                <input type="hidden" name="montant_tot" value="{{ $montantTotal }}">
-                <input type="hidden" name="totalconsigne"
-                    value="{{ $totalconsigne + (optional($conditionnement->conditionnement)->nombre_cageot * $cgt) }}">
-
-                <div class="modal-body">
-
-                    @if($deconsigneglobale - $reste <= 0)
-                        <p class="text-danger">
-                        Le paiement pour l'eau a déjà été effectué.
-                        </p>
-                        @else
-                        <p>
-                            Voulez-vous régler le paiement de la commande
-                            <strong>{{ $commande_id }}</strong> ?<br>
-                            Somme restante à payer :
-                            <span class="text-danger">
-                                {{ $deconsigneglobale - $reste }} Ar
-                            </span>
-                        </p>
-
-                        <div class="form-group">
-                            <input
-                                type="number"
-                                name="somme"
-                                class="form-control"
-                                placeholder="Montant à régler"
-                                max="{{ $prixGlobale - $reste }}">
-                        </div>
-                        @endif
-
-                        <!-- Option: Tout régler -->
-                        <div class="form-group mt-4">
-                            <div class="form-check">
-                                <input type="checkbox" id="all" name="all" class="form-check-input">
-                                <label class="form-check-label" for="all">
-                                    Tout régler en Argent (Avec BTL + CGT)<br>
-                                    <span class="fw-bold text-success">{{ $montantTotal }} Ar</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Montant reçu -->
-                        <div class="form-group mt-3">
-                            <label for="montant-recu">Montant reçu (Ar)</label>
-                            <input
-                                type="number"
-                                id="montant-recu"
-                                name="recu"
-                                class="form-control"
-                                placeholder="Entrez le montant reçu">
-                        </div>
-
-                        <!-- Montant rendu -->
-                        <div class="form-group">
-                            <label for="montant-rendu">Montant à rendre (Ar)</label>
-                            <input
-                                type="number"
-                                id="montant-rendu"
-                                class="form-control bg-light"
-                                readonly>
-                        </div>
+            <!-- Pagination -->
+            @if($ventes->hasPages())
+            <div class="px-6 py-4 border-t border-gray-200">
+                <div class="flex justify-center">
+                    {{ $ventes->links('pagination::tailwind') }}
                 </div>
-
-                <!-- Modal Footer -->
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">Payer</button>
-                </div>
-            </form>
+            </div>
+            @endif
         </div>
-    </div>
 </div>
-<style>
-    /* Supprime tous les styles Bootstrap hérités pour text et number */
-    input[type="text"].form-control,
-    input[type="number"].form-control {
-        all: unset;
-        display: block;
-        font-family: inherit;
-    }
 
-    /* Applique ton propre style simple */
-    input[type="text"],
-    input[type="number"] {
-        font-size: 16px;
-        padding: 6px 8px;
-        border: 1px solid #333;
-        border-radius: 0;
-        background-color: #fff;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    /* Style lorsqu'on est en readonly */
-    input[type="text"][readonly],
-    input[type="number"][readonly] {
-        background-color: #f0f0f0;
-        color: #555;
-    }
-
-    /* Supprime les effets visuels de focus Bootstrap */
-    input[type="text"]:focus,
-    input[type="number"]:focus {
-        outline: none;
-        border-color: #333;
-        box-shadow: none;
-    }
-</style>
-<style>
-    /* Supprime les styles Bootstrap */
-    input[type="text"].form-control,
-    input[type="number"].form-control {
-        all: unset;
-        display: block;
-    }
-
-    /* Applique ton propre style avec priorité */
-    input[type="text"],
-    input[type="number"] {
-        font-size: 16px !important;
-        padding: 6px 8px !important;
-        border: 1px solid #000 !important;
-        /* bordure bien visible */
-        border-radius: 0 !important;
-        background-color: #fff !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-        color: #000 !important;
-    }
-
-    /* Bordure bien visible au focus */
-    input[type="text"]:focus,
-    input[type="number"]:focus {
-        outline: none !important;
-        border: 1px solid #000 !important;
-        box-shadow: none !important;
-    }
-
-    /* Inputs en readonly */
-    input[type="text"][readonly],
-    input[type="number"][readonly] {
-        background-color: #f0f0f0 !important;
-        color: #555 !important;
-        border: 1px solid #000 !important;
-    }
-</style>
-
-<script>
-    document.getElementById('achatForm').addEventListener('submit', function(e) {
-        const button = document.getElementById('validerBtn');
-        if (button) {
-            button.disabled = true;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Traitement...';
-        }
-    });
-    document.addEventListener("DOMContentLoaded", function() {
-        const montantRecu = document.getElementById("montant-recu");
-        const montantRendu = document.getElementById("montant-rendu");
-        const montantAPayer = document.querySelector('input[name="somme"]');
-        const toutReglerCheckbox = document.getElementById("all");
-        const montantTotal = parseFloat("{{ $montantTotal }}") || 0;
-
-        function calculerRendu() {
-            const recu = parseFloat(montantRecu.value) || 0;
-            let aPayer = parseFloat(montantAPayer.value) || 0;
-
-            // Si "Tout régler" est coché, utiliser le montant total comme montant à payer
-            if (toutReglerCheckbox.checked) {
-                aPayer = montantTotal;
-                montantAPayer.value = aPayer.toFixed(2);
-            }
-
-            const rendu = recu - aPayer;
-            montantRendu.value = rendu > 0 ? rendu.toFixed(2) : 0;
-        }
-
-        // Écouteurs d'événements
-        montantRecu.addEventListener("input", calculerRendu);
-        montantAPayer.addEventListener("input", calculerRendu);
-
-        // Écouteur pour la case "Tout régler"
-        toutReglerCheckbox.addEventListener("change", function() {
-            if (this.checked) {
-                montantAPayer.value = montantTotal.toFixed(2);
-                montantAPayer.readOnly = true;
-            } else {
-                montantAPayer.readOnly = false;
-                montantAPayer.value = "";
-            }
-            calculerRendu();
-        });
-    });
-</script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll('input[type="checkbox"][name="check_bouteille_casse"]').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                const modalBody = this.closest('.modal-body');
-                const venteId = this.id.replace('check_bouteille_casse', '');
-
-                const inputCasse = modalBody.querySelector(`#bouteille_casse_input${venteId}`);
-                const cageotContainer = modalBody.querySelector('#cageot_container');
-                const bouteilleContainer = modalBody.querySelector('#bouteille_container');
-                const titre = modalBody.querySelector('#titre');
-                const cageotCasseContainer = modalBody.querySelector(`#cageot_casse_container${venteId}`);
-
-                if (inputCasse && cageotContainer && bouteilleContainer && cageotCasseContainer) {
-                    const isChecked = this.checked;
-                    inputCasse.style.display = isChecked ? 'block' : 'none';
-                    cageotContainer.style.display = isChecked ? 'none' : 'block';
-                    bouteilleContainer.style.display = isChecked ? 'none' : 'block';
-                    cageotCasseContainer.style.display = isChecked ? 'block' : 'none';
-                    titre.style.display = isChecked ? 'block' : 'none';
-                }
-            });
-        });
-    });
-    document.addEventListener('DOMContentLoaded', function() {
-        // Gestion de la checkbox "Tout régler"
-        const allCheckbox = document.getElementById('all');
-        const sommeInput = document.querySelector('input[name="somme"]');
-
-        if (allCheckbox && sommeInput) {
-            allCheckbox.addEventListener('change', function() {
-                if (this.checked) {
-                    // Remplir automatiquement avec le montant max quand "Tout régler" est coché
-                    sommeInput.value = '';
-                    sommeInput.readOnly = true;
-                } else {
-                    sommeInput.value = '';
-                    sommeInput.readOnly = false;
-                }
-            });
-
-            // Validation du montant saisi
-            sommeInput.addEventListener('input', function() {
-                const max = parseFloat(this.max);
-                const value = parseFloat(this.value) || 0;
-
-                if (value > max) {
-                    this.value = '';
-                    alert(`Le montant ne peut pas dépasser ${max} Ar`);
-                }
-            });
-        }
-
-        // Gestion soumission du formulaire
-        const paymentForm = document.querySelector('.modal-body').closest('form');
-        if (paymentForm) {
-            paymentForm.addEventListener('submit', function(e) {
-                const reste = parseFloat("{{$deconsigneglobale - $reste}}");
-
-                if (reste > 0) {
-                    const montantSaisi = parseFloat(sommeInput.value) || 0;
-                    if (montantSaisi <= 0) {
-                        e.preventDefault();
-                        alert('Veuillez saisir un montant valide');
-                        return;
-                    }
-                }
-
-                // Afficher un loader pendant le traitement
-                const submitBtn = paymentForm.querySelector('[type="submit"]');
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
-            });
-        }
-    });
-</script>
-
-
+<!-- Déconsignation Modal -->
 @endsection

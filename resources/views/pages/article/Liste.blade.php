@@ -1,480 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
 @extends('layouts.AdminLayout')
 
 @section('title', 'Accueil')
 
 @section('content')
-<div class="container-fluid">
-
-    <div class="card shadow mb-4">
-        <div class="bg-light card-header d-flex">
-            <i class="fas fa-glass-cheers " style="font-size : 20px;"></i>
-            <h5 class="mb-2 text-dark fw-bold">BOISSON</h5>
-        </div>
-        <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-center bg-light">
-            <!-- Barre de recherche avancée -->
-            <div class="d-flex flex-wrap align-items-center gap-2 mb-2 mb-md-0">
-                <form action="{{ route('article.liste') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2">
-                    <!-- Champ de recherche principal -->
-                    <div class="position-relative">
-                        <input type="text" class="form-control form-control-sm" name="search" placeholder="Rechercher..." value="{{ old('search', request('search')) }}">
-                    </div>
-
-                    <!-- Filtres supplémentaires -->
-
-
-                    <!-- Tri des résultats -->
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-sort me-1"></i> Trier par
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-                            <li><button class="dropdown-item" type="submit" value="nom_asc">Nom (A-Z)</button></li>
-                            <li><button class="dropdown-item" type="submit" value="nom_desc">Nom (Z-A)</button></li>
-                            <li><button class="dropdown-item" type="submit" value="prix_asc">Prix (Croissant)</button></li>
-                            <li><button class="dropdown-item" type="submit" value="prix_desc">Prix (Décroissant)</button></li>
-                            <li><button class="dropdown-item" type="submit" value="stock_asc">Stock (Croissant)</button></li>
-                            <li><button class="dropdown-item" type="submit" value="stock_desc">Stock (Décroissant)</button></li>
-                        </ul>
-                    </div>
-                </form>
+    <div class="container mx-auto px-4 py-6">
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+            <!-- Card Header -->
+            <div class="bg-gray-100 p-4 flex items-center">
+                <i class="fas fa-glass-cheers text-xl mr-2"></i>
+                <h5 class="text-lg font-bold text-gray-800">BOISSON</h5>
             </div>
 
-            <!-- Bouton d'ajout -->
-            <div>
-                <button style="background-color: #4c4e5b;" class="btn text-white btn-sm" data-toggle="modal" data-target="#addArticleModal">
+            <!-- Card Header with Search and Add Button -->
+            <div class="bg-gray-100 p-4 flex flex-wrap justify-between items-center gap-4">
+                <form action="{{ route('article.liste') }}" method="GET" class="flex flex-wrap items-center gap-4">
+                    <div class="relative">
+                        <input type="text" name="search" value="{{ old('search', request('search')) }}"
+                               class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               placeholder="Rechercher...">
+                    </div>
+                    <div class="relative">
+                        <button type="button"
+                                class="border rounded-lg px-3 py-2 text-sm bg-white text-gray-600 hover:bg-gray-50 flex items-center"
+                                onclick="toggleSortDropdown()">
+                            <i class="fas fa-sort mr-1"></i> Trier par
+                        </button>
+                        <div id="sortDropdown" class="absolute hidden mt-2 w-48 bg-white border rounded-lg shadow-lg z-10">
+                            <button type="submit" name="sort" value="nom_asc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Nom (A-Z)</button>
+                            <button type="submit" name="sort" value="nom_desc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Nom (Z-A)</button>
+                            <button type="submit" name="sort" value="prix_asc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Prix (Croissant)</button>
+                            <button type="submit" name="sort" value="prix_desc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Prix (Décroissant)</button>
+                            <button type="submit" name="sort" value="stock_asc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Stock (Croissant)</button>
+                            <button type="submit" name="sort" value="stock_desc" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Stock (Décroissant)</button>
+                        </div>
+                    </div>
+                </form>
+                <button class="bg-gray-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-700 flex items-center"
+                        onclick="openModal('addArticleModal')">
                     <i class="fas fa-plus-circle mr-2"></i>Ajouter boisson
                 </button>
             </div>
-        </div>
 
-        <div class="card-body">
-            @if(session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-            @endif
-            <div class="table-responsive">
+            <!-- Card Body -->
+            <div class="p-4">
+                @if(session('success'))
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4">
+                    {{ session('success') }}
+                </div>
+                @endif
 
+                <div class="overflow-x-auto">
+                    <table class="w-full text-center border-collapse">
+                        <thead class="bg-gray-800 text-white">
+                            <tr>
+                                <th class="p-3">ID</th>
+                                <th class="p-3">Nom</th>
+                                <th class="p-3">Catégorie</th>
+                                <th class="p-3">P.Vente unité gros</th>
+                                <th class="p-3">P.Vente cageot/pack</th>
+                                <th class="p-3">Prix détails</th>
+                                <th class="p-3">P.Achat</th>
+                                <th class="p-3">Quantité</th>
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Options</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($articles as $article)
+                            <tr class="hover:bg-gray-50 cursor-pointer">
+                                <td class="p-3" onclick="openEditModal('editArticleModal{{ $article['id'] }}')">{{ $article['id'] }}</td>
+                                <td class="p-3" onclick="openEditModal('editArticleModal{{ $article['id'] }}')">{{ \Illuminate\Support\Str::limit($article['nom'], 15) }}</td>
+                                <td class="p-3" onclick="openEditModal('editArticleModal{{ $article['id'] }}')">{{ $article['categorie'] }}</td>
+                                <td class="p-3" onclick="openEditModal('editArticleModal{{ $article['id'] }}')">{{ $article['prix_unitaire'] }} Ar</td>
+                                <td class="p-3" onclick="openEditModal('editArticleModal{{ $article['id'] }}')">{{ $article['prix_conditionne'] }} Ar</td>
+                                <td class="p-3" onclick="openEditModal('editArticleModal{{ $article['id'] }}')">{{ $article['prix_gros'] }} Ar</td>
+                                <td class="p-3" onclick="openEditModal('editArticleModal{{ $article['id'] }}')">{{ $article['prix_achat'] }} Ar</td>
+                                <td class="p-3" onclick="openEditModal('editArticleModal{{ $article['id'] }}')">
+                                    @php
+                                    $quotient = intdiv($article['quantite'], $article['conditionnement']);
+                                    $reste = $article['quantite'] % $article['conditionnement'];
+                                    $affichage = $quotient;
+                                    @endphp
+                                    {{ $affichage }} cageot/pack{{ $affichage > 1 ? 's' : '' }} @if($reste > 0) et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}@endif
+                                </td>
+                                <td class="p-3" onclick="openEditModal('editArticleModal{{ $article['id'] }}')">
+                                    @if (!empty($article['created_at']))
+                                    {{ \Carbon\Carbon::createFromFormat('d/m/Y H:i:s', $article['created_at'])->format('Y-m-d') }}
+                                    @else
+                                    -
+                                    @endif
+                                </td>
+                                <td class="p-3">
+                                    <button onclick="openEditModal('editArticleModal{{ $article['id'] }}')" class="text-gray-600 hover:text-gray-800">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="openDeleteModal('supprimerModal{{ $article['id'] }}')" class="text-red-600 hover:text-red-800 ml-3">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
 
-                <table class="table table-striped table-hover table-bordered text-center align-middle" id="dataTable" width="100%" cellspacing="0">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>Nom</th>
-                            <th>Catégorie</th>
-                            <th>P.Vente unité gros</th>
-                            <th>p.vente cageot/pack</th>
-                            <th>Prix détails</th>
-                            <th>P.Achat</th>
-                            <th>Quantité</th>
-                            <th>Date</th>
-                            <th>Options</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($articles as $article)
-                        <tr style="cursor : pointer;">
-                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">{{ $article['id'] }}</td>
-                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">{{ \Illuminate\Support\Str::limit($article['nom'], 15) }}</td>
-                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">{{ $article['categorie'] }}</td>
-                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">{{ $article['prix_unitaire'] }} Ar</td>
-                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">{{$article['prix_conditionne']. 'Ar'}}</td>
-                            <!-- <td>{{ number_format($article['prix_conditionne'] ? $article['prix_conditionne'] / $article['conditionnement'] : 0, 2) }} Ar</td> -->
-                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">{{$article['prix_gros'] .' Ar'}}</td>
-
-                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">{{$article['prix_achat'] . ' Ar'}}</td>
-                            <!-- <td>{{ $article['prix_conditionne'] ? $article['prix_conditionne'] : 'pas de prix' }} Ar</td> -->
-                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">
-                                @php
-                                $quotient = intdiv($article['quantite'], $article['conditionnement']); // Division entière
-                                $reste = $article['quantite'] % $article['conditionnement']; // Reste de la division
-                                $affichage = $quotient;
-                                @endphp
-                                {{ $affichage }} cageot/pack{{ $affichage > 1 ? 's' : '' }} @if($reste> 0) et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}@endif
-                            </td>
-                            <td data-toggle="modal" data-target="#editArticleModal{{$article['id']}}">
-                                @if (!empty($article['created_at']))
-                                {{ \Carbon\Carbon::createFromFormat('d/m/Y H:i:s', $article['created_at'])->format('Y-m-d') }}
-                                @else
-                                -
-                                @endif
-                            </td>
-                            <td>
-                                <a href="#" data-toggle="modal" data-target="#editArticleModal{{$article['id']}}"><i class="fas fa-edit text-secondary"></i></a>
-                                <a class="text-danger ml-3 text-danger" href="#" data-toggle="modal" data-target="#supprimerModal{{ $article['id'] }}">
-                                    <i class="fas fa-trash-alt text-danger"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        <div class="modal fade" id="supprimerModal{{$article['id']}}" tabindex="-1" role="dialog" aria-labelledby="supprimerModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="supprimerModalLabel">suppression</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
+                            <!-- Delete Modal -->
+                            <div id="supprimerModal{{ $article['id'] }}" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+                                <div class="bg-white rounded-lg w-full max-w-md">
+                                    <div class="p-4 border-b">
+                                        <h5 class="text-lg font-bold">Suppression</h5>
+                                        <button onclick="closeModal('supprimerModal{{ $article['id'] }}')" class="absolute top-4 right-4 text-gray-600 hover:text-gray-800">
+                                            <i class="fas fa-times"></i>
                                         </button>
                                     </div>
-                                    <div class="modal-body">
-                                        <p>voulez-vous vraiment supprimer cette article <span class="text-warning">{{$article['nom']}} </span> ?</p>
+                                    <div class="p-4">
+                                        <p>Voulez-vous vraiment supprimer cet article <span class="text-yellow-500">{{ $article['nom'] }}</span> ?</p>
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                                        <a href="{{route('delete.article', ['id' => $article['id']])}}"><button type="submit" class="btn btn-danger">supprimer</button></a>
+                                    <div class="p-4 border-t flex justify-end gap-2">
+                                        <button onclick="closeModal('supprimerModal{{ $article['id'] }}')" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Annuler</button>
+                                        <a href="{{ route('delete.article', ['id' => $article['id']]) }}" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Supprimer</a>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="modal fade" id="editArticleModal{{$article['id']}}" tabindex="-1" aria-labelledby="editArticleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-dark text-white">
-                                        <h5 class="modal-title" id="addArticleModalLabel">Modifier articles</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
+
+                            <!-- Edit Modal -->
+                            <div id="editArticleModal{{ $article['id'] }}" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+                                <div class="bg-white rounded-lg w-full max-w-3xl">
+                                    <div class="bg-gray-800 text-white p-4 rounded-t-lg flex justify-between items-center">
+                                        <h5 class="text-lg font-bold">Modifier articles</h5>
+                                        <button onclick="closeModal('editArticleModal{{ $article['id'] }}')" class="text-white hover:text-gray-200">
+                                            <i class="fas fa-times"></i>
                                         </button>
                                     </div>
-                                    <div class="modal-body">
+                                    <div class="p-4">
                                         <form action="{{ route('articles.update') }}" method="POST">
                                             @csrf
-                                            <div class="form-group">
-                                                <label for="nom">Nom</label>
-                                                <input value="{{$article['nom']}}" type="text" class="form-control" id="nom" name="nom" required>
-                                                <input type="hidden" name="id" value="{{$article['id']}}">
+                                            <div class="mb-4">
+                                                <label for="nom" class="block text-sm font-medium">Nom</label>
+                                                <input type="text" name="nom" value="{{ $article['nom'] }}"
+                                                       class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                                <input type="hidden" name="id" value="{{ $article['id'] }}">
                                             </div>
-
-                                            <div class="">
-                                                <div class="form-group">
-                                                    <label for="categorie">Catégorie</label>
-                                                    <select class="form-control select2" id="categorie" name="categorie_id">
-                                                        <option value="">----</option>
-                                                        @foreach($categories as $categorie)
-                                                        <option value="{{ $categorie->id }}" {{ $categorie->id == $article['categorie_id'] ? 'selected' : '' }}>{{ $categorie->nom }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
+                                            <div class="mb-4">
+                                                <label for="categorie" class="block text-sm font-medium">Catégorie</label>
+                                                <select name="categorie_id" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                    <option value="">----</option>
+                                                    @foreach($categories as $categorie)
+                                                    <option value="{{ $categorie->id }}" {{ $categorie->id == $article['categorie_id'] ? 'selected' : '' }}>{{ $categorie->nom }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
-                                            <div class="">
-                                                <div class="form-group">
-                                                    <label for="conditionnement">conditionnement</label>
-                                                    <select class="form-control" id="conditionnement" name="conditionnement">
-                                                        <option value="{{$article['conditionnement']}}">{{$article['conditionnement']}}</option>
-                                                        <option value="48">Emballage de 48</option>
-                                                        <option value="24">Emballlage de 24</option>
-                                                        <option value="20">Emballlage de 20</option>
-                                                        <option value="12">Emballlage de 12</option>
-                                                        <option value="6">Emballlage de 6</option>
-                                                        <option value="8">Emballlage de 8</option>
-                                                    </select>
-                                                </div>
+                                            <div class="mb-4">
+                                                <label for="conditionnement" class="block text-sm font-medium">Conditionnement</label>
+                                                <select name="conditionnement" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                    <option value="{{ $article['conditionnement'] }}">{{ $article['conditionnement'] }}</option>
+                                                    <option value="48">Emballage de 48</option>
+                                                    <option value="24">Emballage de 24</option>
+                                                    <option value="20">Emballage de 20</option>
+                                                    <option value="12">Emballage de 12</option>
+                                                    <option value="6">Emballage de 6</option>
+                                                    <option value="8">Emballage de 8</option>
+                                                </select>
                                             </div>
-                                            <div class="ml-3 mr-3 col-md-12 row">
-                                                <div class="mb-3 col-md-3 d-flex align-items-center">
-                                                    <input type="radio" class="form-check-input me-2" id="condi_cgt_{{ $article['id'] }}" name="choix_{{ $article['id'] }}" value="cageot" {{ ($article['prix_consignation'] > 0 && $article['prix_cgt']) > 0 ? 'checked' : '' }}>
-                                                    <label for="condi_cgt_{{ $article['id'] }}" class="form-label mb-0">Cageot</label>
+                                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                                                <div class="flex items-center">
+                                                    <input type="radio" name="choix_{{ $article['id'] }}" value="cageot" id="condi_cgt_{{ $article['id'] }}"
+                                                           {{ ($article['prix_consignation'] > 0 && $article['prix_cgt']) > 0 ? 'checked' : '' }}
+                                                           class="mr-2">
+                                                    <label for="condi_cgt_{{ $article['id'] }}" class="text-sm">Cageot</label>
                                                 </div>
-                                                <div class="mb-3 col-md-3 d-flex align-items-center">
-                                                    <input type="radio" class="form-check-input me-2" id="condi_pack_{{ $article['id'] }}" name="choix_{{ $article['id'] }}" value="pack" {{ $article['prix_consignation'] == 0 ? 'checked' : '' }}>
-                                                    <label for="condi_pack_{{ $article['id'] }}" class="form-label mb-0">Pack</label>
+                                                <div class="flex items-center">
+                                                    <input type="radio" name="choix_{{ $article['id'] }}" value="pack" id="condi_pack_{{ $article['id'] }}"
+                                                           {{ $article['prix_consignation'] == 0 ? 'checked' : '' }} class="mr-2">
+                                                    <label for="condi_pack_{{ $article['id'] }}" class="text-sm">Pack</label>
                                                 </div>
-                                                <div class="mb-3 col-md-3 d-flex align-items-center">
-                                                    <input type="radio" class="form-check-input me-2 condi_jet_radio" data-id="{{ $article['id'] }}" id="condi_jet_{{ $article['id'] }}" name="choix_{{ $article['id'] }}" value="jet" {{ $article['prix_consignation'] > 0 && ($article['prix_cgt'] == 0 || $article['prix_cgt'] == null) ? 'checked' : '' }}>
-                                                    <label for="condi_jet_{{ $article['id'] }}" class="form-label mb-0">Emb. jetable</label>
+                                                <div class="flex items-center">
+                                                    <input type="radio" name="choix_{{ $article['id'] }}" value="jet" id="condi_jet_{{ $article['id'] }}"
+                                                           data-id="{{ $article['id'] }}"
+                                                           {{ $article['prix_consignation'] > 0 && ($article['prix_cgt'] == 0 || $article['prix_cgt'] == null) ? 'checked' : '' }}
+                                                           class="mr-2 condi_jet_radio">
+                                                    <label for="condi_jet_{{ $article['id'] }}" class="text-sm">Emb. jetable</label>
                                                 </div>
                                                 @if($article['prix_consignation'] > 0)
-                                                <div class="mb-3 col-md-3 d-flex align-items-center">
-                                                    <input type="radio" class="form-check-input me-2" id="reini_{{ $article['id'] }}" name="choix_{{ $article['id'] }}" value="pack">
-                                                    <label for="reini_{{ $article['id'] }}" class="form-label mb-0">Réinitialiser</label>
+                                                <div class="flex items-center" id="reini_div_{{ $article['id'] }}">
+                                                    <input type="radio" name="choix_{{ $article['id'] }}" value="pack" id="reini_{{ $article['id'] }}"
+                                                           class="mr-2">
+                                                    <label for="reini_{{ $article['id'] }}" class="text-sm">Réinitialiser</label>
                                                 </div>
                                                 @endif
                                             </div>
-                                            <div style="display: flex; gap: 20px;" class="mt-2">
-                                                <div class="form-group" style="flex: 1;">
-                                                    <label for="diff_{{ $article['id'] }}">Prix consignation</label>
-                                                    <input type="number"
-                                                        class="form-control"
-                                                        value="{{ $article['prix_consignation'] ?? '' }}"
-                                                        readonly
-                                                        name="prix_consignation">
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                <div>
+                                                    <label for="prix_consignation" class="block text-sm font-medium">Prix consignation</label>
+                                                    <input type="number" name="prix_consignation" value="{{ $article['prix_consignation'] ?? '' }}"
+                                                           readonly class="w-full border rounded-lg px-3 py-2 mt-1 bg-gray-100">
                                                 </div>
-
-                                                <div class="form-group" style="flex: 1;">
-                                                    <label for="diff_{{ $article['id'] }}">Nouveau prix consignation</label>
-                                                    <input type="number"
-                                                        class="form-control"
-                                                        id="diff_{{ $article['id'] }}"
-                                                        name="diff_{{ $article['id'] }}">
+                                                <div>
+                                                    <label for="diff_{{ $article['id'] }}" class="block text-sm font-medium">Nouveau prix consignation</label>
+                                                    <input type="number" name="diff_{{ $article['id'] }}" id="diff_{{ $article['id'] }}"
+                                                           class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                                 </div>
                                             </div>
-
-
-                                            <div style="display: flex; gap: 20px;">
-                                                <div class="form-group" style="flex: 1;">
-                                                    <label for="prix_achat">Prix d'achat unité</label>
-                                                    <input value="{{ $article['prix_achat'] }}"
-                                                        type="number"
-                                                        class="form-control"
-                                                        id="prix_achat"
-                                                        name="prix_achat"
-                                                        readonly>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                <div>
+                                                    <label for="prix_achat" class="block text-sm font-medium">Prix d'achat unité</label>
+                                                    <input type="number" name="prix_achat" value="{{ $article['prix_achat'] }}"
+                                                           readonly class="w-full border rounded-lg px-3 py-2 mt-1 bg-gray-100">
                                                 </div>
-
-                                                <div class="form-group" style="flex: 1;">
-                                                    <label for="prix_unitaire">Prix de gros unité</label>
-                                                    <input value="{{ $article['prix_unitaire'] }}"
-                                                        type="number"
-                                                        class="form-control"
-                                                        id="prix_unitaire"
-                                                        name="prix_unitaire"
-                                                        required>
+                                                <div>
+                                                    <label for="prix_unitaire" class="block text-sm font-medium">Prix de gros unité</label>
+                                                    <input type="number" name="prix_unitaire" value="{{ $article['prix_unitaire'] }}"
+                                                           class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                                                 </div>
                                             </div>
-                                            <div style="display: flex; gap: 20px;">
-                                                <div id="" style=" flex: 1;">
-                                                    <div class="mb-3">
-                                                        <label for="prix_achat" class="form-label">Prix détails unité</label>
-                                                        <input value="{{ $article['prix_gros'] }}" type="number" class="form-control" id="prix_achat" name="prix_gros" step="0.01">
-                                                    </div>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                <div>
+                                                    <label for="prix_gros" class="block text-sm font-medium">Prix détails unité</label>
+                                                    <input type="number" name="prix_gros" value="{{ $article['prix_gros'] }}"
+                                                           class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" step="0.01">
                                                 </div>
-
-                                                <div id="" style="flex: 1;">
-                                                    <div class="mb-3">
-                                                        <label for="prix_conditionne" class="form-label">Prix de gros cageot/pack <span class="text-danger">*</span></label>
-                                                        <input value="{{ $article['prix_conditionne'] }}" type="number" class="form-control" id="prix_conditionne" name="prix_conditionne" step="0.01">
-                                                    </div>
+                                                <div>
+                                                    <label for="prix_conditionne" class="block text-sm font-medium">Prix de gros cageot/pack <span class="text-red-500">*</span></label>
+                                                    <input type="number" name="prix_conditionne" value="{{ $article['prix_conditionne'] }}"
+                                                           class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" step="0.01">
                                                 </div>
                                             </div>
-                                            <div style="display: flex; gap : 20px;">
-                                                <div id="quantiteContainer" style=" flex: 1;">
-                                                    <div class="mb-3">
-                                                        <label for="quantite" class="form-label">
-                                                            Quantité en cageot/pack
-                                                        </label>
-                                                        <input type="number" class="form-control" id="quantite" name="quantite" step="0.01" value="{{ intdiv($article['quantite'], $article['conditionnement']) }}">
-                                                    </div>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                <div>
+                                                    <label for="quantite" class="block text-sm font-medium">Quantité en cageot/pack</label>
+                                                    <input type="number" name="quantite" value="{{ intdiv($article['quantite'], $article['conditionnement']) }}"
+                                                           class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" step="0.01">
                                                 </div>
-                                                <div id="quantiteContainer" style=" flex: 1;">
-                                                    <div class="mb-3">
-                                                        <label for="quantite" class="form-label">
-                                                            Quantité en unité
-                                                        </label>
-                                                        <input type="number" class="form-control" id="quantite" name="quantite_unite" step="0.01" value="{{ $article['quantite'] % $article['conditionnement'] }}">
-                                                    </div>
+                                                <div>
+                                                    <label for="quantite_unite" class="block text-sm font-medium">Quantité en unité</label>
+                                                    <input type="number" name="quantite_unite" value="{{ $article['quantite'] % $article['conditionnement'] }}"
+                                                           class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" step="0.01">
                                                 </div>
                                             </div>
-
-
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                                                <button type="submit" class="btn btn-primary">enregistrer modification</button>
+                                            <div class="flex justify-end gap-2">
+                                                <button type="button" onclick="closeModal('editArticleModal{{ $article['id'] }}')"
+                                                        class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Annuler</button>
+                                                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Enregistrer modification</button>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
                             </div>
+                            @empty
+                            <tr>
+                                <td colspan="10" class="p-4">
+                                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4">
+                                        <i class="fas fa-exclamation-triangle mr-2"></i>Pas de donnée trouvée
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                    <div class="mt-4">
+                        {{ $articles->appends(['search' => request('search')])->links('pagination::bootstrap-4') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Article Modal -->
+        <div id="addArticleModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg w-full max-w-3xl">
+                <div class="bg-gray-800 text-white p-4 rounded-t-lg flex justify-between items-center">
+                    <h5 class="text-lg font-bold">Ajouter un article</h5>
+                    <button onclick="closeModal('addArticleModal')" class="text-white hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-4">
+                    <form action="{{ route('articles.store') }}" method="POST">
+                        @csrf
+                        <div class="mb-4">
+                            <label for="nom" class="block text-sm font-medium">Nom du boisson</label>
+                            <input type="text" name="nom" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                         </div>
-                        @empty
-                        <tr>
-                            <td colspan="10" class="">
-                                <div class="alert alert-warning mb-3">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>
-                                    Pas de donnée trouvé --
-                                </div>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-                <div class="d-flex justify-content-start mt-3">
-                    {{ $articles->appends(['search' => request('search')])->links('pagination::bootstrap-4') }}
+                        <div class="mb-4">
+                            <label for="categorie" class="block text-sm font-medium">Catégorie</label>
+                            <select name="categorie_id" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <option value=""></option>
+                                @foreach($categories as $categorie)
+                                <option value="{{ $categorie->id }}">{{ $categorie->nom }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label for="conditionnement" class="block text-sm font-medium">Conditionnement</label>
+                            <select name="conditionnement" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <option value="">---Sélectionner---</option>
+                                <option value="48">Emballage de 48</option>
+                                <option value="24">Emballage de 24</option>
+                                <option value="20">Emballage de 20</option>
+                                <option value="12">Emballage de 12</option>
+                                <option value="6">Emballage de 6</option>
+                                <option value="8">Emballage de 8</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div class="flex items-center">
+                                <input type="radio" name="choix" value="cageot" id="condi_cgts" checked class="mr-2">
+                                <label for="condi_cgts" class="text-sm">Cageot</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" name="choix" value="pack" id="condi_packs" class="mr-2">
+                                <label for="condi_packs" class="text-sm">Pack</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" name="choix" value="jet" id="condi_jet" class="mr-2">
+                                <label for="condi_jet" class="text-sm">BTL consigné / Emb jetable</label>
+                            </div>
+                        </div>
+                        <div class="mb-4" id="consignation_field_add">
+                            <label for="diff" class="block text-sm font-medium">Prix consignation</label>
+                            <input type="number" name="diff" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="prix_vente" class="block text-sm font-medium">Prix de gros unité</label>
+                                <input type="number" name="prix_vente" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" step="0.01">
+                            </div>
+                            <div>
+                                <label for="prix_conditionne" class="block text-sm font-medium">Prix de gros cageot/pack <span class="text-red-500">*</span></label>
+                                <input type="number" name="prix_conditionne" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" step="0.01">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label for="prix_gros" class="block text-sm font-medium">Prix détails unité</label>
+                                <input type="number" name="prix_gros" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" step="0.01">
+                            </div>
+                            <div>
+                                <label for="quantite" class="block text-sm font-medium">Quantité initiale en cageot</label>
+                                <input type="number" name="quantite" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" step="0.01">
+                            </div>
+                            <div>
+                                <label for="quantite_unite" class="block text-sm font-medium">Quantité initiale en unité</label>
+                                <input type="number" name="quantite_unite" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" step="0.01">
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-2">
+                            <button type="button" onclick="closeModal('addArticleModal')" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Annuler</button>
+                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Ajouter</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-
-<!-- Modal d'ajout d'article -->
-<div class="modal fade" id="addArticleModal" tabindex="-1" aria-labelledby="addArticleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title" id="addArticleModalLabel">Ajouter un article</h5>
-                <button type="button" class="btn-close text-white" data-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="{{ route('articles.store') }}" method="POST">
-                    @csrf
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <label for="nom" class="form-label">Nom du boisson</label>
-                                <input type="text" class="form-control" id="nom" name="nom" required>
-                            </div>
-                        </div>
-
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <label for="categorie" class="form-label">Catégorie</label>
-                                <select class="form-control select2" id="categorie" name="categorie_id" required>
-                                    <option value=""></option>
-                                    @foreach($categories as $categorie)
-                                    <option value="{{ $categorie->id }}">{{ $categorie->nom }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <label for="conditionnement" class="form-label">Conditionnement</label>
-                                <select class="form-control select2" id="conditionnement" name="conditionnement" required>
-                                    <option value="">---Sélectionner---</option>
-                                    <option value="48">Emballage de 48</option>
-                                    <option value="24">Emballlage de 24</option>
-                                    <option value="20">Emballlage de 20</option>
-                                    <option value="12">Emballlage de 12</option>
-                                    <option value="6">Emballlage de 6</option>
-                                    <option value="8">Emballlage de 8</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="ml-3 mr-3 col-md-12 row">
-                            <div class="mb-3 col-md-3 d-flex align-items-center">
-                                <input type="radio" class="form-check-input me-2" id="condi_cgts" name="choix" value="cageot" checked>
-                                <label for="condi_cgts" class="form-label mb-0">Cageot</label>
-                            </div>
-                            <div class="mb-3 col-md-3 d-flex align-items-center">
-                                <input type="radio" class="form-check-input me-2" id="condi_packs" name="choix" value="pack">
-                                <label for="condi_packs" class="form-label mb-0">Pack</label>
-                            </div>
-                            <div class="mb-3 col-md-6 d-flex align-items-center">
-                                <input type="radio" class="form-check-input me-2" id="condi_jet" name="choix" value="jet">
-                                <label for="condi_jet" class="form-label mb-0">BTL consigné / Emb jetable</label>
-                            </div>
-                        </div>
-                        <div class="form-group" id="consignation_field_add">
-                            <label for="diff">Prix consignation</label>
-                            <input type="number" class="form-control" id="diff" name="diff">
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            <!-- <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="checkCageot" name="checkCageot">
-                                <label class="form-check-label" for="checkCageot">
-                                    Ajouter un prix
-                                </label>
-                            </div> -->
-                            <div style="display: flex; gap: 20px;">
-                                <div id="prix_achatcontainer" style=" flex: 1;">
-                                    <div class="mb-3">
-                                        <label for="prix_vente" class="form-label">Prix de gros unité</label>
-                                        <input type="number" class="form-control" id="prix_achat" name="prix_vente" step="0.01">
-                                    </div>
-                                </div>
-
-                                <div id="prixCageotContainer" style="flex: 1;">
-                                    <div class="mb-3">
-                                        <label for="prix_conditionne" class="form-label">Prix de gros cageot/pack <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control" id="prix_conditionne" name="prix_conditionne" step="0.01">
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="display: flex; gap: 20px;">
-                                <div id="prixGrosContainer" style=" flex: 1;">
-                                    <div class="mb-3">
-                                        <label for="prix_gros" class="form-label">
-                                            Prix détails unité
-                                        </label>
-                                        <input type="number" class="form-control" id="prix_gros" name="prix_gros" step="0.01">
-                                    </div>
-                                </div>
-                                <div id="quantiteContainer" style=" flex: 1;">
-                                    <div class="mb-3">
-                                        <label for="quantite" class="form-label">
-                                            Quantité initiale en cageot
-                                        </label>
-                                        <input type="number" class="form-control" id="quantite" name="quantite" step="0.01" value="">
-                                    </div>
-                                </div>
-                                <div id="quantiteContainer" style=" flex: 1;">
-                                    <div class="mb-3">
-                                        <label for="quantite" class="form-label">
-                                            Quantité initiale en unité
-                                        </label>
-                                        <input type="number" class="form-control" id="quantite" name="quantite_unite" step="0.01" value="">
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-primary">Ajouter</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    function openEditModal(modalId) {
+        openModal(modalId);
+    }
+
+    function openDeleteModal(modalId) {
+        openModal(modalId);
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+    }
+
+    function toggleSortDropdown() {
+        document.getElementById('sortDropdown').classList.toggle('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
         // Gestion des radios dans le modal d'ajout
         const choixRadios = document.querySelectorAll('input[name="choix"]');
-
-
-        // Gestion des radios dans les modals d'édition
-        document.querySelectorAll('[id^="condi_jet_"]').forEach(radio => {
+        choixRadios.forEach(radio => {
             radio.addEventListener('change', function() {
-                const id = this.dataset.id;
-                const field = document.getElementById(`consignation_field_${id}`);
-                field.style.display = 'block';
+                const consignationField = document.getElementById('consignation_field_add');
+                consignationField.style.display = this.value === 'jet' ? 'block' : 'none';
             });
         });
 
-        // Masquer les champs de consignation quand un autre choix est sélectionné
-
-
-        // Gestion de la checkbox pour afficher/masquer les champs de prix
-        document.getElementById('checkCageot').addEventListener('change', function() {
-            document.getElementById('prixCageotContainer').style.display = this.checked ? 'block' : 'none';
-            document.getElementById('prix_achatcontainer').style.display = this.checked ? 'block' : 'none';
-            document.getElementById('quantiteContainer').style.display = this.checked ? 'block' : 'none';
-            document.getElementById('prixGrosContainer').style.display = this.checked ? 'block' : 'none';
-        });
-    });
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Pour chaque modal d'édition
+        // Gestion des radios dans les modals d'édition
         document.querySelectorAll('[id^="editArticleModal"]').forEach(modal => {
             const id = modal.id.replace('editArticleModal', '');
-
-            // Gestion du changement de radio
             const radios = modal.querySelectorAll(`input[name="choix_${id}"]`);
             radios.forEach(radio => {
                 radio.addEventListener('change', function() {
-                    const reiniDiv = modal.querySelector(`#reini_${id}`).closest('div.mb-3');
-
-                    // Masquer "Réinitialiser" si "Pack" est sélectionné
-                    if (this.value === 'pack') {
-                        reiniDiv.style.display = 'none';
-                    } else {
-                        reiniDiv.style.display = 'flex';
+                    const reiniDiv = modal.querySelector(`#reini_div_${id}`);
+                    if (reiniDiv) {
+                        reiniDiv.style.display = this.value === 'pack' ? 'none' : 'flex';
                     }
                 });
             });
 
             // Initialiser l'état au chargement
             const checkedRadio = modal.querySelector(`input[name="choix_${id}"]:checked`);
-            const reiniDiv = modal.querySelector(`#reini_${id}`).closest('div.mb-3');
-            if (checkedRadio && checkedRadio.value === 'pack') {
+            const reiniDiv = modal.querySelector(`#reini_div_${id}`);
+            if (checkedRadio && checkedRadio.value === 'pack' && reiniDiv) {
                 reiniDiv.style.display = 'none';
             }
         });

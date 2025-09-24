@@ -36,4 +36,7 @@ class Article extends Model
     public function ventes(){
         return $this->hasMany(Vente::class , 'article_id');
     }
+    public function historiqueVentes(){
+        return $this->hasMany(HistoriqueVente::class , 'id_article');
+    }
 }

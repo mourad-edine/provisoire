@@ -339,8 +339,8 @@
                         <div class="col-md-2">
                             <label for="type_vente" class="form-label">Type</label>
                             <select class="form-control" id="type_vente" name="cat">
-                                <option value="gros">Gros</option>
-                                <option value="detail">Détail</option>
+                                <option value="gros">Detail</option>
+                                <option value="detail">Gros</option>
                             </select>
                         </div>
                     </div>

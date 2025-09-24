@@ -10,6 +10,7 @@ use App\Models\Consignation;
 use App\Models\ConsignationAchat;
 use App\Models\Depense;
 use App\Models\Fournisseur;
+use App\Models\HistoriqueVente;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -50,6 +51,24 @@ class AchatController extends Controller
         ]);
     }
 
+     public function historiquestore($id_article , $quantite , $vente_id , $prix , $total)
+    {   
+        $article = Article::find($id_article);
+        HistoriqueVente::create([
+            'id_article' => $id_article,
+            'id_vente' => null,
+            'quantite_initiale' => $article->quantite,
+            'quantite_enleve' => $quantite,
+            'quantite_finale' => $article->quantite + $quantite,
+            'type_historique' => 1,
+            'prix' => $prix,
+            'total' => $total,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+    }
+
+
     public function store(Request $request)
     {
        
@@ -84,6 +103,7 @@ class AchatController extends Controller
                     'type_achat' => ($article->prix_consignation == 0 && $article->prix_cgt == 0) ||  ($article->prix_consignation > 0 && $article->prix_cgt == 0) ? 'pack' : 'cageot',
                     'fournisseur_id' => $request->fournisseur_id,
                 ]);
+                $this->historiquestore($articleId , $quantiteCageot * (int) $article->conditionnement , $commande->id , $data['prices'][$index] , $data['totals'][$index]);
                 $article->prix_achat = $data['prices'][$index];
                 $article->quantite += $quantiteCageot * (int) $article->conditionnement;
                 //$article->prix_conditionne = $data['prices'][$index] * $article->conditionnement;
@@ -103,6 +123,7 @@ class AchatController extends Controller
                     'type_achat' => 'bouteilles',
                     'fournisseur_id' => $request->fournisseur_id,
                 ]);
+                $this->historiquestore($articleId , $quantiteUnite , $commande->id , $data['totals'][$index] / $quantiteUnite , $data['totals'][$index]);
     
                 $article->quantite += $quantiteUnite;
                 $article->prix_achat = $data['totals'][$index] / $quantiteUnite;

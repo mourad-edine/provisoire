@@ -3,133 +3,121 @@
 @section('title', 'Tableau de Bord')
 
 @section('content')
-<div class="container-fluid" style="font-size: 0.85rem;">
+<div class="container mx-auto px-4 py-6 text-sm">
     <!-- Statistiques principales -->
-    <div class="row g-3">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         @php
         $cards = [
-        [
-        'title' => 'Nouvelle vente',
-        'value' => 'Commencer',
-        'icon' => 'fa-cash-register',
-        'color' => 'bg-vibrant-green',
-        'text' => 'text-white',
-        'link' => route('vente.page'),
-        'action' => true
-        ],
-        [
-        'title' => 'Approvisionnement',
-        'value' => 'Acheter',
-        'icon' => 'fa-pallet',
-        'color' => 'bg-vibrant-blue',
-        'text' => 'text-white',
-        'link' => route('achat.page'),
-        'action' => true
-        ]
+            [
+                'title' => 'Nouvelle vente',
+                'value' => 'Commencer',
+                'icon' => 'fa-cash-register',
+                'color' => 'bg-green-500',
+                'text' => 'text-white',
+                'link' => route('vente.page'),
+                'action' => true
+            ],
+            [
+                'title' => 'Approvisionnement',
+                'value' => 'Acheter',
+                'icon' => 'fa-pallet',
+                'color' => 'bg-blue-500',
+                'text' => 'text-white',
+                'link' => route('achat.page'),
+                'action' => true
+            ]
         ];
         @endphp
 
         @foreach ($cards as $card)
-        <div class="col-xl-3 col-lg-4 col-md-6">
+        <div>
             @if(isset($card['link']))
-            <a href="{{ $card['link'] }}" class="text-decoration-none card-hover-action">
-                @endif
-
-                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                    <div class="card-body p-3 {{ $card['color'] }} {{ $card['text'] }}">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle p-2 me-3 bg-white-30">
+            <a href="{{ $card['link'] }}" class="no-underline block group">
+            @endif
+                <div class="bg-white border border-slate-200 rounded-lg shadow-sm h-full overflow-hidden transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
+                    <div class="{{ $card['color'] }} {{ $card['text'] }} p-4">
+                        <div class="flex items-center">
+                            <div class="rounded-full p-2 mr-3 bg-white bg-opacity-30">
                                 <i class="fas {{ $card['icon'] }}"></i>
                             </div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1 small fw-medium">{{ $card['title'] }}</h6>
-                                <h5 class="mb-0 fw-bold">
+                            <div class="flex-grow">
+                                <h6 class="mb-1 text-sm font-medium">{{ $card['title'] }}</h6>
+                                <h5 class="mb-0 font-bold flex items-center">
                                     {{ $card['value'] }}
-                                    <i class="fas fa-arrow-right ms-2 fa-xs"></i>
+                                    <i class="fas fa-arrow-right ml-2 text-xs"></i>
                                 </h5>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                @if(isset($card['link']))
+            @if(isset($card['link']))
             </a>
             @endif
         </div>
         @endforeach
     </div>
-    <div class="mt-3">
 
-        <div class="card shadow mb-4">
-
-            <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-center bg-light">
+    <!-- Tableau des articles -->
+    <div class="mt-4">
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <div class="flex flex-wrap justify-between items-center bg-slate-100 p-4">
                 <!-- Barre de recherche avancée -->
-                <div class="d-flex flex-wrap align-items-center gap-2 mb-2 mb-md-0">
-                    <form action="{{ route('page.accueil') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2">
-                        <!-- Champ de recherche principal -->
-                        <div class="position-relative">
-                            <input type="text" class="form-control form-control-sm" name="search" placeholder="Rechercher..." value="{{ old('search', request('search')) }}">
+                <form action="{{ route('page.accueil') }}" method="GET" class="flex flex-wrap items-center gap-2">
+                    <!-- Champ de recherche principal -->
+                    <div class="relative">
+                        <input type="text" name="search" placeholder="Rechercher..." value="{{ old('search', request('search')) }}"
+                            class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <!-- Tri des résultats -->
+                    <div class="relative">
+                        <button type="button" id="sortDropdown" class="flex items-center px-3 py-2 border border-slate-300 rounded-md text-sm bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <i class="fas fa-sort mr-1"></i> Trier par
+                        </button>
+                        <div id="sortDropdownMenu" class="absolute hidden z-10 mt-1 w-48 bg-white border border-slate-200 rounded-md shadow-lg">
+                            <button type="submit" name="sort" value="nom_asc" class="block w-full text-left px-4 py-2 text-sm hover:bg-slate-100">Nom (A-Z)</button>
+                            <button type="submit" name="sort" value="nom_desc" class="block w-full text-left px-4 py-2 text-sm hover:bg-slate-100">Nom (Z-A)</button>
+                            <button type="submit" name="sort" value="prix_asc" class="block w-full text-left px-4 py-2 text-sm hover:bg-slate-100">Prix (Croissant)</button>
+                            <button type="submit" name="sort" value="prix_desc" class="block w-full text-left px-4 py-2 text-sm hover:bg-slate-100">Prix (Décroissant)</button>
+                            <button type="submit" name="sort" value="stock_asc" class="block w-full text-left px-4 py-2 text-sm hover:bg-slate-100">Stock (Croissant)</button>
+                            <button type="submit" name="sort" value="stock_desc" class="block w-full text-left px-4 py-2 text-sm hover:bg-slate-100">Stock (Décroissant)</button>
                         </div>
-
-                        <!-- Filtres supplémentaires -->
-
-
-                        <!-- Tri des résultats -->
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-sort me-1"></i> Trier par
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-                                <li><button class="dropdown-item" type="submit" value="nom_asc">Nom (A-Z)</button></li>
-                                <li><button class="dropdown-item" type="submit" value="nom_desc">Nom (Z-A)</button></li>
-                                <li><button class="dropdown-item" type="submit" value="prix_asc">Prix (Croissant)</button></li>
-                                <li><button class="dropdown-item" type="submit" value="prix_desc">Prix (Décroissant)</button></li>
-                                <li><button class="dropdown-item" type="submit" value="stock_asc">Stock (Croissant)</button></li>
-                                <li><button class="dropdown-item" type="submit" value="stock_desc">Stock (Décroissant)</button></li>
-                            </ul>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Bouton d'ajout -->
-                <div>
-
-                </div>
+                    </div>
+                </form>
             </div>
 
-            <div class="card-body">
+            <div class="p-4">
                 @if(session('success'))
-                <div class="alert alert-success">
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">
                     {{ session('success') }}
                 </div>
                 @endif
-                <div class="table-responsive">
 
-
-                    <table class="table table-striped table-hover table-bordered text-center align-middle" id="dataTable" width="100%" cellspacing="0">
-                        <thead class="thead-dark">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-center border-separate border-spacing-0">
+                        <thead class="bg-slate-800 text-white">
                             <tr>
-                                <th>ID</th>
-                                <th>Nom</th>
-                                <th>Catégorie</th>
-                                <th>P. Vente Unité</th>
-                                <th>P. Vente cageot/Pack</th>
-                                <th>P. details</th>
-                                <th>Quantité</th>
-                                <th>Date</th>
-                                <th>Détails</th>
+                                <th class="px-4 py-2 text-xs font-bold uppercase border-b-2 border-slate-300">ID</th>
+                                <th class="px-4 py-2 text-xs font-bold uppercase border-b-2 border-slate-300">Nom</th>
+                                <th class="px-4 py-2 text-xs font-bold uppercase border-b-2 border-slate-300">Catégorie</th>
+                                <th class="px-4 py-2 text-xs font-bold uppercase border-b-2 border-slate-300">P. Vente Unité</th>
+                                <th class="px-4 py-2 text-xs font-bold uppercase border-b-2 border-slate-300">P. Vente Cageot/Pack</th>
+                                <th class="px-4 py-2 text-xs font-bold uppercase border-b-2 border-slate-300">P. Détails</th>
+                                <th class="px-4 py-2 text-xs font-bold uppercase border-b-2 border-slate-300">Quantité</th>
+                                <th class="px-4 py-2 text-xs font-bold uppercase border-b-2 border-slate-300">Date</th>
+                                <th class="px-4 py-2 text-xs font-bold uppercase border-b-2 border-slate-300">Détails</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($articles as $article)
-                            <tr data-toggle="modal" data-target="#editArticleModal{{$article['id']}}" class="text-secondary" style="cursor: pointer;">
-                                <td>{{ $article['id'] }}</td>
-                                <td>{{ \Illuminate\Support\Str::limit($article['nom'], 15) }}</td>
-                                <td>{{ $article['categorie'] }}</td>
-                                <td>{{ number_format($article['prix_unitaire'], 2) }} Ar</td>
-                                <td>{{ number_format($article['prix_conditionne'], 2) }} Ar</td>
-                                <td>{{ number_format($article['prix_gros'], 2) }} Ar</td>
-                                <td>
+                            <tr class="hover:bg-slate-50 transition-colors cursor-pointer" onclick="openModal('editArticleModal{{ $article['id'] }}')">
+                                <td class="px-4 py-2 border-b border-slate-200 text-slate-600">{{ $article['id'] }}</td>
+                                <td class="px-4 py-2 border-b border-slate-200 text-slate-600">{{ \Illuminate\Support\Str::limit($article['nom'], 15) }}</td>
+                                <td class="px-4 py-2 border-b border-slate-200 text-slate-600">{{ $article['categorie'] }}</td>
+                                <td class="px-4 py-2 border-b border-slate-200 text-slate-600">{{ number_format($article['prix_unitaire'], 2) }} Ar</td>
+                                <td class="px-4 py-2 border-b border-slate-200 text-slate-600">{{ number_format($article['prix_conditionne'], 2) }} Ar</td>
+                                <td class="px-4 py-2 border-b border-slate-200 text-slate-600">{{ number_format($article['prix_gros'], 2) }} Ar</td>
+                                <td class="px-4 py-2 border-b border-slate-200 text-slate-600">
                                     @php
                                     $quotient = intdiv($article['quantite'], $article['conditionnement']);
                                     $reste = $article['quantite'] % $article['conditionnement'];
@@ -139,188 +127,155 @@
                                     et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}
                                     @endif
                                 </td>
-                                <td>
+                                <td class="px-4 py-2 border-b border-slate-200 text-slate-600">
                                     @if (!empty($article['created_at']))
                                     {{ \Carbon\Carbon::createFromFormat('d/m/Y H:i:s', $article['created_at'])->format('Y-m-d') }}
                                     @else
                                     -
                                     @endif
                                 </td>
-                                <td>
-                                    <a href="#" data-toggle="modal" data-target="#editArticleModal{{$article['id']}}" class="text-secondary">
+                                <td class="px-4 py-2 border-b border-slate-200">
+                                    <button onclick="openModal('editArticleModal{{ $article['id'] }}')" class="text-slate-600 hover:text-blue-600">
                                         <i class="fas fa-edit"></i>
-                                    </a>
+                                    </button>
                                 </td>
                             </tr>
-                            <div class="modal fade" id="supprimerModal{{$article['id']}}" tabindex="-1" role="dialog" aria-labelledby="supprimerModalLabel" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="supprimerModalLabel">suppression</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p>voulez-vous vraiment supprimer cette article <span class="text-warning">{{$article['nom']}} </span> ?</p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                                            <a href="{{route('delete.article', ['id' => $article['id']])}}"><button type="submit" class="btn btn-danger">supprimer</button></a>
-                                        </div>
+
+                            <!-- Modal de suppression -->
+                            <div id="supprimerModal{{ $article['id'] }}" class="fixed inset-0 bg-slate-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+                                <div class="relative top-20 mx-auto p-4 border w-full max-w-sm bg-white rounded-lg shadow-lg">
+                                    <div class="flex justify-between items-center bg-slate-800 text-white px-4 py-3 rounded-t-lg">
+                                        <h5 class="text-lg font-bold">Suppression</h5>
+                                        <button onclick="closeModal('supprimerModal{{ $article['id'] }}')" class="text-white">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <div class="p-4">
+                                        <p>Voulez-vous vraiment supprimer cet article <span class="text-yellow-500">{{ $article['nom'] }}</span> ?</p>
+                                    </div>
+                                    <div class="flex justify-end space-x-2 p-4 bg-slate-100 rounded-b-lg">
+                                        <button onclick="closeModal('supprimerModal{{ $article['id'] }}')" class="bg-slate-500 hover:bg-slate-600 text-white px-3 py-1 rounded text-sm">
+                                            Annuler
+                                        </button>
+                                        <a href="{{ route('delete.article', ['id' => $article['id']]) }}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                                            Supprimer
+                                        </a>
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal fade" id="editArticleModal{{$article['id']}}" tabindex="-1" aria-labelledby="editArticleModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-lg">
-                                    <div class="modal-content">
-                                        <div class="modal-header bg-dark text-white">
-                                            <h5 class="modal-title" id="addArticleModalLabel">Modifier articles</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form action="{{ route('articles.update') }}" method="POST">
-                                                @csrf
-                                                <div class="form-group">
-                                                    <label for="nom">Nom</label>
-                                                    <input value="{{$article['nom']}}" type="text" class="form-control" id="nom" name="nom" readonly>
-                                                    <input type="hidden" name="id" value="{{$article['id']}}">
-                                                </div>
 
-                                                <div class="">
-                                                    <div class="form-group">
-                                                        <label for="categorie">Catégorie</label>
-                                                        <select class="form-control select2" id="categorie" name="categorie_id">
-                                                            <option value="">----</option>
-                                                            @foreach($categories as $categorie)
-                                                            <option value="{{ $categorie->id }}" {{ $categorie->id == $article['categorie_id'] ? 'selected' : '' }}>{{ $categorie->nom }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="">
-                                                    <div class="form-group">
-                                                        <label for="conditionnement">conditionnement</label>
-                                                        <select class="form-control" id="conditionnement" name="conditionnement" readonly>
-                                                            <option value="{{$article['conditionnement']}}">{{$article['conditionnement']}}</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="ml-3 mr-3 col-md-12 row">
-                                                    <div class="mb-3 col-md-3 d-flex align-items-center">
-                                                        <input type="radio" class="form-check-input me-2" id="condi_cgt_{{ $article['id'] }}" name="choix_{{ $article['id'] }}" value="cageot" {{ ($article['prix_consignation'] > 0 && $article['prix_cgt']) > 0  ? 'checked' : '' }}>
-                                                        <label for="condi_cgt_{{ $article['id'] }}" class="form-label mb-0">Cageot</label>
-                                                    </div>
-                                                    <div class="mb-3 col-md-3 d-flex align-items-center">
-                                                        <input type="radio" class="form-check-input me-2" id="condi_pack_{{ $article['id'] }}" name="choix_{{ $article['id'] }}" value="pack" {{ $article['prix_consignation'] == 0 ? 'checked' : '' }}>
-                                                        <label for="condi_pack_{{ $article['id'] }}" class="form-label mb-0">Pack</label>
-                                                    </div>
-                                                    <div class="mb-3 col-md-6 d-flex align-items-center">
-                                                        <input type="radio" class="form-check-input me-2 condi_jet_radio" data-id="{{ $article['id'] }}" id="condi_jet_{{ $article['id'] }}" name="choix_{{ $article['id'] }}" value="jet" {{ $article['prix_consignation'] > 0 && ($article['prix_cgt'] == 0 || $article['prix_cgt'] == null) ? 'checked' : '' }}>
-                                                        <label for="condi_jet_{{ $article['id'] }}" class="form-label mb-0">BTL consigné / Emb jetable</label>
-                                                    </div>
+                            <!-- Modal de modification -->
+                            <div id="editArticleModal{{ $article['id'] }}" class="fixed inset-0 bg-slate-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+                                <div class="relative top-20 mx-auto p-4 border w-full max-w-2xl bg-white rounded-lg shadow-lg">
+                                   
+                                    <div class="p-4">
+                                        <form action="{{ route('articles.update') }}" method="POST">
+                                            @csrf
+                                            <div class="mb-4">
+                                                <label for="nom" class="block text-sm font-medium text-slate-700">Nom</label>
+                                                <input value="{{ $article['nom'] }}" type="text" class="w-full px-3 py-2 border border-slate-300 rounded-md bg-slate-100 text-sm" id="nom" name="nom" readonly>
+                                                <input type="hidden" name="id" value="{{ $article['id'] }}">
+                                            </div>
 
-                                                </div>
+                                            <div class="mb-4">
+                                                <label for="categorie" class="block text-sm font-medium text-slate-700">Catégorie</label>
+                                                <select class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm searchable-select" id="categorie" name="categorie_id">
+                                                    <option value="">----</option>
+                                                    @foreach($categories as $categorie)
+                                                    <option value="{{ $categorie->id }}" {{ $categorie->id == $article['categorie_id'] ? 'selected' : '' }}>{{ $categorie->nom }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
 
-                                                    <div style="display: flex; gap: 20px;" class="mt-2">
-                                                <div class="form-group" style="flex: 1;">
-                                                    <label for="diff_{{ $article['id'] }}">Prix consignation</label>
-                                                    <input type="number"
-                                                        class="form-control"
-                                                        value="{{ $article['prix_consignation'] ?? '' }}"
-                                                        readonly
-                                                        name="prix_consignation">
-                                                </div>
+                                            <div class="mb-4">
+                                                <label for="conditionnement" class="block text-sm font-medium text-slate-700">Conditionnement</label>
+                                                <select class="w-full px-3 py-2 border border-slate-300 rounded-md bg-slate-100 text-sm" id="conditionnement" name="conditionnement" readonly>
+                                                    <option value="{{ $article['conditionnement'] }}">{{ $article['conditionnement'] }}</option>
+                                                </select>
+                                            </div>
 
-                                                <div class="form-group" style="flex: 1;">
-                                                    <label for="diff_{{ $article['id'] }}">Nouveau prix consignation</label>
-                                                    <input type="number"
-                                                        class="form-control"
-                                                        id="diff_{{ $article['id'] }}"
-                                                        name="diff_{{ $article['id'] }}">
+                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                                <div class="flex items-center">
+                                                    <input type="radio" class="h-4 w-4 text-blue-600" id="condi_cgt_{{ $article['id'] }}" name="choix_{{ $article['id'] }}" value="cageot" {{ ($article['prix_consignation'] > 0 && $article['prix_cgt'] > 0) ? 'checked' : '' }}>
+                                                    <label for="condi_cgt_{{ $article['id'] }}" class="ml-2 text-sm">Cageot</label>
+                                                </div>
+                                                <div class="flex items-center">
+                                                    <input type="radio" class="h-4 w-4 text-blue-600" id="condi_pack_{{ $article['id'] }}" name="choix_{{ $article['id'] }}" value="pack" {{ $article['prix_consignation'] == 0 ? 'checked' : '' }}>
+                                                    <label for="condi_pack_{{ $article['id'] }}" class="ml-2 text-sm">Pack</label>
+                                                </div>
+                                                <div class="flex items-center">
+                                                    <input type="radio" class="h-4 w-4 text-blue-600 condi_jet_radio" data-id="{{ $article['id'] }}" id="condi_jet_{{ $article['id'] }}" name="choix_{{ $article['id'] }}" value="jet" {{ $article['prix_consignation'] > 0 && ($article['prix_cgt'] == 0 || $article['prix_cgt'] == null) ? 'checked' : '' }}>
+                                                    <label for="condi_jet_{{ $article['id'] }}" class="ml-2 text-sm">BTL consigné / Emb jetable</label>
                                                 </div>
                                             </div>
 
-
-                                            <div style="display: flex; gap: 20px;">
-                                                <div class="form-group" style="flex: 1;">
-                                                    <label for="prix_achat">Prix d'achat unité</label>
-                                                    <input value="{{ $article['prix_achat'] }}"
-                                                        type="number"
-                                                        class="form-control"
-                                                        id="prix_achat"
-                                                        name="prix_achat"
-                                                        readonly>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                <div>
+                                                    <label for="prix_consignation" class="block text-sm font-medium text-slate-700">Prix consignation</label>
+                                                    <input type="number" class="w-full px-3 py-2 border border-slate-300 rounded-md bg-slate-100 text-sm" value="{{ $article['prix_consignation'] ?? '' }}" name="prix_consignation" readonly>
                                                 </div>
-
-                                                <div class="form-group" style="flex: 1;">
-                                                    <label for="prix_unitaire">Prix de gros unité</label>
-                                                    <input value="{{ $article['prix_unitaire'] }}"
-                                                        type="number"
-                                                        class="form-control"
-                                                        id="prix_unitaire"
-                                                        name="prix_unitaire"
-                                                        required>
-                                                </div>
-                                            </div>
-                                            <div style="display: flex; gap: 20px;">
-                                                <div id="" style=" flex: 1;">
-                                                    <div class="mb-3">
-                                                        <label for="prix_achat" class="form-label">Prix détails unité</label>
-                                                        <input value="{{ $article['prix_gros'] }}" type="number" class="form-control" id="prix_achat" name="prix_gros" step="0.01">
-                                                    </div>
-                                                </div>
-
-                                                <div id="" style="flex: 1;">
-                                                    <div class="mb-3">
-                                                        <label for="prix_conditionne" class="form-label">Prix de gros cageot/pack <span class="text-danger">*</span></label>
-                                                        <input value="{{ $article['prix_conditionne'] }}" type="number" class="form-control" id="prix_conditionne" name="prix_conditionne" step="0.01">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                              <div style="display: flex; gap : 20px;">
-                                                <div id="quantiteContainer" style=" flex: 1;">
-                                                    <div class="mb-3">
-                                                        <label for="quantite" class="form-label">
-                                                            Quantité en cageot/pack disponible
-                                                        </label>
-                                                        <input type="number" class="form-control" id="quantite" name="quantite" step="0.01" value="{{ intdiv($article['quantite'], $article['conditionnement']) }}">
-                                                    </div>
-                                                </div>
-                                                <div id="quantiteContainer" style=" flex: 1;">
-                                                    <div class="mb-3">
-                                                        <label for="quantite" class="form-label">
-                                                            Quantité en unité disponible
-                                                        </label>
-                                                        <input type="number" class="form-control" id="quantite" name="quantite_unite" step="0.01" value="{{ $article['quantite'] % $article['conditionnement'] }}">
-                                                    </div>
+                                                <div>
+                                                    <label for="diff_{{ $article['id'] }}" class="block text-sm font-medium text-slate-700">Nouveau prix consignation</label>
+                                                    <input type="number" class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm" id="diff_{{ $article['id'] }}" name="diff_{{ $article['id'] }}">
                                                 </div>
                                             </div>
 
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">fermer</button>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                <div>
+                                                    <label for="prix_achat" class="block text-sm font-medium text-slate-700">Prix d'achat unité</label>
+                                                    <input value="{{ $article['prix_achat'] }}" type="number" class="w-full px-3 py-2 border border-slate-300 rounded-md bg-slate-100 text-sm" id="prix_achat" name="prix_achat" readonly>
                                                 </div>
-                                            </form>
-                                        </div>
+                                                <div>
+                                                    <label for="prix_unitaire" class="block text-sm font-medium text-slate-700">Prix de gros unité</label>
+                                                    <input value="{{ $article['prix_unitaire'] }}" type="number" class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm" id="prix_unitaire" name="prix_unitaire" required>
+                                                </div>
+                                            </div>
+
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                <div>
+                                                    <label for="prix_gros" class="block text-sm font-medium text-slate-700">Prix détails unité</label>
+                                                    <input value="{{ $article['prix_gros'] }}" type="number" class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm" id="prix_gros" name="prix_gros" step="0.01">
+                                                </div>
+                                                <div>
+                                                    <label for="prix_conditionne" class="block text-sm font-medium text-slate-700">Prix de gros cageot/pack <span class="text-red-500">*</span></label>
+                                                    <input value="{{ $article['prix_conditionne'] }}" type="number" class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm" id="prix_conditionne" name="prix_conditionne" step="0.01">
+                                                </div>
+                                            </div>
+
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                <div>
+                                                    <label for="quantite" class="block text-sm font-medium text-slate-700">Quantité en cageot/pack disponible</label>
+                                                    <input type="number" class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm" id="quantite" name="quantite" step="0.01" value="{{ intdiv($article['quantite'], $article['conditionnement']) }}">
+                                                </div>
+                                                <div>
+                                                    <label for="quantite_unite" class="block text-sm font-medium text-slate-700">Quantité en unité disponible</label>
+                                                    <input type="number" class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm" id="quantite_unite" name="quantite_unite" step="0.01" value="{{ $article['quantite'] % $article['conditionnement'] }}">
+                                                </div>
+                                            </div>
+
+                                            <div class="flex justify-end space-x-2">
+                                                <button type="button" onclick="closeModal('editArticleModal{{ $article['id'] }}')" class="bg-slate-500 hover:bg-slate-600 text-white px-3 py-1 rounded text-sm">
+                                                    Fermer
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                             @empty
                             <tr>
-                                <td colspan="10" class="">
-                                    <div class="alert alert-warning mb-3">
-                                        <i class="fas fa-exclamation-triangle me-2"></i>
-                                        Pas de donnée trouvé --
+                                <td colspan="9" class="py-4">
+                                    <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-2 rounded">
+                                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                                        Pas de donnée trouvé
                                     </div>
                                 </td>
                             </tr>
                             @endforelse
                         </tbody>
                     </table>
-                    <div class="d-flex justify-content-start mt-3">
-                        {{ $articles->appends(['search' => request('search')])->links('pagination::bootstrap-4') }}
+                    <div class="mt-4">
+                        {{ $articles->appends(['search' => request('search')])->links('pagination::tailwind') }}
                     </div>
                 </div>
             </div>
@@ -328,38 +283,36 @@
     </div>
 
     <!-- Graphique des ventes -->
-    <div class="row g-3 mt-3">
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 mt-4">
         <!-- Meilleures Ventes -->
-        <div class="col-xl-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h6 class="mb-0 fw-bold"><i class="fas fa-trophy me-2 text-warning"></i> Meilleures ventes</h6>
+        <div>
+            <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
+                <div class="border-b border-slate-200 p-4">
+                    <h6 class="text-sm font-bold"><i class="fas fa-trophy mr-2 text-yellow-500"></i> Meilleures ventes</h6>
                 </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
+                <div class="p-0">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-100">
                                 <tr>
-                                    <th class="ps-4 py-3 text-uppercase small fw-bold" style="width: 70%">Produit</th>
-                                    <th class="text-end pe-4 py-3 text-uppercase small fw-bold" style="width: 30%">Ventes</th>
+                                    <th class="px-4 py-2 text-left text-xs font-bold uppercase">Produit</th>
+                                    <th class="px-4 py-2 text-right text-xs font-bold uppercase">Ventes</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($meilleur as $meilleu)
-                                <tr class="border-top border-bottom">
-                                    <td class="ps-4 py-3">
-                                        <div class="d-flex align-items-center">
-                                            <span class="fw-medium text-dark">{{ $meilleu->nom }}</span>
-                                        </div>
+                                <tr class="border-t border-b border-slate-200 hover:bg-slate-50 transition-colors">
+                                    <td class="px-4 py-3">
+                                        <span class="font-medium text-slate-800">{{ $meilleu->nom }}</span>
                                     </td>
-                                    <td class="text-end pe-4 py-3 fw-bold text-primary">
+                                    <td class="px-4 py-3 text-right font-bold text-blue-600">
                                         {{ number_format($meilleu->ventes_count, 0, ',', ' ') }}
                                     </td>
                                 </tr>
                                 @empty
-                                <tr class="border-top border-bottom">
-                                    <td colspan="2" class="text-center py-4 text-muted">
-                                        <i class="fas fa-info-circle me-2"></i>Aucune donnée de vente disponible
+                                <tr class="border-t border-b border-slate-200">
+                                    <td colspan="2" class="text-center py-4 text-slate-500">
+                                        <i class="fas fa-info-circle mr-2"></i>Aucune donnée de vente disponible
                                     </td>
                                 </tr>
                                 @endforelse
@@ -368,59 +321,57 @@
                     </div>
                 </div>
                 @if(count($meilleur) > 0)
-                <div class="card-footer bg-white border-0 py-2 px-4">
-                    <small class="text-muted">
-                        <i class="fas fa-clock me-1"></i> Mis à jour à {{ now()->format('H:i') }}
-                    </small>
+                <div class="bg-white p-3 text-slate-500 text-xs">
+                    <i class="fas fa-clock mr-1"></i> Mis à jour à {{ now()->format('H:i') }}
                 </div>
                 @endif
             </div>
         </div>
 
         <!-- Stocks Faibles -->
-        <div class="col-xl-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h6 class="mb-0 fw-bold"><i class="fas fa-exclamation-triangle me-2 text-danger"></i> Stocks faibles</h6>
+        <div>
+            <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
+                <div class="border-b border-slate-200 p-4">
+                    <h6 class="text-sm font-bold"><i class="fas fa-exclamation-triangle mr-2 text-red-500"></i> Stocks faibles</h6>
                 </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
+                <div class="p-0">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-100">
                                 <tr>
-                                    <th class="ps-4 py-3 text-uppercase small fw-bold" style="width: 50%">Produit</th>
-                                    <th class="text-end py-3 text-uppercase small fw-bold" style="width: 20%">Stock</th>
-                                    <th class="text-end pe-4 py-3 text-uppercase small fw-bold" style="width: 30%">Statut</th>
+                                    <th class="px-4 py-2 text-left text-xs font-bold uppercase">Produit</th>
+                                    <th class="px-4 py-2 text-right text-xs font-bold uppercase">Stock</th>
+                                    <th class="px-4 py-2 text-right text-xs font-bold uppercase">Statut</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($faible as $faib)
-                                <tr class="border-top border-bottom">
-                                    <td class="ps-4 py-3">
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar-sm rounded-circle me-3 d-flex align-items-center justify-content-center bg-light-{{ $faib->quantite < 5 ? 'danger' : ($faib->quantite < 10 ? 'warning' : 'secondary') }}">
-                                                <i class="fas fa-box-open text-{{ $faib->quantite < 5 ? 'danger' : ($faib->quantite < 10 ? 'warning' : 'secondary') }}"></i>
+                                <tr class="border-t border-b border-slate-200 hover:bg-slate-50 transition-colors">
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center">
+                                            <div class="w-9 h-9 rounded-full mr-3 flex items-center justify-center {{ $faib->quantite < 5 ? 'bg-red-100' : ($faib->quantite < 10 ? 'bg-yellow-100' : 'bg-slate-100') }}">
+                                                <i class="fas fa-box-open {{ $faib->quantite < 5 ? 'text-red-500' : ($faib->quantite < 10 ? 'text-yellow-500' : 'text-slate-500') }}"></i>
                                             </div>
-                                            <span class="fw-medium text-dark">{{ $faib->nom }}</span>
+                                            <span class="font-medium text-slate-800">{{ $faib->nom }}</span>
                                         </div>
                                     </td>
-                                    <td class="text-end py-3 fw-bold {{ $faib->quantite < 5 ? 'text-danger' : ($faib->quantite < 10 ? 'text-warning' : 'text-secondary') }}">
+                                    <td class="px-4 py-3 text-right font-bold {{ $faib->quantite < 5 ? 'text-red-500' : ($faib->quantite < 10 ? 'text-yellow-500' : 'text-slate-500') }}">
                                         {{ number_format($faib->quantite, 0, ',', ' ') }}
                                     </td>
-                                    <td class="text-end pe-4 py-3">
+                                    <td class="px-4 py-3 text-right">
                                         @if($faib->quantite < 5)
-                                            <span class="badge bg-danger text-white bg-opacity-15 text-danger px-3 py-1">URGENT</span>
-                                            @elseif($faib->quantite < 10)
-                                                <span class="badge bg-warning text-white bg-opacity-15 text-warning px-3 py-1">ALERTE</span>
-                                                @else
-                                                <span class="badge bg-secondary text-white bg-opacity-15 text-secondary px-3 py-1">NORMAL</span>
-                                                @endif
+                                        <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-semibold">URGENT</span>
+                                        @elseif($faib->quantite < 10)
+                                        <span class="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-xs font-semibold">ALERTE</span>
+                                        @else
+                                        <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-semibold">NORMAL</span>
+                                        @endif
                                     </td>
                                 </tr>
                                 @empty
-                                <tr class="border-top border-bottom">
-                                    <td colspan="3" class="text-center py-4 text-muted">
-                                        <i class="fas fa-check-circle me-2 text-success"></i>Tous les stocks sont suffisants
+                                <tr class="border-t border-b border-slate-200">
+                                    <td colspan="3" class="text-center py-4 text-slate-500">
+                                        <i class="fas fa-check-circle mr-2 text-green-500"></i>Tous les stocks sont suffisants
                                     </td>
                                 </tr>
                                 @endforelse
@@ -429,117 +380,51 @@
                     </div>
                 </div>
                 @if(count($faible) > 0)
-                <div class="card-footer bg-white border-0 py-2 px-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">
-                            <i class="fas fa-clock me-1"></i> Dernière mise à jour
-                        </small>
-                        <a href="{{ route('achat.page') }}" class="btn btn-sm btn-danger px-3">
-                            <i class="fas fa-plus me-1"></i>Approvisionner
-                        </a>
-                    </div>
+                <div class="bg-white p-3 flex justify-between items-center">
+                    <span class="text-slate-500 text-xs"><i class="fas fa-clock mr-1"></i> Dernière mise à jour</span>
+                    <a href="{{ route('achat.page') }}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                        <i class="fas fa-plus mr-1"></i>Approvisionner
+                    </a>
                 </div>
                 @endif
             </div>
         </div>
     </div>
 </div>
-</div>
-</div>
 
-<style>
-    :root {
-        --vibrant-green: #6bbf59;
-        /* Vert adouci */
-        --vibrant-blue: #5a9bd4;
-        /* Bleu adouci */
+<!-- Script pour gérer les modals et le dropdown -->
+<script>
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
     }
 
-    .bg-vibrant-green {
-        background-color: var(--vibrant-green);
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
     }
 
-    .bg-vibrant-blue {
-        background-color: var(--vibrant-blue);
-    }
+    document.addEventListener('DOMContentLoaded', function () {
+        // Gestion du dropdown de tri
+        const sortButton = document.getElementById('sortDropdown');
+        const sortMenu = document.getElementById('sortDropdownMenu');
+        sortButton.addEventListener('click', function () {
+            sortMenu.classList.toggle('hidden');
+        });
 
-    .btn-vibrant-blue {
-        background-color: var(--vibrant-blue);
-        border-color: var(--vibrant-blue);
-        color: white;
-    }
+        // Fermer le dropdown si on clique à l'extérieur
+        document.addEventListener('click', function (event) {
+            if (!sortButton.contains(event.target) && !sortMenu.contains(event.target)) {
+                sortMenu.classList.add('hidden');
+            }
+        });
 
-    .btn-vibrant-blue:hover {
-        background-color: #4a8ac2;
-        border-color: #4a8ac2;
-    }
-
-
-    .bg-white-30 {
-        background-color: rgba(255, 255, 255, 0.3);
-    }
-
-    .card-hover-action .card {
-        transition: all 0.3s ease;
-    }
-
-    .card-hover-action:hover .card {
-        transform: translateY(-1px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
-    }
-
-    .card {
-        border-radius: 0.5rem;
-    }
-
-    .avatar-sm {
-        width: 32px;
-        height: 32px;
-        display: flex;
-    }
-
-    .table-hover tbody tr {
-        transition: background-color 0.2s ease;
-    }
-
-    /* Styles pour les tableaux */
-    .table {
-        border-collapse: separate;
-        border-spacing: 0;
-    }
-
-    .table thead th {
-        border-bottom: 2px solid #e9ecef;
-        border-top: none;
-        vertical-align: middle;
-    }
-
-    .table tbody tr {
-        transition: all 0.2s ease;
-    }
-
-    .table tbody tr:hover {
-        background-color: rgba(0, 0, 0, 0.02);
-    }
-
-    .table tbody tr.border-top {
-        border-top: 1px solid #e9ecef;
-    }
-
-    .table tbody tr.border-bottom {
-        border-bottom: 1px solid #e9ecef;
-    }
-
-    .badge {
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-    }
-
-    .avatar-sm {
-        width: 36px;
-        height: 36px;
-    }
-</style>
-
+        // Gestion des modals (clic à l'extérieur pour fermer)
+        document.querySelectorAll('.fixed.inset-0').forEach(modal => {
+            modal.addEventListener('click', function (event) {
+                if (event.target === this) {
+                    this.classList.add('hidden');
+                }
+            });
+        });
+    });
+</script>
 @endsection

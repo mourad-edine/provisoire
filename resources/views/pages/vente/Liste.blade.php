@@ -6,183 +6,136 @@
 <div class="">
 
     <!-- Navigation Tabs -->
-    <ul class="nav nav-tabs mb-4" id="parametresTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <a class="nav-link text-decoration-none p-0" href="{{ route('commande.liste.vente') }}">
-                <button class="nav-link" id="commandes-tab">
-                    <i class="fas fa-list-alt me-2"></i> Listes par commandes
-                </button>
+    <ul class="flex border-b mb-4">
+        <li class="mr-4">
+            <a href="{{ route('commande.liste.vente') }}" class="inline-flex items-center px-4 py-2 text-gray-600 hover:text-blue-600">
+                <i class="fas fa-list-alt mr-2"></i> Listes par commandes
             </a>
         </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link text-decoration-none p-0" href="{{ route('vente.liste') }}">
-                <button class="nav-link active">
-                    <i class="fas fa-shopping-cart me-2"></i> Listes ventes
-                </button>
+        <li class="mr-4">
+            <a href="{{ route('vente.liste') }}" class="inline-flex items-center px-4 py-2 text-blue-600 border-b-2 border-blue-600 font-semibold">
+                <i class="fas fa-shopping-cart mr-2"></i> Listes ventes
             </a>
         </li>
-        <!-- <li class="nav-item" role="presentation">
-            <a class="nav-link text-decoration-none p-0" href="{{ route('paiment.all') }}">
-                <button class="nav-link">
-                    <i class="fas fa-history me-2"></i> Historique des paiements
-                </button>
-            </a>
-        </li> -->
-       
-        <li class="nav-item" role="presentation">
-            <a class="nav-link text-decoration-none p-0" href="{{route('vente.page')}}">
-                <button class="nav-link active bg-dark text-white">
-                    <i class="fas fa-cart-plus me-2 text-white"></i> Nouvel vente
-                </button>
+        <li class="mr-4">
+            <a href="{{route('vente.page')}}" class="inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800">
+                <i class="fas fa-cart-plus mr-2 text-white"></i> Nouvelle vente
             </a>
         </li>
     </ul>
 
     <!-- Main Card -->
-    <div class="card shadow-sm">
-        <!-- Card Header -->
-        
-
-        <!-- Card Body -->
-        <div class="card-body p-4">
+    <div class="bg-white shadow rounded-lg">
+        <div class="p-4">
             @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show">
+            <div class="mb-4 p-3 rounded bg-green-100 text-green-700">
                 {{ session('success') }}
             </div>
             @endif
 
             <!-- Ventes Table -->
-            <div class="table-responsive mb-4">
-                <table class="table table-bordered table-hover" id="dataTable">
-                    <thead class="table-secondary">
+            <div class="overflow-x-auto mb-4">
+                <table class="min-w-full border border-gray-200 text-sm">
+                    <thead class="bg-gray-100 text-gray-700">
                         <tr>
-                            <th>ID</th>
-                            <th>Article</th>
-                            <th>CGT/BTL</th>
-                            <th>BTL</th>
-                            <th>CGT</th>
-                            <th>Statut</th>
-                            <th>Quantité</th>
-                            <th>Prix</th>
-                            <th>Total</th>
-                            <th>Bénéfice</th>
-
-                            <th class="text-end">details</th>
+                            <th class="px-3 py-2 text-left">Article</th>
+                            <th class="px-3 py-2">CGT/BTL</th>
+                            <th class="px-3 py-2">BTL</th>
+                            <th class="px-3 py-2">CGT</th>
+                            <th class="px-3 py-2">Statut</th>
+                            <th class="px-3 py-2">Quantité</th>
+                            <th class="px-3 py-2">Prix</th>
+                            <th class="px-3 py-2">Total</th>
+                            <th class="px-3 py-2">Bénéfice</th>
+                            <th class="px-3 py-2 text-right">Détails</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @php $prixGlobale = 0;$deconsigneglobale = 0 ; $totalconsigne = 0; $totalbtl = 0; $totalcgt = 0; $casse = 0 ; $casse_cgt = 0 ;$rendu_btl=0 ; $rendu_cgt = 0; @endphp
-                        @forelse($ventes as $vente)
-                        @php
-                        $highlightedId = session('highlighted_id');
-                        $bouteilleNonRendu = $vente['etat'] == 'non rendu';
-                        $cageotNonRendu = $vente['etat_cgt'] == 'non rendu';
+                        @php 
+                            $prixGlobale = 0; $deconsigneglobale = 0; $totalconsigne = 0; 
+                            $totalbtl = 0; $totalcgt = 0; $casse = 0; $casse_cgt = 0;
+                            $rendu_btl = 0; $rendu_cgt = 0; 
                         @endphp
 
-                        <tr id="row-{{$vente['id']}}" class="{{ $highlightedId == $vente['id'] ? 'bg-info' : '' }}">
-                            <td class="fw-bold">{{$vente['id']}}</td>
-                            <td>{{$vente['article']}}</td>
-                            <td>
+                        @forelse($ventes as $vente)
+                        @php
+                            $highlightedId = session('highlighted_id');
+                            $bouteilleNonRendu = $vente['etat'] == 'non rendu';
+                            $cageotNonRendu = $vente['etat_cgt'] == 'non rendu';
+                        @endphp
+
+                        <tr class="{{ $highlightedId == $vente['id'] ? 'bg-blue-100' : '' }}">
+                            <td class="px-3 py-2 font-semibold">{{$vente['article']}}</td>
+                            <td class="px-3 py-2">
                                 @if(($vente['consignation'] ?? 0) + ($vente['prix_cgt'] ?? 0) > 0)
-                                @if($vente['etat_client'] == 1)
-                                <span class="badge bg-danger text-white">à rendre</span>
-                                @elseif($vente['etat_client_commande'] == 2 )
-                                <span class="badge bg-warning">à disposition</span>
+                                    @if($vente['etat_client'] == 1)
+                                        <span class="px-2 py-1 rounded bg-red-600 text-white text-xs">à rendre</span>
+                                    @elseif($vente['etat_client_commande'] == 2 )
+                                        <span class="px-2 py-1 rounded bg-yellow-400 text-xs">à disposition</span>
+                                    @else
+                                        <span class="px-2 py-1 rounded bg-gray-200 text-gray-800 text-xs">
+                                            {{ number_format(($vente['consignation'] ?? 0) + ($vente['prix_cgt'] ?? 0), 0, ',', ' ') }} Ar
+                                        </span>
+                                    @endif
                                 @else
-                                <span class="badge bg-light text-dark">
-                                    {{ number_format(($vente['consignation'] ?? 0) + ($vente['prix_cgt'] ?? 0), 0, ',', ' ') }} Ar
-                                </span>
-                                @endif
-                                @else
-                                <span>--</span>
+                                    <span>--</span>
                                 @endif
                             </td>
-                            <td>
-                                <span class="badge {{ $vente['etat'] == 'non rendu' ? 'bg-danger text-white' : 'bg-success text-white' }}">
-                                    {{ $vente['etat'] ?($vente['prix_consignation'] == 0 ? 0 : $vente['consignation'] / $vente['prix_consignation']) : '--' }}
+                            <td class="px-3 py-2">
+                                <span class="px-2 py-1 rounded text-xs {{ $vente['etat'] == 'non rendu' ? 'bg-red-600 text-white' : 'bg-green-600 text-white' }}">
+                                    {{ $vente['etat'] ? ($vente['prix_consignation'] == 0 ? 0 : $vente['consignation'] / $vente['prix_consignation']) : '--' }}
                                 </span>
                             </td>
-                            <td>
-                                <span class="badge {{ in_array($vente['etat_cgt'], ['non rendu']) ? 'bg-danger text-white' : 'bg-success text-white' }}">
-                                    {{ $vente['etat_cgt'] ?($vente['consi_cgt'] == 0 ? 0 : $vente['prix_cgt'] / $vente['consi_cgt']):'--' }}
+                            <td class="px-3 py-2">
+                                <span class="px-2 py-1 rounded text-xs {{ $vente['etat_cgt'] == 'non rendu' ? 'bg-red-600 text-white' : 'bg-green-600 text-white' }}">
+                                    {{ $vente['etat_cgt'] ? ($vente['consi_cgt'] == 0 ? 0 : $vente['prix_cgt'] / $vente['consi_cgt']) : '--' }}
                                 </span>
                             </td>
-                            <td>
-                                <span class="badge {{ $vente['etat_payement'] == 0 ? 'bg-danger-light text-danger' : 'bg-success-light text-success' }}">
-                                    <i class="fas {{ $vente['etat_payement'] == 0 ? 'fa-times-circle text-danger' : 'fa-check-circle text-success' }} me-1"></i>
-                                    {{ $vente['etat_payement'] == 0 ? '' : '' }}
+                            <td class="px-3 py-2">
+                                <span class="px-2 py-1 rounded text-xs {{ $vente['etat_payement'] == 0 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600' }}">
+                                    <i class="fas {{ $vente['etat_payement'] == 0 ? 'fa-times-circle' : 'fa-check-circle' }} mr-1"></i>
                                 </span>
                             </td>
-                            <td class="fw-bold">{{$vente['quantite']}} {{$vente['type_achat']}}</td>
-                            <td>
+                            <td class="px-3 py-2 font-bold">{{$vente['quantite']}} {{$vente['type_achat']}}</td>
+                            <td class="px-3 py-2">
                                 {{ number_format($vente['prix_unitaire'], 0, ',', ' ') }} Ar
                                 @unless($vente['etat_client'] == 1 || $vente['etat'] == 'rendu' || $vente['etat'] == 'non consigné' || !isset($vente['etat']))
-                                + {{ number_format($vente['prix_consignation'], 0, ',', ' ') }} Ar
+                                    + {{ number_format($vente['prix_consignation'], 0, ',', ' ') }} Ar
                                 @endunless
                             </td>
-
-                            <td>
+                            <td class="px-3 py-2">
                                 @php
-                                $prix_total = ($vente['type_achat'] === 'cageot' || $vente['type_achat'] === 'pack')
-                                ? ($vente['prix_unitaire'] * $vente['quantite'] * $vente['conditionnement']) + $vente['consignation'] + $vente['prix_cgt']
-                                : ($vente['prix_unitaire'] * $vente['quantite']) + $vente['consignation'] + $vente['prix_cgt'];
-
-                                
-                                
+                                    $prix_total = ($vente['type_achat'] === 'cageot' || $vente['type_achat'] === 'pack')
+                                        ? ($vente['prix_unitaire'] * $vente['quantite'] * $vente['conditionnement']) + $vente['consignation'] + $vente['prix_cgt']
+                                        : ($vente['prix_unitaire'] * $vente['quantite']) + $vente['consignation'] + $vente['prix_cgt'];
                                 @endphp
-
                                 {{ number_format($prix_total, 0, ',', ' ') }} Ar
                             </td>
-                            <td> -- </td>
-
-                            <td class="text-end">
+                            <td class="px-3 py-2">--</td>
+                            <td class="px-3 py-2 text-right">
                                 @if($vente['etat_client_commande'] != 2)
-                                <a href="{{ route('commande.liste.vente.detail', ['id' => $vente['numero_commande']]) }}" class="text-primary">
-    <i class="fas fa-edit"></i>
-</a>
-
+                                <a href="{{ route('commande.liste.vente.detail', ['id' => $vente['numero_commande']]) }}" class="text-blue-600 hover:text-blue-800">
+                                    <i class="fas fa-edit"></i>
+                                </a>
                                 @endif
                             </td>
                         </tr>
-
-                        <!-- Modal for each vente -->
-                        
                         @empty
                         <tr>
-                            <td colspan="11" class="text-center text-muted py-4">
-                                <i class="fas fa-exclamation-circle me-2"></i>Aucune donnée disponible
+                            <td colspan="10" class="px-3 py-4 text-center text-gray-500">
+                                <i class="fas fa-exclamation-circle mr-2"></i> Aucune donnée disponible
                             </td>
                         </tr>
                         @endforelse
-
-                        <!-- Total Row -->
-                        
-                       
                     </tbody>
                 </table>
 
                 <!-- Pagination -->
-                <div class="d-flex justify-content-start mt-3">
+                <div class="mt-3">
                     {{ $ventes->links('pagination::bootstrap-4') }}
                 </div>
-                
-            </div>
-
-            <!-- Conditionnement Section -->
-            <div class="mt-4">
-                <!-- <h5 class="d-flex align-items-center text-uppercase fw-bold mb-3">
-                    <img src="{{ asset('assets/images/enter.png') }}" alt="Conditionnement" width="24" class="me-2">
-                    Conditionnement
-                </h5> -->
-                <hr class="mt-0">
-
-               
-
-                <!-- Global Total -->
-
             </div>
         </div>
     </div>
 </div>
-
 @endsection
