@@ -157,10 +157,10 @@
                         <!-- Edit Modal -->
                         <div id="editArticleModal{{ $article['id'] }}" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
                             <div class="bg-white rounded-lg w-full max-w-3xl">
-                                <div class="bg-gray-800 text-white p-4 rounded-t-lg flex justify-between items-center">
+                                <div class="bg-gray-50 text-dark p-4 rounded-t-lg flex justify-between items-center">
                                     <h5 class="text-lg font-bold">Modifier articles</h5>
-                                    <button onclick="closeModal('editArticleModal{{ $article['id'] }}')" class="text-white hover:text-gray-200">
-                                        <i class="fas fa-times"></i>
+                                    <button onclick="closeModal('editArticleModal{{ $article['id'] }}')" class="text-gray-900 hover:text-dark">
+                                        <i class="fas fa-times text-dark"></i>
                                     </button>
                                 </div>
                                 <div class="p-4">
@@ -356,9 +356,9 @@
     <!-- Add Article Modal -->
     <div id="addArticleModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
         <div class="bg-white rounded-lg w-full max-w-3xl">
-            <div class="bg-gray-800 text-white p-4 rounded-t-lg flex justify-between items-center">
+            <div class="bg-gray-50 text-dark p-4 rounded-t-lg flex justify-between items-center">
                 <h5 class="text-lg font-bold">Ajouter un article</h5>
-                <button onclick="closeModal('addArticleModal')" class="text-white hover:text-gray-200">
+                <button onclick="closeModal('addArticleModal')" class="text-dark hover:text-gray-900">
                     <i class="fas fa-times"></i>
                 </button>
             </div>

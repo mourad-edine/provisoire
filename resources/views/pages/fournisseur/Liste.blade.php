@@ -72,9 +72,9 @@
                         <!-- Delete Modal -->
                         <div id="supprimerArticleModal{{ $fournisseur->id }}" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
                             <div class="bg-white rounded-lg w-full max-w-md">
-                                <div class="bg-gray-800 text-white p-4 rounded-t-lg flex justify-between items-center">
+                                <div class="bg-gray-50 text-dark p-4 rounded-t-lg flex justify-between items-center">
                                     <h5 class="text-lg font-bold">Suppression</h5>
-                                    <button onclick="closeModal('supprimerArticleModal{{ $fournisseur->id }}')" class="text-white hover:text-gray-200">
+                                    <button onclick="closeModal('supprimerArticleModal{{ $fournisseur->id }}')" class="text-dark">
                                         <i class="fas fa-times"></i>
                                     </button>
                                 </div>
@@ -109,9 +109,9 @@
     <!-- Add Supplier Modal -->
     <div id="addArticleModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
         <div class="bg-white rounded-lg w-full max-w-md">
-            <div class="bg-gray-800 text-white p-4 rounded-t-lg flex justify-between items-center">
+            <div class="bg-gray-50 text-dark p-4 rounded-t-lg flex justify-between items-center">
                 <h5 class="text-lg font-bold">Ajouter un fournisseur</h5>
-                <button onclick="closeModal('addArticleModal')" class="text-white hover:text-gray-200">
+                <button onclick="closeModal('addArticleModal')" class="text-dark">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
