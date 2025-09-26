@@ -71,7 +71,7 @@ class AchatController extends Controller
 
     public function store(Request $request)
     {
-       
+       //dd($request->all());
         $data = $request->validate([
             'articles' => 'required|array',
             'quantites' => 'nullable|array',

@@ -3,61 +3,96 @@
 @section('title', 'Accueil')
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid px-4">
     <!-- Navigation par onglets -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <ul class="nav nav-tabs" id="clientTabs" role="tablist">
-            <!-- <li class="nav-item" role="presentation">
-                <a class="nav-link" href="{{ route('client.profil', ['id' => $client_id]) }}">
-                    <i class="fas fa-id-card me-2"></i>Profil client et Emballage
-                </a>
-            </li> -->
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
+        <div class="w-full">
+            <div class="bg-white shadow-lg  border border-gray-100 overflow-hidden">
+                <!-- En-tête avec titre -->
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <i class="fas fa-cog mr-3 text-blue-600"></i>
+                        Menu
+                    </h3>
+                </div>
 
-            <li class="nav-item" role="presentation">
-                <a class="nav-link" href="{{route('client.historique', ['id' => $client_id])}}">
-                    <i class="fas fa-history me-2"></i> Historique
-                </a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link active" href="{{ route('client.commande', ['id' => $client_id]) }}">
-                    <i class="fas fa-wine-bottle me-2"></i>Commandes
-                </a>
-            </li>
-        </ul>
+                <!-- Grille des actions -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+                    <!-- Carte Détails commande -->
+                    <a href="{{route('client.historique', ['id' => $client_id])}}"
+                        class="group bg-white border-2 border-gray-200 hover:border-blue-500 rounded-xl p-4 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-500 transition-colors duration-300">
+                                <i class="fas fa-file-alt text-blue-600 group-hover:text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">Historique des payements</h4>
+                                <p class="text-xs text-gray-500">Voir les informations détaillées</p>
+                            </div>
+                        </div>
+                    </a>
 
-        <a href="{{ url()->previous() }}" class="btn btn-dark btn-sm">
-            <i class="fas fa-arrow-left me-1"></i> Retour
-        </a>
+                    <!-- Carte Historique paiements -->
+                    <a href="{{ route('client.commande', ['id' => $client_id]) }}"
+                        class="group bg-white border-2 border-gray-200 hover:border-green-500 rounded-xl p-4 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-500 transition-colors duration-300">
+                                <i class="fas fa-history text-green-600 group-hover:text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 group-hover:text-green-600 transition-colors">Commandes passées</h4>
+                                <p class="text-xs text-gray-500">Consulter l'historique</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
+   
 
     <!-- Formulaire de recherche -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <form method="GET" class="row g-3">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
+        <div class="p-6">
+            
+            <form method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <input type="hidden" name="client_id" value="{{ $client_id }}">
 
-                <div class="col-md-2">
-                    <label for="search" class="form-label">Nom | N° commande</label>
-                    <input type="text" id="search" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Rechercher...">
+                <div>
+                    <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Nom | N° commande</label>
+                    <div class="relative">
+                        <input type="text" id="search" name="search" value="{{ request('search') }}" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all" placeholder="Rechercher...">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
                 </div>
-                <div class="col-md-2">
-                    <label for="date_debut" class="form-label">Date début</label>
-                    <input type="date" id="date_debut" name="date_debut" value="{{ request('date_debut') }}" class="form-control form-control-sm">
+                <div>
+                    <label for="date_debut" class="block text-sm font-medium text-gray-700 mb-1">Date début</label>
+                    <div class="relative">
+                        <input type="date" id="date_debut" name="date_debut" value="{{ request('date_debut') }}" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                        <i class="fas fa-calendar-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
                 </div>
-                <div class="col-md-2">
-                    <label for="date_fin" class="form-label">Date fin</label>
-                    <input type="date" id="date_fin" name="date_fin" value="{{ request('date_fin') }}" class="form-control form-control-sm">
+                <div>
+                    <label for="date_fin" class="block text-sm font-medium text-gray-700 mb-1">Date fin</label>
+                    <div class="relative">
+                        <input type="date" id="date_fin" name="date_fin" value="{{ request('date_fin') }}" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                        <i class="fas fa-calendar-day absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
                 </div>
-                <div class="col-md-2">
-                    <label for="tri" class="form-label">Trier par date</label>
-                    <select name="tri" id="tri" class="form-select form-select-sm">
-                        <option value="desc" {{ request('tri') == 'desc' ? 'selected' : '' }}>Décroissant</option>
-                        <option value="asc" {{ request('tri') == 'asc' ? 'selected' : '' }}>Croissant</option>
-                    </select>
+                <div>
+                    <label for="tri" class="block text-sm font-medium text-gray-700 mb-1">Trier par date</label>
+                    <div class="relative">
+                        <select name="tri" id="tri" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none">
+                            <option value="desc" {{ request('tri') == 'desc' ? 'selected' : '' }}>Décroissant</option>
+                            <option value="asc" {{ request('tri') == 'asc' ? 'selected' : '' }}>Croissant</option>
+                        </select>
+                        <i class="fas fa-sort absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
                 </div>
-                <div class="col-md-2 align-self-end">
-                    <button type="submit" class="btn btn-dark btn-sm">
-                        <i class="fas fa-search me-1"></i> Rechercher
+                <div class="flex items-end">
+                    <button type="submit" class="w-full flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200">
+                        <i class="fas fa-search mr-2"></i>
+                        <span>Rechercher</span>
                     </button>
                 </div>
             </form>
@@ -65,50 +100,79 @@
     </div>
 
     <!-- Tableau des commandes -->
-    <div class="card shadow">
-        <div class="card-body">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-6">
             @if(session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
+            <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center">
+                <i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i>
+                <span class="text-green-700">{{ session('success') }}</span>
             </div>
             @endif
-            <div class="table-responsive">
-                <table class="table table-striped table-hover table-bordered text-center align-middle" id="dataTable" width="100%" cellspacing="0">
-                    <thead class="thead-dark">
+            
+            <div class="overflow-x-auto  border border-gray-200">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-800">
                         <tr>
-                            <th>id</th>
-                            <th>id client</th>
-                            <th>date commande</th>
-                            <th>nombre d'achat</th>
-                            <th>sous-total</th>
-                            <th>consignation</th>
-                            <th>total</th>
-                            <th>état</th>
-                            <th>Options</th>
+                            <th class="px-6 py-2 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">
+                                <i class="fas fa-hashtag mr-1"></i> ID
+                            </th>
+                            <th class="px-6 py-2 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">
+                                <i class="fas fa-user mr-1"></i> Client
+                            </th>
+                            <th class="px-6 py-2 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">
+                                <i class="fas fa-calendar mr-1"></i> Date commande
+                            </th>
+                            <th class="px-6 py-2 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">
+                                <i class="fas fa-shopping-cart mr-1"></i> Nb achats
+                            </th>
+                            <th class="px-6 py-2 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">
+                                <i class="fas fa-receipt mr-1"></i> Sous-total
+                            </th>
+                            <th class="px-6 py-2 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">
+                                <i class="fas fa-boxes mr-1"></i> Consignation
+                            </th>
+                            <th class="px-6 py-2 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">
+                                <i class="fas fa-calculator mr-1"></i> Total
+                            </th>
+                            <th class="px-6 py-2 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">
+                                <i class="fas fa-info-circle mr-1"></i> État
+                            </th>
+                            <th class="px-6 py-2 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">
+                                <i class="fas fa-cog mr-1"></i> Actions
+                            </th>
                         </tr>
                     </thead>
-                    <style>
-                        .clickable-row {
-                            cursor: pointer;
-                        }
-
-                        .clickable-row:hover {
-                            background-color: #f9f9f9;
-                        }
-                    </style>
-                    <tbody>
+                    <tbody class="bg-white divide-y divide-gray-200">
                         @forelse($commandes as $commande)
-                        <tr class="clickable-row" data-href="{{route('commande.liste.vente.detail', ['id' => $commande->id]) }}">
-                            <td>C-{{$commande->id}}</td>
-                            <td>{{$commande->client ? $commande->client->nom : 'client passager'}}</td>
-                            <td>{{$commande->created_at}}</td>
-                            <td>{{$commande->ventes_count}} </td>
-                            <td>{{$commande->ventes_total }}Ar</td>
-                            <td>
+                        <tr class="hover:bg-gray-50 transition-colors duration-150 cursor-pointer" data-href="{{route('commande.liste.vente.detail', ['id' => $commande->id]) }}">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    C-{{$commande->id}}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{$commande->client ? $commande->client->nom : 'Client passager'}}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{$commande->created_at}}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-800 font-medium">
+                                    {{$commande->ventes_count}}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{$commande->ventes_total }} Ar
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
                                 @if($commande->etat_client == 1)
-                                <span class="fw-boldtext-danger"> à rendre</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i> À rendre
+                                </span>
                                 @elseif($commande->etat_client == 2)
-                                <span class="fw-bold text-danger">à disposition</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    <i class="fas fa-clock mr-1"></i> À disposition
+                                </span>
                                 @else
                                 {{ number_format(
                                         $commande->ventes_consignation_sum_prix 
@@ -118,83 +182,66 @@
                                 ) }} Ar
                                 @endif
                             </td>
-                            <td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                 @if($commande->etat_client == 1)
                                 {{ number_format($commande->ventes_total, 0, ',', ' ') }} Ar
                                 @else
                                 {{ number_format($commande->ventes_total + $commande->ventes_consignation_sum_prix + $commande->ventes_consignation_sum_prix_cgt + (optional($commande->conditionnement)->nombre_cageot * $cgt), 0, ',', ' ') }} Ar
                                 @endif
                             </td>
-                            <td>@if($commande->etat_commande == 'payé')
-                                <span class="text-success">
-                                    {{$commande->etat_commande}}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                @if($commande->etat_commande == 'payé')
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <i class="fas fa-check-circle mr-1"></i> {{$commande->etat_commande}}
                                 </span>
                                 @else
-                                <span class="text-danger">non payé</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    <i class="fas fa-times-circle mr-1"></i> Non payé
+                                </span>
                                 @endif
                             </td>
-                            <td>
-                                <!-- Icônes d'options -->
-                                <a href="{{route('commande.liste.vente.detail', ['id' => $commande->id]) }}" class=""><i class="fas fa-eye"></i></a>
-                                <a href="{{route('pdf.download' , ['id'=>$commande->id])}}" class="ml-3"><i class="fas fa-print text-warning"></i></a>
-
-
-
-                                <form action="#" method="POST" style="display:inline;">
-
-                                </form>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex space-x-3">
+                                    <a href="{{route('commande.liste.vente.detail', ['id' => $commande->id]) }}" class="text-blue-600 hover:text-blue-900 transition-colors duration-200" title="Voir les détails">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{route('pdf.download' , ['id'=>$commande->id])}}" class="text-amber-600 hover:text-amber-900 transition-colors duration-200" title="Imprimer">
+                                        <i class="fas fa-print"></i>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
-                        <div class="modal fade" id="venteModal2{{$commande->id}}" tabindex="-1" role="dialog">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-light">
-                                        <h5 class="modal-title">regler payement</h5>
-                                        <button type="button" class="close" data-dismiss="modal">
-                                            <span>&times;</span>
-                                        </button>
-                                    </div>
-                                    <form action="{{route('regler.payement')}}" method="POST">
-                                        @csrf
-                                        <div class="modal-body">
-                                            <input type="hidden" name="commande_id" value="{{$commande->id}}">
-                                            <p>voulez-vous regler le payement de cette commande {{$commande->id}}?</p>
-                                        </div>
-                                        <div class="modal-footer bg-light">
-                                            <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                                            <button type="submit" class="btn btn-primary">Payer</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
                         @empty
                         <tr>
-                            <td colspan="9" class="">
-                                <div class="alert alert-warning mb-3">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>
-                                    Pas de donnée trouvé --
+                            <td colspan="9" class="px-6 py-12 text-center">
+                                <div class="flex flex-col items-center justify-center text-gray-500">
+                                    <i class="fas fa-inbox text-4xl mb-3 opacity-50"></i>
+                                    <p class="text-lg font-medium">Aucune donnée trouvée</p>
+                                    <p class="text-sm mt-1">Aucune commande ne correspond à vos critères de recherche</p>
                                 </div>
                             </td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
-                <div class="d-flex justify-content-start mt-3">
-                    {{$commandes->appends(['search' => request('search')])->links('pagination::bootstrap-4') }}
-                </div>
             </div>
+            
+            <!-- Pagination -->
+            @if($commandes->hasPages())
+            <div class="px-6 py-4 border-t border-gray-200">
+                {{$commandes->appends(['search' => request('search')])->links('pagination::bootstrap-4') }}
+            </div>
+            @endif
         </div>
     </div>
 </div>
 
-
 <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
 <script>
     $(document).ready(function() {
-        $('.clickable-row').click(function(e) {
-            // Évite les conflits si on clique sur une icône ou un lien
-            if (!$(e.target).is('a, i, button')) {
+        $('tr[data-href]').click(function(e) {
+            // Évite les conflits si on clique sur un lien ou un bouton
+            if (!$(e.target).is('a, i, button') && !$(e.target).closest('a, button').length) {
                 window.location = $(this).data('href');
             }
         });
@@ -204,25 +251,37 @@
 
 @push('styles')
 <style>
-    .nav-tabs .nav-link {
-        border: none;
-        color: #495057;
-        padding: 0.75rem 1.25rem;
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 1rem;
     }
-
-    .nav-tabs .nav-link.active {
-        color: #0d6efd;
-        border-bottom: 3px solid #0d6efd;
-        background-color: transparent;
+    
+    .pagination li {
+        margin: 0 0.25rem;
     }
-
-    .table th {
-        white-space: nowrap;
+    
+    .pagination li a, 
+    .pagination li span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        color: #374151;
+        text-decoration: none;
+        transition: all 0.2s;
     }
-
-    .badge {
-        font-weight: 500;
-        padding: 0.35em 0.65em;
+    
+    .pagination li.active span {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+        color: white;
+    }
+    
+    .pagination li a:hover {
+        background-color: #f3f4f6;
     }
 </style>
 @endpush

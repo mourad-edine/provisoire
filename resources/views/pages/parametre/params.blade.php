@@ -79,6 +79,50 @@
     .user-table tr:hover td {
         background: #f9fafb;
     }
+
+    .logo-preview {
+        width: 120px;
+        height: 120px;
+        border: 2px dashed #d1d5db;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .logo-preview:hover {
+        border-color: #3b82f6;
+    }
+
+    .logo-preview img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .upload-area {
+        border: 2px dashed #d1d5db;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .upload-area.dragover {
+        border-color: #3b82f6;
+        background-color: #f0f9ff;
+    }
+
+    .info-card {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-left: 4px solid #10b981;
+        transition: all 0.3s ease;
+    }
+
+    .info-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
 </style>
 
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
@@ -135,6 +179,11 @@
                 <div class="px-6">
                     <nav class="flex space-x-8" id="settingsTabs" role="tablist">
                         <button class="py-4 px-1 text-sm font-medium transition-all duration-200 inactive-tab active-tab" 
+                                data-tab="entreprise">
+                            <i class="fas fa-building mr-2"></i>
+                            ENTREPRISE
+                        </button>
+                        <button class="py-4 px-1 text-sm font-medium transition-all duration-200 inactive-tab" 
                                 data-tab="consignation">
                             <i class="fas fa-wine-bottle mr-2"></i>
                             CONSIGNATION
@@ -150,8 +199,229 @@
 
             <!-- Contenu des onglets -->
             <div class="p-6">
+                <!-- Tab: Entreprise -->
+                <div class="tab-content active" id="entreprise">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                        <!-- Informations générales -->
+                        <div>
+                            <div class="flex items-center space-x-3 mb-6">
+                                <div class="w-1 h-8 bg-blue-500"></div>
+                                <h3 class="text-lg font-semibold text-gray-900">
+                                    <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+                                    Informations de l'entreprise
+                                </h3>
+                            </div>
+                            
+                            <form class="space-y-6 p-6 bg-white shadow-sm border border-gray-100">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Nom de l'entreprise *</label>
+                                        <input type="text" value="Mon Entreprise SARL" 
+                                               class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                               required>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Slogan</label>
+                                        <input type="text" value="Votre partenaire de confiance" 
+                                               class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Adresse *</label>
+                                    <textarea rows="3" 
+                                              class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                              placeholder="Adresse complète de l'entreprise">Lot II B 41 Bis Antanimena</textarea>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone *</label>
+                                        <input type="tel" value="+261 34 00 000 00" 
+                                               class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                               required>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                        <input type="email" value="contact@monentreprise.mg" 
+                                               class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Site web</label>
+                                        <input type="url" value="https://www.monentreprise.mg" 
+                                               class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">NIF *</label>
+                                        <input type="text" value="1234567890" 
+                                               class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                               required>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">STAT *</label>
+                                        <input type="text" value="987654321" 
+                                               class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                               required>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                                    <textarea rows="4" 
+                                              class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                              placeholder="Description de l'activité de l'entreprise">Spécialisée dans la distribution de boissons depuis 2010, nous sommes votre partenaire de confiance pour tous vos besoins.</textarea>
+                                </div>
+
+                                <button type="button" onclick="showSuccess()" 
+                                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                                    <i class="fas fa-save mr-2"></i>Enregistrer les informations
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Logo et apparence -->
+                        <div class="space-y-8">
+                            <!-- Logo -->
+                            <div class="bg-white shadow-sm border border-gray-100 p-6">
+                                <div class="flex items-center space-x-3 mb-6">
+                                    <div class="w-1 h-8 bg-purple-500"></div>
+                                    <h3 class="text-lg font-semibold text-gray-900">
+                                        <i class="fas fa-image mr-2 text-purple-500"></i>
+                                        Logo de l'entreprise
+                                    </h3>
+                                </div>
+
+                                <div class="text-center space-y-4">
+                                    <div class="logo-preview mx-auto cursor-pointer" onclick="document.getElementById('logoUpload').click()">
+                                        <i class="fas fa-building text-4xl text-gray-400"></i>
+                                        <img id="logoPreview" src="" alt="Logo" class="hidden">
+                                    </div>
+                                    
+                                    <input type="file" id="logoUpload" accept="image/*" class="hidden" onchange="previewLogo(event)">
+                                    
+                                    <div class="upload-area p-6 cursor-pointer" onclick="document.getElementById('logoUpload').click()">
+                                        <div class="text-center">
+                                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                            <p class="text-sm text-gray-600">Cliquez pour télécharger ou glissez-déposez</p>
+                                            <p class="text-xs text-gray-500 mt-1">PNG, JPG max. 2MB</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="button" 
+                                            class="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-6 py-3 text-sm font-medium transition-all duration-200">
+                                        <i class="fas fa-sync-alt mr-2"></i>Mettre à jour le logo
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Informations légales -->
+                            <div class="bg-white shadow-sm border border-gray-100 p-6">
+                                <div class="flex items-center space-x-3 mb-6">
+                                    <div class="w-1 h-8 bg-green-500"></div>
+                                    <h3 class="text-lg font-semibold text-gray-900">
+                                        <i class="fas fa-gavel mr-2 text-green-500"></i>
+                                        Informations légales
+                                    </h3>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <div class="info-card p-4">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <span class="text-gray-700 font-medium">Capital social</span>
+                                                <p class="text-gray-500 text-sm">Capital de l'entreprise</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <span class="text-xl font-bold text-green-600">10 000 000 Ar</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-card p-4">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <span class="text-gray-700 font-medium">RCS</span>
+                                                <p class="text-gray-500 text-sm">Registre du Commerce</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <span class="text-lg font-semibold text-gray-800">2024A001</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-card p-4">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <span class="text-gray-700 font-medium">Date de création</span>
+                                                <p class="text-gray-500 text-sm">Fondation de l'entreprise</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <span class="text-lg font-semibold text-gray-800">15/01/2010</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Paramètres d'impression -->
+                            <div class="bg-white shadow-sm border border-gray-100 p-6">
+                                <div class="flex items-center space-x-3 mb-6">
+                                    <div class="w-1 h-8 bg-orange-500"></div>
+                                    <h3 class="text-lg font-semibold text-gray-900">
+                                        <i class="fas fa-print mr-2 text-orange-500"></i>
+                                        Paramètres d'impression
+                                    </h3>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200">
+                                        <div>
+                                            <span class="text-sm font-medium text-gray-700">En-tête des factures</span>
+                                            <p class="text-xs text-gray-500">Afficher le logo sur les documents</p>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" class="sr-only peer" checked>
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200">
+                                        <div>
+                                            <span class="text-sm font-medium text-gray-700">Pied de page</span>
+                                            <p class="text-xs text-gray-500">Afficher les informations légales</p>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" class="sr-only peer" checked>
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200">
+                                        <div>
+                                            <span class="text-sm font-medium text-gray-700">Signature numérique</span>
+                                            <p class="text-xs text-gray-500">Ajouter une signature aux PDF</p>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" class="sr-only peer">
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Tab: Consignation -->
-                <div class="tab-content active" id="consignation">
+                <div class="tab-content" id="consignation">
+                    <!-- Contenu existant de la consignation -->
                     <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
                         <!-- Tarifs actuels -->
                         <div>
@@ -264,6 +534,7 @@
 
                 <!-- Tab: Utilisateurs -->
                 <div class="tab-content" id="utilisateur">
+                    <!-- Contenu existant des utilisateurs -->
                     <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
                         <!-- Ajouter utilisateur -->
                         <div class="bg-white shadow-sm border border-gray-100 p-6">
@@ -369,6 +640,66 @@
         }, 5000);
     }
 
+    function previewLogo(event) {
+        const input = event.target;
+        const preview = document.getElementById('logoPreview');
+        const placeholder = preview.previousElementSibling;
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function setupDragAndDrop() {
+        const uploadArea = document.querySelector('.upload-area');
+        const logoUpload = document.getElementById('logoUpload');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            uploadArea.classList.add('dragover');
+        }
+        
+        function unhighlight() {
+            uploadArea.classList.remove('dragover');
+        }
+        
+        uploadArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            logoUpload.files = files;
+            
+            // Déclencher l'événement change pour afficher l'aperçu
+            const event = new Event('change');
+            logoUpload.dispatchEvent(event);
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         // Gestion des tabs
         const tabs = document.querySelectorAll('[data-tab]');
@@ -403,6 +734,9 @@
                 icon.classList.toggle('fa-eye-slash');
             });
         });
+
+        // Setup drag and drop pour le logo
+        setupDragAndDrop();
     });
 </script>
 @endsection

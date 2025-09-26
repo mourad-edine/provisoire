@@ -3,33 +3,39 @@
 @section('title', 'Gestion des stocks')
 
 @section('content')
-<div class="w-full px-4">
+<div class="max-w-screen-4xl mx-auto px-4 py-6">
 
     <!-- Onglets -->
-    <ul class="flex border-b mb-3" id="parametresTabs" role="tablist">
+    <ul class="flex border-b mb-4" id="parametresTabs" role="tablist">
         <li class="mr-2" role="presentation">
             <a href="{{ route('stock.liste') }}" 
-               class="inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium 
-                      {{ request()->routeIs('stock.liste') ? 'border-black text-black' : 'border-transparent text-gray-600 hover:text-black hover:border-gray-300' }}">
-                <i class="fas fa-warehouse mr-2"></i> Listes globales
+               class="inline-flex items-center px-4 py-2 rounded-t-lg border-b-2 
+                      {{ request()->routeIs('stock.liste') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-600 hover:text-indigo-600 hover:border-gray-300' }}">
+                <i class="fas fa-warehouse mr-1"></i> Listes globales
             </a>
         </li>
         <li class="mr-2" role="presentation">
             <a href="{{ route('stock.faible.liste') }}" 
-               class="inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium 
-                      {{ request()->routeIs('stock.faible.liste') ? 'border-black text-black' : 'border-transparent text-gray-600 hover:text-black hover:border-gray-300' }}">
-                <i class="fas fa-exclamation-triangle mr-2"></i> Stocks faibles
+               class="inline-flex items-center px-4 py-2 rounded-t-lg border-b-2 
+                      {{ request()->routeIs('stock.faible.liste') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-600 hover:text-indigo-600 hover:border-gray-300' }}">
+                <i class="fas fa-exclamation-triangle mr-1"></i> Stocks faibles
             </a>
         </li>
         <li role="presentation">
             <a href="{{ route('stock.categorie.liste') }}" 
-               class="inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium 
-                      {{ request()->routeIs('stock.categorie.liste') ? 'border-black text-black' : 'border-transparent text-gray-600 hover:text-black hover:border-gray-300' }}">
-                <i class="fas fa-th-large mr-2"></i> Catégories
+               class="inline-flex items-center px-4 py-2 rounded-t-lg border-b-2 
+                      {{ request()->routeIs('stock.categorie.liste') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-600 hover:text-indigo-600 hover:border-gray-300' }}">
+                <i class="fas fa-th-large mr-1"></i> Catégories
+            </a>
+        </li>
+        <li role="presentation">
+            <a href="{{ route('sortie.stat') }}" 
+               class="inline-flex items-center px-4 py-2 rounded-t-lg border-b-2 
+                      {{ request()->routeIs('sortie.stat') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-600 hover:text-indigo-600 hover:border-gray-300' }}">
+                <i class="fas fa-th-recycle mr-1"></i> Mouvement stock
             </a>
         </li>
     </ul>
-
     <!-- Cartes -->
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         @forelse($categories as $categorie)

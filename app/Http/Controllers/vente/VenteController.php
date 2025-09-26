@@ -606,7 +606,7 @@ class VenteController extends Controller
     public function historiquestore($id_article , $quantite , $vente_id , $prix , $total)
     {   
         $article = Article::find($id_article);
-        $te = HistoriqueVente::create([
+        HistoriqueVente::create([
             'id_article' => $id_article,
             'id_vente' => $vente_id,
             'quantite_initiale' => $article->quantite,

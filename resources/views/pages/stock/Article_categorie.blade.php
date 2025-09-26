@@ -3,29 +3,40 @@
 @section('title', 'Accueil')
 
 @section('content')
-<div class="w-full px-4">
+<div class="max-w-screen-4xl mx-auto px-4 py-6">
 
     <!-- Onglets -->
     <ul class="flex border-b mb-4" id="parametresTabs" role="tablist">
-        <li class="mr-2">
-            <a href="{{route('stock.liste')}}" class="inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium 
-                {{ request()->routeIs('stock.liste') ? 'border-black text-black' : 'border-transparent text-gray-600 hover:text-black hover:border-gray-300' }}">
-                <i class="fas fa-wine-bottle mr-2"></i> Listes globales
+        <li class="mr-2" role="presentation">
+            <a href="{{ route('stock.liste') }}" 
+               class="inline-flex items-center px-4 py-2 rounded-t-lg border-b-2 
+                      {{ request()->routeIs('stock.liste') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-600 hover:text-indigo-600 hover:border-gray-300' }}">
+                <i class="fas fa-warehouse mr-1"></i> Listes globales
             </a>
         </li>
-        <li class="mr-2">
-            <a href="{{route('stock.faible.liste')}}" class="inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium 
-                {{ request()->routeIs('stock.faible.liste') ? 'border-black text-black' : 'border-transparent text-gray-600 hover:text-black hover:border-gray-300' }}">
-                <i class="fas fa-user mr-2"></i> Stock faible
+        <li class="mr-2" role="presentation">
+            <a href="{{ route('stock.faible.liste') }}" 
+               class="inline-flex items-center px-4 py-2 rounded-t-lg border-b-2 
+                      {{ request()->routeIs('stock.faible.liste') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-600 hover:text-indigo-600 hover:border-gray-300' }}">
+                <i class="fas fa-exclamation-triangle mr-1"></i> Stocks faibles
             </a>
         </li>
-        <li>
-            <a href="{{route('stock.categorie.liste')}}" class="inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium 
-                {{ request()->routeIs('stock.categorie.liste') ? 'border-black text-black' : 'border-transparent text-gray-600 hover:text-black hover:border-gray-300' }}">
-                <i class="fas fa-user mr-2"></i> Catégorie
+        <li role="presentation">
+            <a href="{{ route('stock.categorie.liste') }}" 
+               class="inline-flex items-center px-4 py-2 rounded-t-lg border-b-2 
+                      {{ request()->routeIs('stock.categorie.liste') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-600 hover:text-indigo-600 hover:border-gray-300' }}">
+                <i class="fas fa-th-large mr-1"></i> Catégories
+            </a>
+        </li>
+        <li role="presentation">
+            <a href="{{ route('sortie.stat') }}" 
+               class="inline-flex items-center px-4 py-2 rounded-t-lg border-b-2 
+                      {{ request()->routeIs('stock.categorie.liste') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-600 hover:text-indigo-600 hover:border-gray-300' }}">
+                <i class="fas fa-th-recycle mr-1"></i> Mouvement stock
             </a>
         </li>
     </ul>
+
 
     <!-- Card -->
     <div class="bg-white shadow rounded mb-6">
@@ -41,11 +52,18 @@
         <div class="flex flex-wrap items-center gap-2 px-4 py-3">
             <form action="{{ route('stock.liste.id',['id'=> $categorie_id]) }}" method="GET" class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                 @csrf
-                <input type="text" 
-                       class="border border-gray-300 rounded text-sm px-3 py-1.5 focus:ring focus:ring-blue-200 focus:outline-none" 
-                       name="search" 
-                       placeholder="Rechercher..." 
-                       value="{{ old('search', request('search')) }}">
+                <div class="relative w-72">
+    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+    <input 
+        type="text" 
+        name="search" 
+        placeholder="Rechercher..."
+        value="{{ old('search', request('search')) }}"
+        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm placeholder-gray-400
+               focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
+               shadow-sm transition duration-200"
+    >
+</div>
 
                 <!-- Tri -->
                 <div class="relative">
@@ -73,10 +91,8 @@
                         <th class="px-3 py-2 border">ID</th>
                         <th class="px-3 py-2 border">Nom</th>
                         <th class="px-3 py-2 border">Catégorie</th>
-                        <th class="px-3 py-2 border">P. Vente</th>
-                        <th class="px-3 py-2 border">P.C</th>
+                  
                         <th class="px-3 py-2 border">Quantité</th>
-                        <th class="px-3 py-2 border">Consignation</th>
                         <th class="px-3 py-2 border">Mise à jour</th>
                         <th class="px-3 py-2 border">Date création</th>
                         <th class="px-3 py-2 border">Ajouter</th>
@@ -88,8 +104,7 @@
                         <td class="px-3 py-2 border">{{ $article->id }}</td>
                         <td class="px-3 py-2 border">{{ $article->nom }}</td>
                         <td class="px-3 py-2 border">{{ $article->categorie_id }}</td>
-                        <td class="px-3 py-2 border">{{ $article->prix_unitaire }} Ar</td>
-                        <td class="px-3 py-2 border">{{ $article->prix_conditionne ? $article->prix_conditionne .' Ar' : 'pas de prix' }}</td>
+                  
                         <td class="px-3 py-2 border">
                             @php
                                 $quotient = intdiv($article->quantite, $article->conditionnement);
@@ -97,15 +112,12 @@
                                 $affichage = $quotient;
                             @endphp
                             @if($quotient > 0)
-                                <span class="text-green-600">{{ $affichage }} cageot{{ $affichage > 1 ? 's' : '' }}</span>
+                                <span class="text-green-600">{{ $affichage }} cageot{{ $affichage > 1 ? 's' : '' }} et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}</span>
                             @else
-                                <span class="text-red-600">{{ $affichage }} cageot{{ $affichage > 1 ? 's' : '' }}</span>
+                                <span class="text-red-600">{{ $affichage }} cageot{{ $affichage > 1 ? 's' : '' }} et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}</span>
                             @endif
-                            @if($reste > 0)
-                                et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}
-                            @endif
+                           
                         </td>
-                        <td class="px-3 py-2 border">{{ $article->prix_consignation ? $article->prix_consignation . ' Ar' : 'pas de prix' }}</td>
                         <td class="px-3 py-2 border">{{ \Carbon\Carbon::parse($article->created_at)->format('Y-m-d') }}</td>
                         <td class="px-3 py-2 border">{{ \Carbon\Carbon::parse($article->updated_at)->format('Y-m-d') }}</td>
                         <td class="px-3 py-2 border text-center">

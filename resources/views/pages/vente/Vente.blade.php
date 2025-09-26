@@ -9,10 +9,16 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Bellota:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Cinzel:wght@400..900&family=Lobster&family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Permanent+Marker&family=Shadows+Into+Light&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
+        body{
+  font-family: "Bellota", system-ui;
+        }
         .select2-container--default .select2-selection--single {
             height: 46px;
             padding: 0.5rem;
@@ -23,249 +29,379 @@
         .select2-container--default .select2-selection--single .select2-selection__arrow {
             height: 44px;
         }
+
+        .nav-active {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-active:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+        }
+
+        .nav-item {
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            margin: 0 0.25rem;
+        }
+
+        .nav-item:hover:not(.nav-active) {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fbbf24;
+        }
+
+        .dropdown-menu {
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .mobile-nav-active {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border-radius: 6px;
+            margin: 2px 0;
+        }
     </style>
 </head>
 
-<body class="bg-gray-50">
-     <nav class="fixed top-0 left-0 w-full bg-gray-800 text-white shadow-md z-50">
+<body class="bg-gray-50 font-semibold">
+    <nav class="fixed top-0 left-0 w-full bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-lg z-50 border-b border-gray-700">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center py-3">
-                <div class="flex items-center">
-                    <button id="mobile-menu-button" class="md:hidden text-white mr-3 focus:outline-none">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <a href="{{ route('page.accueil') }}" class="text-xl font-bold">Mon Site</a>
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-store text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
+                        MonSite
+                    </span>
                 </div>
 
                 <!-- Desktop Menu -->
-                <div id="mainNavbar" class="hidden md:flex items-center space-x-6">
-                    <a href="{{ route('page.accueil') }}" class="hover:text-yellow-400 transition flex items-center">
-                        <i class="fas fa-home mr-1"></i> Accueil
+                <div id="mainNavbar" class="hidden md:flex items-center space-x-1">
+                    <!-- Accueil -->
+                    <a href="{{ route('page.accueil') }}"
+                        class="nav-item flex items-center space-x-2 {{ request()->routeIs('page.accueil') ? 'nav-active' : '' }}">
+                        <i class="fas fa-home text-sm"></i>
+                        <span>Accueil</span>
                     </a>
 
-                    <!-- User Space Dropdown -->
+                    <!-- Paramétrage d'articles -->
                     <div class="relative group">
-                        <button class="hover:text-yellow-400 transition flex items-center">
-                            <i class="fas fa-user mr-1"></i> Espace utilisateur
-                            <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                        <button class="nav-item flex items-center space-x-2 {{ request()->routeIs('article.liste') || request()->routeIs('categorie.liste') || request()->routeIs('depense') ? 'nav-active' : '' }}">
+                            <i class="fas fa-cogs text-sm"></i>
+                            <span>Paramétrage</span>
+                            <i class="fas fa-chevron-down text-xs ml-1"></i>
                         </button>
-                        <div class="absolute hidden group-hover:block bg-gray-700 shadow-lg rounded-md mt-1 w-48 z-50">
-                            <a href="{{ route('article.liste') }}" class="block px-4 py-2 hover:bg-gray-600 text-white">
-                                <i class="fas fa-glass-martini-alt mr-2"></i> Boissons
+                        <div class="absolute hidden group-hover:block glass-effect shadow-xl rounded-lg mt-1 w-56 z-50 border border-gray-200">
+                            <a href="{{ route('article.liste') }}"
+                                class="block px-4 py-3 hover:bg-blue-50 text-gray-700 border-b border-gray-100 transition-colors {{ request()->routeIs('article.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
+                                <i class="fas fa-glass-martini-alt mr-3 text-blue-500"></i>Boissons
                             </a>
-                            <a href="{{ route('categorie.liste') }}" class="block px-4 py-2 hover:bg-gray-600 text-white">
-                                <i class="fas fa-tags mr-2"></i> Catégories
+                            <a href="{{ route('categorie.liste') }}"
+                                class="block px-4 py-3 hover:bg-blue-50 text-gray-700 border-b border-gray-100 transition-colors {{ request()->routeIs('categorie.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
+                                <i class="fas fa-tags mr-3 text-green-500"></i>Catégories
                             </a>
-                            <div class="border-t border-gray-600 my-1"></div>
-                            <a href="{{ route('commande.liste.vente') }}" class="block px-4 py-2 hover:bg-gray-600 text-white">
-                                <i class="fas fa-cash-register mr-2"></i> Commandes ventes
-                            </a>
-                            <a href="{{ route('achat.commande') }}" class="block px-4 py-2 hover:bg-gray-600 text-white">
-                                <i class="fas fa-cash-register mr-2"></i> Commandes achats
-                            </a>
-                            <a href="{{ route('depense') }}" class="block px-4 py-2 hover:bg-gray-600 text-white">
-                                <i class="fas fa-cash-register mr-2"></i> Dépense divers
-                            </a>
-                            <a href="{{ route('vente.page') }}" class="block px-4 py-2 hover:bg-gray-600 text-white">
-                                <i class="fas fa-cash-register mr-2"></i> Ventes
-                            </a>
-                            <a href="{{ route('achat.page') }}" class="block px-4 py-2 hover:bg-gray-600 text-white">
-                                <i class="fas fa-shopping-cart mr-2"></i> Achats
+                            <div class="border-t border-gray-200 my-1"></div>
+                            <a href="{{ route('depense') }}"
+                                class="block px-4 py-3 hover:bg-blue-50 text-gray-700 transition-colors {{ request()->routeIs('depense') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
+                                <i class="fas fa-money-bill-wave mr-3 text-yellow-500"></i>Dépenses divers
                             </a>
                         </div>
                     </div>
 
-                    <!-- Clients & Suppliers -->
+                    <!-- Ventes -->
+                    <a href="{{ route('commande.liste.vente') }}"
+                        class="nav-item flex items-center space-x-2 {{ request()->routeIs('commande.liste.vente') || request()->routeIs('vente.page')  ? 'nav-active' : '' }}">
+                        <i class="fas fa-cart-plus text-sm"></i>
+                        <span>Ventes</span>
+                    </a>
+
+                    <!-- Achats -->
+                    <a href="{{ route('achat.commande') }}"
+                        class="nav-item flex items-center space-x-2 {{ request()->routeIs('achat.commande') || request()->routeIs('achat.page')  ? 'nav-active' : '' }}">
+                        <i class="fas fa-shopping-cart text-sm"></i>
+                        <span>Achats</span>
+                    </a>
+
+                    <!-- Clients & Fournisseurs -->
                     <div class="relative group">
-                        <button class="hover:text-yellow-400 transition flex items-center">
-                            <i class="fas fa-users mr-1"></i> Clients & Fournisseurs
-                            <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                        <button class="nav-item flex items-center space-x-2 {{ request()->routeIs('client.liste') || request()->routeIs('fournisseur.liste') ? 'nav-active' : '' }}">
+                            <i class="fas fa-users text-sm"></i>
+                            <span>Clients & Fournisseurs</span>
+                            <i class="fas fa-chevron-down text-xs ml-1"></i>
                         </button>
-                        <div class="absolute hidden group-hover:block bg-gray-700 shadow-lg rounded-md mt-1 w-48 z-50">
-                            <a href="{{ route('client.liste') }}" class="block px-4 py-2 hover:bg-gray-600 text-white">
-                                <i class="fas fa-users mr-2"></i> Clients
+                        <div class="absolute hidden group-hover:block glass-effect shadow-xl rounded-lg mt-1 w-56 z-50 border border-gray-200">
+                            <a href="{{ route('client.liste') }}"
+                                class="block px-4 py-3 hover:bg-blue-50 text-gray-700 border-b border-gray-100 transition-colors {{ request()->routeIs('client.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
+                                <i class="fas fa-users mr-3 text-blue-500"></i>Clients
                             </a>
-                            <a href="{{ route('fournisseur.liste') }}" class="block px-4 py-2 hover:bg-gray-600 text-white">
-                                <i class="fas fa-truck mr-2"></i> Fournisseurs
+                            <a href="{{ route('fournisseur.liste') }}"
+                                class="block px-4 py-3 hover:bg-blue-50 text-gray-700 transition-colors {{ request()->routeIs('fournisseur.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
+                                <i class="fas fa-truck mr-3 text-green-500"></i>Fournisseurs
                             </a>
                         </div>
                     </div>
 
-                    <a href="{{ route('stat') }}" class="hover:text-yellow-400 transition flex items-center">
-                        <i class="fas fa-chart-bar mr-1"></i> Statistique des ventes
+                    <!-- Stock -->
+                    <a href="{{ route('stock.liste') }}"
+                        class="nav-item flex items-center space-x-2 {{ request()->routeIs('stock.liste') ? 'nav-active' : '' }}">
+                        <i class="fas fa-boxes text-sm"></i>
+                        <span>Stock</span>
                     </a>
-                    <a  class="hover:text-yellow-400 transition flex items-center" href="{{route('sortie.stat')}}">
-                            <i class="fas fa-history"></i>
-                            historique des sorties
-                    </a>
-                    <a href="{{ route('parametre') }}" class="hover:text-yellow-400 transition flex items-center">
-                        <i class="fas fa-cog mr-1"></i> Paramètres
-                    </a>
-                    <a href="{{ route('stock.liste') }}" class="hover:text-yellow-400 transition flex items-center">
-                        <i class="fas fa-boxes mr-1"></i> Stock
+
+                    <!-- Paramètres -->
+                    <a href="{{ route('parametre') }}"
+                        class="nav-item flex items-center space-x-2 {{ request()->routeIs('parametre') ? 'nav-active' : '' }}">
+                        <i class="fas fa-cog text-sm"></i>
+                        <span>Paramètres</span>
                     </a>
                 </div>
 
                 <!-- User Menu -->
                 <div class="relative group">
-                    <button class="hover:text-yellow-400 transition flex items-center">
-                        <i class="fas fa-user-circle mr-1"></i> {{ Auth::user()->name }}
-                        <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                    <button class="nav-item flex items-center space-x-2">
+                        <i class="fas fa-user-circle text-sm"></i>
+                        <span class="max-w-32 truncate">{{ Auth::user()->name }}</span>
+                        <i class="fas fa-chevron-down text-xs ml-1"></i>
                     </button>
-                    <div class="absolute right-0 hidden group-hover:block bg-gray-700 shadow-lg rounded-md mt-1 w-48 z-50">
+                    <div class="absolute right-0 hidden group-hover:block glass-effect shadow-xl rounded-lg mt-1 w-48 z-50 border border-gray-200">
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="block w-full text-left px-4 py-2 hover:bg-gray-600 text-white">
-                                <i class="fas fa-sign-out-alt mr-2"></i> Se déconnecter
+                            <button type="submit" class="block w-full text-left px-4 py-3 hover:bg-red-50 text-gray-700 transition-colors flex items-center">
+                                <i class="fas fa-sign-out-alt mr-3 text-red-500"></i>Se déconnecter
                             </button>
                         </form>
                     </div>
                 </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button" class="md:hidden text-white p-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
             </div>
 
             <!-- Mobile Menu -->
-            <div id="mobile-menu" class="hidden md:hidden bg-gray-900 p-4 mt-3 rounded-md">
-                <div class="flex flex-col space-y-3">
-                    <a href="{{ route('page.accueil') }}" class="hover:text-yellow-400 transition flex items-center">
-                        <i class="fas fa-home mr-2"></i> Accueil
+            <div id="mobile-menu" class="hidden md:hidden bg-gray-800 p-4 mt-3 rounded-lg border border-gray-700">
+                <div class="flex flex-col space-y-2">
+                    <a href="{{ route('page.accueil') }}"
+                        class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('page.accueil') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                        <i class="fas fa-home w-5 text-center"></i>
+                        <span>Accueil</span>
                     </a>
 
-                    <div class="pl-2 border-l border-gray-600">
-                        <p class="font-medium mb-1"><i class="fas fa-user mr-2"></i> Espace utilisateur</p>
-                        <div class="flex flex-col space-y-2 ml-4">
-                            <a href="{{ route('article.liste') }}" class="text-sm hover:text-yellow-400">
-                                <i class="fas fa-glass-martini-alt mr-2"></i> Boissons
+                    <!-- Paramétrage Mobile -->
+                    <div class="space-y-1">
+                        <div class="px-3 py-2 text-gray-400 font-medium flex items-center space-x-3">
+                            <i class="fas fa-cogs w-5 text-center"></i>
+                            <span>Paramétrage</span>
+                        </div>
+                        <div class="ml-6 space-y-1">
+                            <a href="{{ route('article.liste') }}"
+                                class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('article.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                                <i class="fas fa-glass-martini-alt w-5 text-center"></i>
+                                <span>Boissons</span>
                             </a>
-                            <a href="{{ route('categorie.liste') }}" class="text-sm hover:text-yellow-400">
-                                <i class="fas fa-tags mr-2"></i> Catégories
+                            <a href="{{ route('categorie.liste') }}"
+                                class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('categorie.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                                <i class="fas fa-tags w-5 text-center"></i>
+                                <span>Catégories</span>
                             </a>
-                            <div class="border-t border-gray-600 my-1"></div>
-                            <a href="{{ route('commande.liste.vente') }}" class="text-sm hover:text-yellow-400">
-                                <i class="fas fa-cash-register mr-2"></i> Commandes ventes
-                            </a>
-                            <a href="{{ route('achat.commande') }}" class="text-sm hover:text-yellow-400">
-                                <i class="fas fa-cash-register mr-2"></i> Commandes achats
-                            </a>
-                            <a href="{{ route('depense') }}" class="text-sm hover:text-yellow-400">
-                                <i class="fas fa-cash-register mr-2"></i> Dépense divers
-                            </a>
-                            <a href="{{ route('vente.page') }}" class="text-sm hover:text-yellow-400">
-                                <i class="fas fa-cash-register mr-2"></i> Ventes
-                            </a>
-                            <a href="{{ route('achat.page') }}" class="text-sm hover:text-yellow-400">
-                                <i class="fas fa-shopping-cart mr-2"></i> Achats
+                            <a href="{{ route('depense') }}"
+                                class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('depense') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                                <i class="fas fa-money-bill-wave w-5 text-center"></i>
+                                <span>Dépenses divers</span>
                             </a>
                         </div>
                     </div>
 
-                    <div class="pl-2 border-l border-gray-600">
-                        <p class="font-medium mb-1"><i class="fas fa-users mr-2"></i> Clients & Fournisseurs</p>
-                        <div class="flex flex-col space-y-2 ml-4">
-                            <a href="{{ route('client.liste') }}" class="text-sm hover:text-yellow-400">
-                                <i class="fas fa-users mr-2"></i> Clients
+                    <!-- Ventes & Achats -->
+                    <a href="{{ route('commande.liste.vente') }}"
+                        class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('commande.liste.vente') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                        <i class="fas fa-cart-plus w-5 text-center"></i>
+                        <span>Ventes</span>
+                    </a>
+                    <a href="{{ route('achat.commande') }}"
+                        class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('achat.commande') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                        <i class="fas fa-shopping-cart w-5 text-center"></i>
+                        <span>Achats</span>
+                    </a>
+
+                    <!-- Clients & Fournisseurs Mobile -->
+                    <div class="space-y-1">
+                        <div class="px-3 py-2 text-gray-400 font-medium flex items-center space-x-3">
+                            <i class="fas fa-users w-5 text-center"></i>
+                            <span>Clients & Fournisseurs</span>
+                        </div>
+                        <div class="ml-6 space-y-1">
+                            <a href="{{ route('client.liste') }}"
+                                class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('client.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                                <i class="fas fa-users w-5 text-center"></i>
+                                <span>Clients</span>
                             </a>
-                            <a href="{{ route('fournisseur.liste') }}" class="text-sm hover:text-yellow-400">
-                                <i class="fas fa-truck mr-2"></i> Fournisseurs
+                            <a href="{{ route('fournisseur.liste') }}"
+                                class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('fournisseur.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                                <i class="fas fa-truck w-5 text-center"></i>
+                                <span>Fournisseurs</span>
                             </a>
                         </div>
                     </div>
 
-                    <a href="{{ route('stat') }}" class="hover:text-yellow-400 flex items-center">
-                        <i class="fas fa-chart-bar mr-2"></i> Statistique des ventes
+                    <!-- Stock & Paramètres -->
+                    <a href="{{ route('stock.liste') }}"
+                        class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('stock.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                        <i class="fas fa-boxes w-5 text-center"></i>
+                        <span>Stock</span>
                     </a>
-                    <a href="{{ route('parametre') }}" class="hover:text-yellow-400 flex items-center">
-                        <i class="fas fa-cog mr-2"></i> Paramètres
-                    </a>
-                    <a href="{{ route('stock.liste') }}" class="hover:text-yellow-400 flex items-center">
-                        <i class="fas fa-boxes mr-2"></i> Stock
+                    <a href="{{ route('parametre') }}"
+                        class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('parametre') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                        <i class="fas fa-cog w-5 text-center"></i>
+                        <span>Paramètres</span>
                     </a>
                 </div>
             </div>
         </div>
     </nav>
-    <div class="container mx-auto px-4 py-6 mt-12">
-        <div class="bg-white shadow-lg overflow-hidden">
+
+    <div class=" mx-auto px-4 py-6 mt-12">
+        <div class="max-w-7xl mx-auto  sm:px-6 lg:px-8 bg-white shadow-lg overflow-hidden">
             <!-- Card Header -->
-            <div class="border-b-2 border-b-gray-500 bg-gray-10 px-6 py-4 text-dark flex justify-between items-center">
-                <h5 class="text-lg font-semibold flex items-center">
-                    <i class="fas fa-cash-register mr-2"></i> Nouvelle vente
+
+<div class="bg-white border-b-2 border-gray-200 py-4 px-6 flex justify-between items-center">
+                <h5 class="textrounded-md font-semibold flex items-center text-gray-800">
+                    <svg class="w-5 h-5 mr-2 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a1 1 0 100 2 1 1 0 000-2zm-10 2H3" />
+                    </svg>
+                    Nouvelle vente
                 </h5>
-                <a href="{{ url()->previous() }}" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm flex items-center">
-                    <i class="fas fa-arrow-left mr-1"></i>Retour
+                <a href="{{ url()->previous() }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm flex items-center transition-colors">
+                    <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Retour
                 </a>
             </div>
 
             <!-- Card Body -->
-            <div class="p-6">
+            <div class="py-6  ">
                 <form id="venteForm" action="{{ route('vente.store') }}" method="POST" onsubmit="disableSubmitButton(this)">
                     @csrf
 
                     <!-- Section Client -->
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6 items-end">
-                        <!-- Client existant -->
-                        <div class="md:col-span-3">
-                            <label for="client_id" class="block text-sm font-medium text-gray-700 mb-1">Client existant</label>
-                            <select class="w-full border border-gray-300 rounded px-3 py-2 searchable-select" id="client_id" name="client_id" required>
-                                <option value="">Sélectionner un client</option>
-                                @foreach($clients as $client)
-                                <option value="{{ $client->id }}">{{ $client->nom }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Nouveau client -->
-                        <div class="md:col-span-3 flex items-end gap-2">
-                            <div class="flex-1">
-                                <label for="nouveau_client" class="block text-sm font-medium text-gray-700 mb-1">Nouveau client</label>
-                                <input type="text" class="w-full border border-gray-300 rounded px-3 py-2" name="nouveau" id="nouveau_client" disabled>
+                    <div class="bg-white p-6 rounded-lg shadow-md max-w-7xl mx-auto border-2 border-gray-200">
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end ">
+                            <!-- Client existant -->
+                            <div class="md:col-span-3">
+                                <label for="client_id" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                    <svg class="w-5 h-5 mr-1 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                    Client existant
+                                </label>
+                                <select class="w-full border border-gray-200 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors searchable-select" id="client_id" name="client_id" required>
+                                    <option value="">Sélectionner un client</option>
+                                    @foreach($clients as $client)
+                                    <option value="{{ $client->id }}">{{ $client->nom }}</option>
+                                    @endforeach
+                                </select>
                             </div>
-                            <button type="button" id="toggle_nouveau_client" class="h-10 w-10 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded" title="Créer un nouveau client">
-                                <span class="text-xl font-bold">+</span>
-                            </button>
-                        </div>
 
-                        <!-- Date -->
-                        <div class="md:col-span-2">
-                            <label for="date_vente" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                            <input type="text" class="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100" id="date_vente" value="{{ now()->format('d/m/Y') }}" readonly>
-                        </div>
+                            <!-- Nouveau client -->
+                            <div class="md:col-span-3 flex items-end gap-2">
+                                <div class="flex-1">
+                                    <label for="nouveau_client" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                        <svg class="w-5 h-5 mr-1 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                        </svg>
+                                        Nouveau client
+                                    </label>
+                                    <input type="text" class="w-full border border-gray-200 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" name="nouveau" id="nouveau_client" disabled>
+                                </div>
+                                <button type="button" id="toggle_nouveau_client" class="h-10 w-10 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors" title="Créer un nouveau client">
+                                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                </button>
+                            </div>
 
-                        <!-- Hidden inputs -->
-                        <input type="hidden" name="total_non_consignee" id="total_non_consignee">
-                        <input type="hidden" name="tot_glob" id="tot_glob">
+                            <!-- Date -->
+                            <div class="md:col-span-2">
+                                <label for="date_vente" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                    <svg class="w-5 h-5 mr-1 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    Date
+                                </label>
+                                <input type="text" class="w-full border border-gray-200 rounded-md px-3 py-2 bg-gray-50 cursor-not-allowed" id="date_vente" value="{{ now()->format('d/m/Y') }}" readonly>
+                            </div>
 
-                        <!-- Numéro de commande -->
-                        <div class="md:col-span-2">
-                            <label for="numero_commande" class="block text-sm font-medium text-gray-700 mb-1">N° Commande</label>
-                            <input type="text" class="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100" id="numero_commande" value="C-{{ str_pad(($dernier->id ?? 0) + 1, 5, '0', STR_PAD_LEFT) }}" readonly>
-                        </div>
+                            <!-- Hidden inputs -->
+                            <input type="hidden" name="total_non_consignee" id="total_non_consignee">
+                            <input type="hidden" name="tot_glob" id="tot_glob">
 
-                        <!-- Type -->
-                        <div class="md:col-span-2">
-                            <label for="type_vente" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                            <select class="w-full border border-gray-300 rounded px-3 py-2" id="type_vente" name="cat">
-                                <option value="gros">Détail</option>
-                                <option value="detail">Gros</option>
-                            </select>
+                            <!-- Numéro de commande -->
+                            <div class="md:col-span-2">
+                                <label for="numero_commande" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                    <svg class="w-5 h-5 mr-1 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg>
+                                    N° Commande
+                                </label>
+                                <input type="text" class="w-full border border-gray-200 rounded-md px-3 py-2 bg-gray-50 cursor-not-allowed" id="numero_commande" value="C-{{ str_pad(($dernier->id ?? 0) + 1, 5, '0', STR_PAD_LEFT) }}" readonly>
+                            </div>
+
+                            <!-- Type -->
+                            <div class="md:col-span-2">
+                                <label for="type_vente" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                    <svg fill="#000000" class="w-5 h-5 mr-1 text-gray-500" viewBox="0 0 512 512" data-name="Layer 1" id="Layer_1" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M478,256,302,432l-21.21-21.2L420.6,271H34V241H420.6L280.75,101.16,302,80Z" />
+                                    </svg> Type
+                                </label>
+                                <select class="w-full border border-gray-200 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" id="type_vente" name="cat">
+                                    <option value="gros">Détail</option>
+                                    <option value="detail">Gros</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
 
-                    <hr class="my-6">
 
                     <!-- Section Articles - Tableau amélioré -->
-                    <div id="articles-container" class="border border-gray-300 overflow-hidden">
+                    <div id="articles-container" class="border border-gray-300 overflow-hidden shadow-md my-5">
                         <!-- En-tête du tableau avec bordures -->
-                        <div class="grid grid-cols-12 gap-0 bg-gray-600 border-b border-gray-300 font-medium text-gray-700 text-white">
-                            <div class="col-span-2 p-3 border-r border-gray-300">Article</div>
-                            <div class="col-span-1 p-3 border-r border-gray-300 text-center">prix unitaire</div>
-                            <div class="col-span-1 p-3 border-r border-gray-300 text-center">P.cgt</div>
-                            <div class="col-span-1 p-3 border-r border-gray-300 text-center">Qt.CGT/Pack</div>
-                            <div class="col-span-1 p-3 border-r border-gray-300 text-center">Qt.BTL</div>
-                            <div class="col-span-1 p-3 border-r border-gray-300 text-center">Cageot/pack</div>
-                            <div class="col-span-1 p-3 border-r border-gray-300 text-center">Unité</div>
-                            <div class="col-span-2 p-3 border-r border-gray-300 text-center">Options</div>
-                            <div class="col-span-2 p-3 text-center">Total</div>
+                        <div class="grid grid-cols-12 gap-0 bg-gray-100 border-b border-gray-300 font-medium  text-dark rounded-md">
+                            <div class="col-span-2 p-1 border-r border-gray-300">Article</div>
+                            <div class="col-span-1 p-1 border-r border-gray-300 text-center">prix unitaire</div>
+                            <div class="col-span-2 p-1 border-r border-gray-300 text-center">Prix cageot</div>
+                            <div class="col-span-2 p-1 border-r border-gray-300 text-center">stock</div>
+                            <!-- <div class="col-span-1 p-1 border-r border-gray-300 text-center">Qt.BTL</div> -->
+                            <div class="col-span-1 p-1 border-r border-gray-300 text-center">Cageot/pack</div>
+                            <div class="col-span-1 p-1 border-r border-gray-300 text-center">Unité</div>
+                            <div class="col-span-1 p-1 border-r border-gray-300 text-center">Options</div>
+                            <div class="col-span-2 p-1 text-center">Total</div>
                         </div>
 
                         <!-- Premier article avec bordures -->
@@ -273,7 +409,7 @@
                             <div class="grid grid-cols-12 gap-0 items-center">
                                 <!-- Article -->
                                 <div class="col-span-2 p-3 border-r border-gray-200">
-                                    <select class="w-full border border-gray-300 rounded px-2 py-1 searchable-select article-select" name="articles[0][id]" required>
+                                    <select class="w-full border border-gray-300  px-2 py-1 searchable-select article-select" name="articles[0][id]" required>
                                         <option value="">Sélectionner un article</option>
                                         @foreach($articles as $article)
                                         <option value="{{ $article->id }}"
@@ -292,36 +428,42 @@
 
                                 <!-- Prix unitaire -->
                                 <div class="col-span-1 p-3 border-r border-gray-200">
-                                    <input type="number" class="w-full border border-gray-300 rounded px-2 py-1 bg-gray-100 text-center" name="articles[0][prix_unitaire]" readonly>
+                                    <input type="number" class="w-full border border-gray-300  px-2 py-1 bg-gray-100 text-center" name="articles[0][prix_unitaire]" readonly>
                                 </div>
 
                                 <!-- Prix CGT -->
-                                <div class="col-span-1 p-3 border-r border-gray-200">
-                                    <input type="number" class="w-full border border-gray-300 rounded px-2 py-1 bg-gray-100 text-center" name="articles[0][prix_cgt]" readonly>
+                                <div class="col-span-2 p-3 border-r border-gray-200">
+                                    <input type="number" class="w-full border border-gray-300  px-2 py-1 bg-gray-100 text-center" name="articles[0][prix_cgt]" readonly>
                                 </div>
 
                                 <!-- Stock cageots -->
                                 <div class="col-span-1 p-3 border-r border-gray-200">
-                                    <input type="number" class="w-full border border-gray-300 rounded px-2 py-1 bg-gray-100 text-center" name="articles[0][stock_cageots]" readonly>
+                                    <div class="flex items-center border border-gray-300 bg-gray-100 rounded">
+                                        <input type="number" class="w-full px-2 py-1 bg-transparent text-center border-none focus:outline-none" name="articles[0][stock_cageots]" readonly>
+                                        <span class="px-2 py-1 bg-gray-200 text-gray-600 text-sm border-l border-gray-300">P</span>
+                                    </div>
                                 </div>
 
                                 <!-- Stock unités -->
                                 <div class="col-span-1 p-3 border-r border-gray-200">
-                                    <input type="number" class="w-full border border-gray-300 rounded px-2 py-1 bg-gray-100 text-center" name="articles[0][stock_unites]" readonly>
+                                    <div class="flex items-center border border-gray-300 bg-gray-100 rounded">
+                                        <input type="number" class="w-full px-2 py-1 bg-transparent text-center border-none focus:outline-none" name="articles[0][stock_unites]" readonly>
+                                        <span class="px-2 py-1 bg-gray-200 text-gray-600 text-sm border-l border-gray-300">U</span>
+                                    </div>
                                 </div>
 
                                 <!-- Quantité cageot -->
                                 <div class="col-span-1 p-3 border-r border-gray-200">
-                                    <input type="number" class="w-full border border-gray-300 rounded px-2 py-1 text-center" name="articles[0][quantite_cageot]" min="0">
+                                    <input type="number" class="w-full border border-gray-300  px-2 py-1 text-center" name="articles[0][quantite_cageot]" min="0">
                                 </div>
 
                                 <!-- Quantité unité -->
                                 <div class="col-span-1 p-3 border-r border-gray-200">
-                                    <input type="number" class="w-full border border-gray-300 rounded px-2 py-1 text-center" name="articles[0][quantite_unite]" min="0">
+                                    <input type="number" class="w-full border border-gray-300  px-2 py-1 text-center" name="articles[0][quantite_unite]" min="0">
                                 </div>
 
                                 <!-- Options -->
-                                <div class="col-span-2 p-3 border-r border-gray-200">
+                                <div class="col-span-1 p-3 border-r border-gray-200">
                                     <div class="flex flex-col space-y-1 items-start">
                                         <label class="inline-flex items-center">
                                             <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600" name="articles[0][avec_cageot]" checked>
@@ -335,12 +477,17 @@
                                 </div>
 
                                 <!-- Prix total -->
-                                <div class="col-span-2 p-3 text-center">
-                                    <div class="font-bold total-price mb-2" data-index="0">0 Ar</div>
-                                    <div class="text-xs text-gray-500 price-details mb-2" data-index="0"></div>
-                                    <button type="button" class="delete-article bg-red-600 hover:bg-red-700 text-white px-2 py-1 text-sm flex items-center justify-center w-full mx-auto">
-                                        <i class="fas fa-trash mr-1"></i> Supprimer
-                                    </button>
+                                <div class="col-span-2 p-3 text-center bg-white rounded-lg border border-gray-200 flex justify-between items-stretch h-16">
+                                    <div class="flex flex-col justify-center items-start flex-grow">
+                                        <div class="font-bold total-price text-gray-900 ml-3" data-index="0">0 Ar</div>
+                                        <div class="text-xs text-gray-500 price-details" data-index="0"></div>
+                                    </div>
+
+                                    <div class="flex items-stretch ml-3">
+                                        <button type="button" class="delete-article bg-red-400 hover:bg-red-600 text-white w-8 h-8 flex items-center justify-center rounded-r transition-colors duration-200">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -348,7 +495,7 @@
 
                     <!-- Bouton Ajouter article -->
                     <div class="mb-6 mt-4">
-                        <button type="button" id="add-article" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 flex items-center">
+                        <button type="button" id="add-article" class="rounded-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 flex items-center">
                             <i class="fas fa-plus mr-2"></i> Ajouter un article
                         </button>
                     </div>
@@ -367,136 +514,129 @@
 
                     <!-- Bouton de soumission -->
                     <div class="flex justify-end">
-                        <button type="button" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 flex items-center text-lg" id="final2">
+                        <button type="button" class="bg-blue-600 rounded-sm hover:bg-blue-700 text-white px-6 py-2 flex items-center text-lg" id="final2">
                             <i class="fas fa-check-circle mr-2"></i> Valider la vente
                         </button>
                     </div>
 
                     <!-- Modal -->
-                    <div class="modal fade fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden" id="venteModal2" tabindex="-1" role="dialog" aria-labelledby="venteModal2Label" aria-hidden="true">
-                        <div class="modal-dialog modal-lg relative top-20 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white">
-                            <!-- En-tête du modal -->
-                            <div class="modal-header bg-gray-800 text-white px-6 py-4 rounded-t-md flex justify-between items-center">
-                                <h5 class="modal-title font-bold text-lg" id="venteModal2Label">
-                                    <i class="fas fa-cogs mr-2"></i>Configuration avancée de la commande
-                                </h5>
-                                <button type="button" class="close text-white text-2xl" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
+                    <div class="modal fade fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full hidden" id="venteModal2" tabindex="-1" role="dialog" aria-labelledby="venteModal2Label" aria-hidden="true">
+                        <div class="modal-dialog relative top-20 mx-auto p-2 w-full max-w-2xl">
+                            <div class="bg-white -xl shadow-2xl border border-gray-200 overflow-hidden">
+                                <!-- En-tête du modal -->
+                                <div class="bg-gradient-to-r from-gray-800 to-gray-900 px-6 py-4 flex justify-between items-center">
+                                    <h5 class="modal-title font-semibold text-white text-lg flex items-center">
+                                        <i class="fas fa-cogs mr-3 text-blue-400"></i>Configuration de la commande
+                                    </h5>
+                                    <button type="button" class="close text-white text-xl hover:text-gray-300 transition-colors" data-dismiss="modal" aria-label="Close">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
 
-                            <!-- Corps du modal -->
-                            <div class="modal-body p-6">
-                                <div class="container-fluid">
-                                    <!-- Section Résumé -->
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                        <div class="border border-gray-300 rounded-lg h-full">
-                                            <div class="bg-gray-600 text-white px-4 py-2 rounded-t-lg">
-                                                <h6 class="font-semibold"><i class="fas fa-boxes mr-2"></i>Résumé des quantités</h6>
-                                            </div>
-                                            <div class="p-4">
-                                                <div class="flex justify-between items-center py-2">
-                                                    <span class="font-bold">Total unités :</span>
-                                                    <span class="bg-gray-800 text-white px-3 py-1 rounded-full" id="total-unites">0</span>
+                                <!-- Corps du modal -->
+                                <div class="p-6">
+                                    <!-- Section Résumé compacte -->
+                                    <div class="grid grid-cols-2 gap-4 mb-6">
+                                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 -lg p-4">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="text-sm font-medium text-blue-700 mb-1">Total unités</p>
+                                                    <span class="text-2xl font-bold text-blue-900" id="total-unites">0</span>
+                                                </div>
+                                                <div class="w-10 h-10 bg-blue-200 -full flex items-center justify-center">
+                                                    <i class="fas fa-box text-blue-600"></i>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="border border-gray-300 rounded-lg h-full">
-                                            <div class="bg-gray-600 text-white px-4 py-2 rounded-t-lg">
-                                                <h6 class="font-semibold"><i class="fas fa-receipt mr-2"></i>Total global</h6>
+                                        <div class="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 -lg p-4">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="text-sm font-medium text-green-700 mb-1">Montant final</p>
+                                                    <span class="text-2xl font-bold text-green-900" id="global-total-modal">0 Ar</span>
+                                                </div>
+                                                <div class="w-10 h-10 bg-green-200 -full flex items-center justify-center">
+                                                    <i class="fas fa-receipt text-green-600"></i>
+                                                </div>
                                             </div>
-                                            <div class="p-4">
-                                                <div class="flex justify-between items-center py-2">
-                                                    <span class="font-bold">Montant final :</span>
-                                                    <span class="text-lg font-bold" id="global-total-modal">0 Ar</span>
-                                                </div>
-                                                <div id="empty-cageots-supplement" class="text-right text-sm mt-1 hidden">
-                                                    <span class="text-gray-600">dont supplément cageots: </span>
-                                                    <span class="text-yellow-600 font-bold">0 Ar</span>
-                                                </div>
+                                            <div id="empty-cageots-supplement" class="text-right text-xs mt-1 hidden">
+                                                <span class="text-gray-600">dont cageots: </span>
+                                                <span class="text-yellow-600 font-semibold">0 Ar</span>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Section Options -->
-                                    <div class="border border-gray-300 rounded-lg shadow-sm mb-6">
-                                        <div class="bg-gray-100 px-4 py-2 rounded-t-lg">
-                                            <h6 class="font-semibold"><i class="fas fa-tools mr-2"></i>Options de conditionnement</h6>
+                                    <!-- Section Options compacte -->
+                                    <div class="space-y-4">
+                                        <!-- Option Cageots vides -->
+                                        <div class="border border-gray-200 -lg p-4 bg-white">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <label class="flex items-center cursor-pointer">
+                                                    <input type="checkbox" class="h-4 w-4 text-blue-600 " id="choix" name="choix">
+                                                    <span class="ml-3 font-medium text-gray-700">Ajouter des cageots vides</span>
+                                                </label>
+                                            </div>
+                                            <div id="choix_content" class="pl-7 mt-2 hidden">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="flex border border-gray-300 -lg overflow-hidden">
+                                                        <input type="number" class="w-24 px-3 py-2 border-0 focus:ring-0" name="embale" id="embale" placeholder="Nombre">
+                                                        <span class="bg-gray-100 px-3 py-2 text-gray-600 border-l border-gray-300">unités</span>
+                                                    </div>
+                                                    <span class="text-sm text-gray-500">Prix: <span id="cageot-unit-price" class="font-semibold">0</span> Ar/unité</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="p-4">
-                                            <!-- Option Cageots vides -->
-                                            <div class="mb-4">
-                                                <div class="flex items-center mb-2">
-                                                    <input type="checkbox" class="h-5 w-5 text-blue-600" id="choix" name="choix" style="cursor: pointer;">
-                                                    <label class="ml-2 font-bold cursor-pointer" for="choix">Ajouter des cageots vides</label>
-                                                </div>
-                                                <div id="choix_content" class="pl-6 mt-2 hidden">
-                                                    <div class="flex">
-                                                        <input type="number" class="border border-gray-300 rounded px-3 py-2 w-32" name="embale" id="embale" placeholder="Nombre de cageots">
-                                                        <span class="bg-gray-100 border border-gray-300 border-l-0 px-3 py-2 rounded-r">unités</span>
-                                                    </div>
-                                                    <small class="text-gray-600">Prix par cageot: <span id="cageot-unit-price">0</span> Ar</small>
-                                                </div>
+
+                                        <!-- Options de paiement en ligne -->
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div class="border border-gray-200 -lg p-3 bg-white">
+                                                <label class="flex items-center cursor-pointer">
+                                                    <input type="checkbox" class="h-4 w-4 text-blue-600 " id="fidele" name="fidele">
+                                                    <span class="ml-3 text-sm font-medium text-gray-700">Mode non consigné</span>
+                                                </label>
+                                                <p class="text-xs text-gray-500 mt-1">Bouteilles + Cageots</p>
                                             </div>
 
-                                            <!-- Options de paiement -->
-                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div>
-                                                    <label class="flex items-center">
-                                                        <input type="checkbox" class="h-5 w-5 text-blue-600" id="fidele" name="fidele" style="cursor: pointer;">
-                                                        <span class="ml-2 cursor-pointer">
-                                                            <i class="fas fa-user-check mr-1"></i> Mode non consigné
-                                                        </span>
-                                                    </label>
-                                                    <small class="text-gray-600">(Bouteilles + Cageots)</small>
-                                                </div>
-
-                                                <div>
-                                                    <label class="flex items-center">
-                                                        <input type="checkbox" class="h-5 w-5 text-blue-600" id="payer" name="payer" style="cursor: pointer;" checked>
-                                                        <span class="ml-2 cursor-pointer">
-                                                            <i class="fas fa-money-bill-wave mr-1"></i> Paiement immédiat
-                                                        </span>
-                                                    </label>
-                                                </div>
-
-                                                <div>
-                                                    <label class="flex items-center">
-                                                        <input type="checkbox" class="h-5 w-5 text-blue-600" id="disposition" name="disposition" style="cursor: pointer;">
-                                                        <span class="ml-2 cursor-pointer">
-                                                            <i class="fas fa-archive mr-1 text-yellow-600"></i> À disposition
-                                                        </span>
-                                                    </label>
-                                                </div>
+                                            <div class="border border-gray-200 -lg p-3 bg-white">
+                                                <label class="flex items-center cursor-pointer">
+                                                    <input type="checkbox" class="h-4 w-4 text-blue-600 " id="payer" name="payer" checked>
+                                                    <span class="ml-3 text-sm font-medium text-gray-700">Paiement immédiat</span>
+                                                </label>
                                             </div>
 
-                                            <!-- Champs de paiement -->
-                                            <div id="paiement-fields" class="mt-4 p-4 border rounded bg-gray-50">
-                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label for="montant-recu" class="block text-sm font-medium text-gray-700">Montant reçu (Ar)</label>
-                                                        <input type="number" class="w-full border border-gray-300 rounded px-3 py-2" id="montant-recu" name="montant_recu">
-                                                    </div>
-                                                    <div>
-                                                        <label for="montant-rendu" class="block text-sm font-medium text-gray-700">Montant à rendre (Ar)</label>
-                                                        <input type="number" class="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100" id="montant-rendu" name="montant_rendu" readonly>
-                                                    </div>
+                                            <div class="border border-gray-200 -lg p-3 bg-white">
+                                                <label class="flex items-center cursor-pointer">
+                                                    <input type="checkbox" class="h-4 w-4 text-yellow-600 " id="disposition" name="disposition">
+                                                    <span class="ml-3 text-sm font-medium text-gray-700">À disposition</span>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Champs de paiement -->
+                                        <div id="paiement-fields" class="border border-gray-200 -lg p-4 bg-gray-50">
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label for="montant-recu" class="block text-sm font-medium text-gray-700 mb-2">Montant reçu (Ar)</label>
+                                                    <input type="number" class="w-full border border-gray-300 -lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="montant-recu" name="montant_recu" placeholder="0">
+                                                </div>
+                                                <div>
+                                                    <label for="montant-rendu" class="block text-sm font-medium text-gray-700 mb-2">Montant à rendre (Ar)</label>
+                                                    <input type="number" class="w-full border border-gray-300 -lg px-3 py-2 bg-gray-100 focus:ring-2 focus:ring-gray-500 focus:border-transparent" id="montant-rendu" name="montant_rendu" readonly>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Pied de page du modal -->
-                            <div class="modal-footer bg-gray-100 px-6 py-4 rounded-b-md flex justify-end space-x-3">
-                                <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded flex items-center" data-dismiss="modal">
-                                    <i class="fas fa-times mr-1"></i> Annuler
-                                </button>
-                                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center" id="confirm-btn">
-                                    <i class="fas fa-check-circle mr-1"></i> Confirmer la configuration
-                                </button>
+                                <!-- Pied de page du modal -->
+                                <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                                    <button type="button" class="px-5 py-2 border border-gray-300 text-gray-700 -lg hover:bg-gray-100 transition-colors duration-200 flex items-center font-medium" data-dismiss="modal">
+                                        <i class="fas fa-times mr-2"></i> Annuler
+                                    </button>
+                                    <button type="submit" class="px-5 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white -lg hover:from-green-700 hover:to-green-800 transition-all duration-200 flex items-center font-medium shadow-lg hover:shadow-xl" id="confirm-btn">
+                                        <i class="fas fa-check-circle mr-2"></i> Confirmer
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -511,7 +651,7 @@
             <div class="grid grid-cols-12 gap-0 items-center">
                 <!-- Article -->
                 <div class="col-span-2 p-3 border-r border-gray-200">
-                    <select class="w-full border border-gray-300 rounded px-2 py-1 searchable-select article-select" name="articles[{index}][id]" required>
+                    <select class="w-full border border-gray-300  px-2 py-1 searchable-select article-select" name="articles[{index}][id]" required>
                         <option value="">Sélectionner un article</option>
                         @foreach($articles as $article)
                         <option value="{{ $article->id }}"
@@ -530,36 +670,42 @@
 
                 <!-- Prix unitaire -->
                 <div class="col-span-1 p-3 border-r border-gray-200">
-                    <input type="number" class="w-full border border-gray-300 rounded px-2 py-1 bg-gray-100 text-center" name="articles[{index}][prix_unitaire]" readonly>
+                    <input type="number" class="w-full border border-gray-300  px-2 py-1 bg-gray-100 text-center" name="articles[{index}][prix_unitaire]" readonly>
                 </div>
 
                 <!-- Prix CGT -->
-                <div class="col-span-1 p-3 border-r border-gray-200">
-                    <input type="number" class="w-full border border-gray-300 rounded px-2 py-1 bg-gray-100 text-center" name="articles[{index}][prix_cgt]" readonly>
+                <div class="col-span-2 p-3 border-r border-gray-200">
+                    <input type="number" class="w-full border border-gray-300  px-2 py-1 bg-gray-100 text-center" name="articles[{index}][prix_cgt]" readonly>
                 </div>
 
                 <!-- Stock cageots -->
                 <div class="col-span-1 p-3 border-r border-gray-200">
-                    <input type="number" class="w-full border border-gray-300 rounded px-2 py-1 bg-gray-100 text-center" name="articles[{index}][stock_cageots]" readonly>
+                    <div class="flex items-center border border-gray-300 bg-gray-100 rounded">
+                        <input type="number" class="w-full px-2 py-1 bg-transparent text-center border-none focus:outline-none" name="articles[{index}][stock_cageots]" readonly>
+                        <span class="px-2 py-1 bg-gray-200 text-gray-600 text-sm border-l border-gray-300">P</span>
+                    </div>
                 </div>
 
                 <!-- Stock unités -->
                 <div class="col-span-1 p-3 border-r border-gray-200">
-                    <input type="number" class="w-full border border-gray-300 rounded px-2 py-1 bg-gray-100 text-center" name="articles[{index}][stock_unites]" readonly>
+                    <div class="flex items-center border border-gray-300 bg-gray-100 rounded">
+                        <input type="number" class="w-full px-2 py-1 bg-transparent text-center border-none focus:outline-none" name="articles[{index}][stock_unites]" readonly>
+                        <span class="px-2 py-1 bg-gray-200 text-gray-600 text-sm border-l border-gray-300">U</span>
+                    </div>
                 </div>
 
                 <!-- Quantité cageot -->
                 <div class="col-span-1 p-3 border-r border-gray-200">
-                    <input type="number" class="w-full border border-gray-300 rounded px-2 py-1 text-center" name="articles[{index}][quantite_cageot]" min="0">
+                    <input type="number" class="w-full border border-gray-300  px-2 py-1 text-center" name="articles[{index}][quantite_cageot]" min="0">
                 </div>
 
                 <!-- Quantité unité -->
                 <div class="col-span-1 p-3 border-r border-gray-200">
-                    <input type="number" class="w-full border border-gray-300 rounded px-2 py-1 text-center" name="articles[{index}][quantite_unite]" min="0">
+                    <input type="number" class="w-full border border-gray-300  px-2 py-1 text-center" name="articles[{index}][quantite_unite]" min="0">
                 </div>
 
                 <!-- Options -->
-                <div class="col-span-2 p-3 border-r border-gray-200">
+                <div class="col-span-1 p-3 border-r border-gray-200">
                     <div class="flex flex-col space-y-2 items-start">
                         <label class="inline-flex items-center">
                             <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600" name="articles[{index}][avec_cageot]" id="avec_cageot_{index}" checked>
@@ -573,13 +719,18 @@
                 </div>
 
                 <!-- Prix total + bouton supprimer -->
-                <div class="col-span-2 p-3 text-center">
-                    <div class="font-bold total-price mb-2" data-index="{index}">0 Ar</div>
-                    <div class="text-xs text-gray-500 price-details mb-2" data-index="{index}"></div>
-                    <button type="button" class="delete-article bg-red-600 hover:bg-red-700 text-white px-2 py-1 text-sm flex items-center justify-center w-full mx-auto">
-                        <i class="fas fa-trash mr-1"></i> Supprimer
-                    </button>
-                </div>
+                <div class="col-span-2 p-3 text-center bg-white rounded-lg border border-gray-200 flex justify-between items-stretch h-16">
+    <div class="flex flex-col justify-center items-start flex-grow">
+        <div class="font-bold total-price text-gray-900 ml-3" data-index="{index}">0 Ar</div>
+        <div class="text-xs text-gray-500 price-details ml-3" data-index="{index}"></div>
+    </div>
+    
+    <div class="flex items-stretch ml-3">
+        <button type="button" class="delete-article bg-red-400 hover:bg-red-600 text-white w-8 h-8 flex items-center justify-center rounded-r transition-colors duration-200">
+                                            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
             </div>
         </div>
     </template>
@@ -658,11 +809,7 @@
 
             // Prevent form submission if payment is required but amount is not entered
             $('#venteForm').submit(function(e) {
-                if ($('#payer').is(':checked') && !$('#montant-recu').val()) {
-                    e.preventDefault();
-                    alert('Veuillez saisir le montant reçu.');
-                    return false;
-                }
+               
                 return true;
             });
 

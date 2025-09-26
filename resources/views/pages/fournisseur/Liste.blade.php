@@ -3,7 +3,7 @@
 @section('title', 'Accueil')
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
+<div class=" mx-auto">
     <!-- Supplier Table -->
     <div class="bg-white shadow-lg rounded-lg overflow-hidden">
         <div class="bg-gray-100 p-4 flex justify-between items-center">
@@ -45,25 +45,25 @@
                 <table class="w-full text-center border-collapse">
                     <thead class="bg-gray-800 text-white">
                         <tr>
-                            <th class="p-3">id</th>
-                            <th class="p-3">nom</th>
-                            <th class="p-3">numero</th>
-                            <th class="p-3">reference</th>
-                            <th class="p-3">Dette fournisseur</th>
-                            <th class="p-3">date creation</th>
-                            <th class="p-3">options</th>
+                           <th class="p-2">id</th>
+                            <th class="p-2">nom</th>
+                            <th class="p-2">numero</th>
+                            <th class="p-2">reference</th>
+                            <th class="p-2">Dette fournisseur</th>
+                            <th class="p-2">date creation</th>
+                            <th class="p-2">options</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($fournisseurs as $fournisseur)
                         <tr class="hover:bg-gray-50">
-                            <td class="p-3">{{ $fournisseur->id }}</td>
-                            <td class="p-3">{{ $fournisseur->nom }}</td>
-                            <td class="p-3">{{ $fournisseur->numero ? $fournisseur->numero : 'pas de numero' }}</td>
-                            <td class="p-3">{{ $fournisseur->reference ? $fournisseur->reference : 'pas de reference' }}</td>
-                            <td class="p-3">---</td>
-                            <td class="p-3">{{ $fournisseur->date_entre }}</td>
-                            <td class="p-3">
+                            <td class="px-3 py-5">{{ $fournisseur->id }}</td>
+                            <td class="px-3 py-5">{{ $fournisseur->nom }}</td>
+                            <td class="px-3 py-5">{{ $fournisseur->numero ? $fournisseur->numero : 'pas de numero' }}</td>
+                            <td class="px-3 py-5">{{ $fournisseur->reference ? $fournisseur->reference : 'pas de reference' }}</td>
+                            <td class="px-3 py-5">---</td>
+                            <td class="px-3 py-5">{{ $fournisseur->date_entre }}</td>
+                            <td class="px-3 py-5">
                                 <a class="text-red-500 hover:text-red-700" href="#" onclick="openDeleteModal('supprimerArticleModal{{ $fournisseur->id }}')">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>

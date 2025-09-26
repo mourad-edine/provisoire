@@ -3,7 +3,7 @@
 @section('title', 'Accueil')
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
+<div class=" mx-auto">
     <!-- Client Table -->
     <div class="bg-white shadow-lg rounded-lg overflow-hidden">
         <div class="bg-gray-100 p-4 flex justify-between items-center">
@@ -45,33 +45,33 @@
                 <table class="w-full text-center border-collapse">
                     <thead class="bg-gray-800 text-white">
                         <tr>
-                            <th class="p-3">id</th>
-                            <th class="p-3">nom</th>
-                            <th class="p-3">numero</th>
-                            <th class="p-3">reference</th>
-                            <th class="p-3">bouteille(s)</th>
-                            <th class="p-3">cageot(s)</th>
-                            <th class="p-3">créance BTL+CGT</th>
-                            <th class="p-3">Reste à payer</th>
-                            <th class="p-3">Commande non payé</th>
-                            <th class="p-3">date creation</th>
-                            <th class="p-3">options</th>
+                            <th class="p-2">id</th>
+                            <th class="p-2">nom</th>
+                            <th class="p-2">numero</th>
+                            <th class="p-2">reference</th>
+                            <th class="p-2">bouteille(s)</th>
+                            <th class="p-2">cageot(s)</th>
+                            <th class="p-2">créance BTL+CGT</th>
+                            <th class="p-2">Reste à payer</th>
+                            <th class="p-2">Commande non payé</th>
+                            <th class="p-2">date creation</th>
+                            <th class="p-2">options</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($clients as $client)
                         <tr class="hover:bg-gray-50 cursor-pointer clickable-row" data-href="{{ route('client.commande', ['id' => $client['id']]) }}">
-                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['id'] }}</a></td>
-                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['nom'] }}</a></td>
-                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['numero'] ? $client['numero'] : 'pas de numero' }}</a></td>
-                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['reference'] ? $client['reference'] : 'pas de reference' }}</a></td>
-                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['sum_btl'] }}</a></td>
-                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['sum_cgt'] + $client['conditionnement'] }}</a></td>
-                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ number_format($client['consignation_sum_prix'] + $client['consignation_sum_prix_cgt'] + ($client['conditionnement'] * $cgt), 0, ',', ' ') }} Ar</a></td>
-                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['reste_a_payer'] }} Ar</a></td>
-                            <td class="p-3"><a class="font-bold {{ $client['nombre_com_no_paye'] > 0 ? 'text-red-500' : 'text-green-500' }} hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['nombre_com_no_paye'] }}</a></td>
-                            <td class="p-3"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['created_at'] }}</a></td>
-                            <td class="p-3">
+                            <td class="px-3 py-5"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['id'] }}</a></td>
+                            <td class="px-3 py-5"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['nom'] }}</a></td>
+                            <td class="px-3 py-5"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['numero'] ? $client['numero'] : 'pas de numero' }}</a></td>
+                            <td class="px-3 py-5"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['reference'] ? $client['reference'] : 'pas de reference' }}</a></td>
+                            <td class="px-3 py-5"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['sum_btl'] }}</a></td>
+                            <td class="px-3 py-5"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['sum_cgt'] + $client['conditionnement'] }}</a></td>
+                            <td class="px-3 py-5"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ number_format($client['consignation_sum_prix'] + $client['consignation_sum_prix_cgt'] + ($client['conditionnement'] * $cgt), 0, ',', ' ') }} Ar</a></td>
+                            <td class="px-3 py-5"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['reste_a_payer'] }} Ar</a></td>
+                            <td class="px-3 py-5"><a class="font-bold {{ $client['nombre_com_no_paye'] > 0 ? 'text-red-500' : 'text-green-500' }} hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['nombre_com_no_paye'] }}</a></td>
+                            <td class="px-3 py-5"><a class="text-gray-800 hover:text-blue-600" href="{{ route('client.commande', ['id' => $client['id']]) }}">{{ $client['created_at'] }}</a></td>
+                            <td class="px-3 py-5">
                                 <a class="text-gray-600 hover:text-gray-800" href="{{ route('client.commande', ['id' => $client['id']]) }}"><i class="fas fa-user-alt"></i></a>
                                 <a class="text-red-500 hover:text-red-700 ml-3" href="#" onclick="openDeleteModal('supprimerArticleModal{{ $client['id'] }}')"><i class="fas fa-trash-alt"></i></a>
                             </td>

@@ -3,29 +3,36 @@
 @section('title', 'Accueil')
 
 @section('content')
-<div class="max-w-screen-xl mx-auto px-4 py-6">
+<div class="max-w-screen-4xl mx-auto px-4 py-6">
 
     <!-- Onglets de navigation -->
     <ul class="flex border-b mb-4" id="parametresTabs" role="tablist">
         <li class="mr-2" role="presentation">
-            <a href="{{ route('stock.liste') }}" 
-               class="inline-flex items-center px-4 py-2 rounded-t-lg border-b-2 
+            <a href="{{ route('stock.liste') }}"
+                class="inline-flex items-center px-4 py-2 rounded-t-lg border-b-2 
                       {{ request()->routeIs('stock.liste') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-600 hover:text-indigo-600 hover:border-gray-300' }}">
                 <i class="fas fa-warehouse mr-1"></i> Listes globales
             </a>
         </li>
         <li class="mr-2" role="presentation">
-            <a href="{{ route('stock.faible.liste') }}" 
-               class="inline-flex items-center px-4 py-2 rounded-t-lg border-b-2 
+            <a href="{{ route('stock.faible.liste') }}"
+                class="inline-flex items-center px-4 py-2 rounded-t-lg border-b-2 
                       {{ request()->routeIs('stock.faible.liste') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-600 hover:text-indigo-600 hover:border-gray-300' }}">
                 <i class="fas fa-exclamation-triangle mr-1"></i> Stocks faibles
             </a>
         </li>
         <li role="presentation">
-            <a href="{{ route('stock.categorie.liste') }}" 
-               class="inline-flex items-center px-4 py-2 rounded-t-lg border-b-2 
+            <a href="{{ route('stock.categorie.liste') }}"
+                class="inline-flex items-center px-4 py-2 rounded-t-lg border-b-2 
                       {{ request()->routeIs('stock.categorie.liste') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-600 hover:text-indigo-600 hover:border-gray-300' }}">
                 <i class="fas fa-th-large mr-1"></i> Catégories
+            </a>
+        </li>
+        <li role="presentation">
+            <a href="{{ route('sortie.stat') }}"
+                class="inline-flex items-center px-4 py-2 rounded-t-lg border-b-2 
+                      {{ request()->routeIs('sortie.stat') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-600 hover:text-indigo-600 hover:border-gray-300' }}">
+                <i class="fas fa-th-recycle mr-1"></i> Mouvement stock
             </a>
         </li>
     </ul>
@@ -35,8 +42,8 @@
         <!-- Header -->
         <div class="flex justify-between items-center border-b px-4 py-3">
             <h6 class="text-gray-700 font-bold">LISTE GLOBALE</h6>
-            <a href="{{ url('/dashboard') }}" 
-               class="bg-gray-700 text-white px-3 py-1.5 rounded text-sm hover:bg-gray-800">
+            <a href="{{ url('/dashboard') }}"
+                class="bg-gray-700 text-white px-3 py-1.5 rounded text-sm hover:bg-gray-800">
                 <i class="fas fa-arrow-left mr-2"></i> Retour dashboard
             </a>
         </div>
@@ -46,14 +53,24 @@
             <form action="{{ route('stock.liste') }}" method="GET" class="flex flex-wrap items-center gap-2">
                 @csrf
                 <!-- Champ de recherche -->
-                <input type="text" name="search" placeholder="Rechercher..."
-                       value="{{ old('search', request('search')) }}"
-                       class="w-64 border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <div class="relative w-72">
+    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+    <input 
+        type="text" 
+        name="search" 
+        placeholder="Rechercher..."
+        value="{{ old('search', request('search')) }}"
+        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm placeholder-gray-400
+               focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
+               shadow-sm transition duration-200"
+    >
+</div>
+
 
                 <!-- Dropdown tri -->
                 <div class="relative">
-                    <button type="button" 
-                            class="inline-flex items-center px-3 py-1.5 text-sm border rounded-md text-gray-600 hover:bg-gray-100">
+                    <button type="button"
+                        class="inline-flex items-center px-3 py-1.5 text-sm border rounded-md text-gray-600 hover:bg-gray-100">
                         <i class="fas fa-sort mr-1"></i> Trier par
                         <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -80,10 +97,8 @@
                             <th class="px-2 py-2">id</th>
                             <th class="px-2 py-2">nom</th>
                             <th class="px-2 py-2">categorie</th>
-                            <th class="px-2 py-2">P.Vente</th>
-                            <th class="px-2 py-2">P.Cageot</th>
+
                             <th class="px-2 py-2">quantite</th>
-                            <th class="px-2 py-2">consignation</th>
                             <th class="px-2 py-2">mise à jour</th>
                             <th class="px-2 py-2">date</th>
                             <th class="px-2 py-2">ajouter</th>
@@ -95,24 +110,20 @@
                             <td class="px-2 py-2">{{ $article->id }}</td>
                             <td class="px-2 py-2">{{ $article->nom }}</td>
                             <td class="px-2 py-2">{{ $article->categorie_id }}</td>
-                            <td class="px-2 py-2">{{ $article->prix_unitaire }} Ar</td>
-                            <td class="px-2 py-2">{{ $article->prix_conditionne ? $article->prix_conditionne :'pas de prix' }} Ar</td>
+
                             <td class="px-2 py-2">
                                 @php
-                                    $quotient = intdiv($article->quantite, $article->conditionnement);
-                                    $reste = $article->quantite % $article->conditionnement;
+                                $quotient = intdiv($article->quantite, $article->conditionnement);
+                                $reste = $article->quantite % $article->conditionnement;
                                 @endphp
                                 @if($quotient > 0)
-                                    <span class="text-green-600">{{ $quotient }} cageot{{ $quotient > 1 ? 's' : '' }}</span>
+                                <span class="text-green-600">{{ $quotient }} cageot{{ $quotient > 1 ? 's' : '' }} et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}</span>
                                 @else
-                                    <span class="text-red-600">{{ $quotient }} cageot{{ $quotient > 1 ? 's' : '' }}</span>
+                                <span class="text-red-600">{{ $quotient }} cageot{{ $quotient > 1 ? 's' : '' }} et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}</span>
                                 @endif
 
-                                @if($reste > 0)
-                                    et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}
-                                @endif
+
                             </td>
-                            <td class="px-2 py-2">{{ $article->prix_consignation ? $article->prix_consignation . ' Ar' : 'pas de prix' }}</td>
                             <td class="px-2 py-2">{{ \Carbon\Carbon::parse($article->created_at)->format('Y-m-d') }}</td>
                             <td class="px-2 py-2">{{ \Carbon\Carbon::parse($article->updated_at)->format('Y-m-d') }}</td>
                             <td class="px-2 py-2">
@@ -136,7 +147,7 @@
 
                 <!-- Pagination -->
                 <div class="mt-4">
-                    {{ $articles->appends(['search' => request('search')])->links('pagination::bootstrap-4') }}
+                    {{ $articles->appends(['search' => request('search')])->links('pagination::tailwind') }}
                 </div>
             </div>
         </div>

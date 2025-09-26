@@ -11,38 +11,78 @@
     }
 </style>
 
-<div class="container mx-auto px-4 py-6">
+<div class=" mx-auto">
     @php
     $highlightedId = session('highlighted_id');
     @endphp
-    
+
     <!-- En-tête de section -->
-  
+
     <!-- Navigation Tabs -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
-        <ul class="flex" id="parametresTabs" role="tablist">
-            <li class="flex-1">
-                <a href="{{ route('achat.commande') }}" class="no-underline">
-                    <div class="inline-flex items-center justify-center w-full px-4 py-3 text-sm font-medium border-b-2 transition-all duration-200 ease-in-out border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50">
-                        <i class="fas fa-list mr-2"></i>Listes par commandes
-                    </div>
-                </a>
-            </li>
-            <li class="flex-1">
-                <a href="{{ route('achat.liste') }}" class="no-underline">
-                    <div class="inline-flex items-center justify-center w-full px-4 py-3 text-sm font-medium border-b-2 transition-all duration-200 ease-in-out border-blue-500 text-blue-600 bg-blue-50">
-                        <i class="fas fa-shopping-cart mr-2"></i>Listes achats
-                    </div>
-                </a>
-            </li>
-            <li class="flex-1">
-                <a href="{{ route('achat.page') }}" class="no-underline">
-                    <div class="inline-flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-200 ease-in-out hover:from-blue-600 hover:to-blue-700">
-                        <i class="fas fa-cart-plus mr-2"></i>Nouvel achat
-                    </div>
-                </a>
-            </li>
-        </ul>
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
+        <div class="w-full">
+            <div class="bg-white shadow-lg rounded-2xl border border-gray-100 overflow-hidden">
+                <!-- En-tête avec titre -->
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <i class="fas fa-cog mr-3 text-blue-600"></i>
+                        Menu
+                    </h3>
+                </div>
+
+                <!-- Grille des actions -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+                    <!-- Carte Détails commande -->
+                    <a href="{{ route('achat.commande') }}"
+                        class="group bg-white border-2 border-gray-200 hover:border-blue-500 rounded-xl p-4 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-500 transition-colors duration-300">
+                                <i class="fas fa-file-alt text-blue-600 group-hover:text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">Listes par commandes</h4>
+                                <p class="text-xs text-gray-500">Voir les informations détaillées</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Carte Historique paiements -->
+                    <a href="{{ route('achat.liste') }}"
+                        class="group bg-white border-2 border-gray-200 hover:border-green-500 rounded-xl p-4 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-500 transition-colors duration-300">
+                                <i class="fas fa-history text-green-600 group-hover:text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 group-hover:text-green-600 transition-colors">Listes achats</h4>
+                                <p class="text-xs text-gray-500">Consulter l'historique</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Carte Articles à rendre -->
+                    <a href="{{ route('achat.page') }}"
+                        class="group bg-white border-2 border-gray-200 hover:border-amber-500 rounded-xl p-4 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center group-hover:bg-amber-500 transition-colors duration-300">
+                                <i class="fas fa-undo text-amber-600 group-hover:text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 group-hover:text-amber-600 transition-colors"> Nouvel achat
+                                </h4>
+                                <p class="text-xs text-gray-500">Acheter</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Carte Compte rendu -->
+
+                </div>
+
+                <!-- Barre de statut en bas -->
+
+            </div>
+        </div>
     </div>
 
     <!-- Carte principale -->
@@ -53,7 +93,7 @@
                 <i class="fas fa-receipt mr-2 text-blue-500"></i>Historique des achats
             </h2>
         </div>
-        
+
         <div class="p-6">
             @if(session('success'))
             <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-5 rounded-md flex items-center" role="alert">
@@ -64,20 +104,20 @@
                 </div>
             </div>
             @endif
-            
-            <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-200">
+
+            <div class="overflow-x-auto  shadow-sm border border-gray-200">
                 <table class="w-full text-sm text-gray-700">
                     <thead class="bg-gray-800 text-white">
-                        <tr>
-                            <th class="py-4 px-4 text-left font-medium">ID</th>
-                            <th class="py-4 px-4 text-left font-medium">Article</th>
-                            <th class="py-4 px-4 text-right font-medium">Prix unité</th>
-                            <th class="py-4 px-4 text-right font-medium">Prix / cageot</th>
-                            <th class="py-4 px-4 text-left font-medium">Commande</th>
-                            <th class="py-4 px-4 text-center font-medium">Quantité</th>
-                            <th class="py-4 px-4 text-center font-medium">État</th>
-                            <th class="py-4 px-4 text-right font-medium">Total</th>
-                            <th class="py-4 px-4 text-left font-medium">Date</th>
+                       <tr>
+                            <th class="py-2 px-2 text-left font-medium">ID</th>
+                            <th class="py-2 px-2 text-left font-medium">Article</th>
+                            <th class="py-2 px-2 text-right font-medium">Prix unité</th>
+                            <th class="py-2 px-2 text-right font-medium">Prix / cageot</th>
+                            <th class="py-2 px-2 text-left font-medium">Commande</th>
+                            <th class="py-2 px-2 text-center font-medium">Quantité</th>
+                            <th class="py-2 px-2 text-center font-medium">État</th>
+                            <th class="py-2 px-2 text-right font-medium">Total</th>
+                            <th class="py-2 px-2 text-left font-medium">Date</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
@@ -119,7 +159,7 @@
                     </tbody>
                 </table>
             </div>
-            
+
             <div class="mt-5">
                 {{ $achats->links('pagination::tailwind') }}
             </div>

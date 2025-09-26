@@ -52,43 +52,170 @@ $montantTotal = ($deconsigneglobale - $reste < 0 ? 0 : $deconsigneglobale - $res
 
     <div class="container mx-auto px-4">
     <!-- Header avec breadcrumb -->
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
         <div class="w-full">
-            <div class="bg-white  shadow-sm mb-4">
-                <div class="flex flex-wrap gap-2 justify-start">
-                    <a href="{{ route('commande.liste.vente.detail', ['id' => $commande_id]) }}" class="border border-blue-600 text-blue-600 hover:bg-blue-50 px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
-                        <i class="fas fa-file-alt mr-2"></i>Détails commande
+            <div class="bg-white shadow-sm border border-gray-100 overflow-hidden">
+                <!-- En-tête avec titre -->
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <i class="fas fa-cog mr-3 text-blue-600"></i>
+                        Gestion de la commande #{{ $commande_id }}
+                    </h3>
+                </div>
+
+                <!-- Grille des actions -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
+                    <!-- Carte Détails commande -->
+                    <a href="{{ route('commande.liste.vente.detail', ['id' => $commande_id]) }}"
+                        class="group bg-white border-2 border-gray-200 hover:border-blue-500 rounded-xl p-4 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-500 transition-colors duration-300">
+                                <i class="fas fa-file-alt text-blue-600 group-hover:text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">Détails commande</h4>
+                                <p class="text-xs text-gray-500">Voir les informations détaillées</p>
+                            </div>
+                        </div>
                     </a>
-                    <a href="{{ route('paiment.boissons', ['id' => $commande_id]) }}" class="border border-blue-600 text-blue-600 hover:bg-blue-50 px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
-                        <i class="fas fa-history mr-2"></i>Historique des paiements
+
+                    <!-- Carte Historique paiements -->
+                    <a href="{{ route('paiment.boissons', ['id' => $commande_id]) }}"
+                        class="group bg-white border-2 border-gray-200 hover:border-green-500 rounded-xl p-4 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-500 transition-colors duration-300">
+                                <i class="fas fa-history text-green-600 group-hover:text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 group-hover:text-green-600 transition-colors">Historique paiements</h4>
+                                <p class="text-xs text-gray-500">Consulter l'historique</p>
+                            </div>
+                        </div>
                     </a>
+
+                    <!-- Carte Articles à rendre -->
                     @if($exist == true)
-                    <a href="{{ route('vente.rendu', ['id' => $commande_id]) }}" class="border border-yellow-500 text-yellow-600 hover:bg-yellow-50 px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
-                        <i class="fas fa-undo mr-2"></i>Articles à rendre
+                    <a href="{{ route('vente.rendu', ['id' => $commande_id]) }}"
+                        class="group bg-white border-2 border-gray-200 hover:border-amber-500 rounded-xl p-4 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center group-hover:bg-amber-500 transition-colors duration-300">
+                                <i class="fas fa-undo text-amber-600 group-hover:text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 group-hover:text-amber-600 transition-colors">Articles à rendre</h4>
+                                <p class="text-xs text-gray-500">Gestion des retours</p>
+                            </div>
+                        </div>
                     </a>
                     @endif
+
+                    <!-- Carte Compte rendu -->
                     @if($commande->etat_client == 2)
-                    <a href="{{ route('rendre.boissons', ['id' => $commande_id]) }}" class="border border-blue-400 text-blue-500 hover:bg-blue-50 px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
-                        <i class="fas fa-clipboard-list mr-2"></i>Compte rendu
+                    <a href="{{ route('rendre.boissons', ['id' => $commande_id]) }}"
+                        class="group bg-white border-2 border-gray-200 hover:border-indigo-500 rounded-xl p-4 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center group-hover:bg-indigo-500 transition-colors duration-300">
+                                <i class="fas fa-clipboard-list text-indigo-600 group-hover:text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">Compte rendu</h4>
+                                <p class="text-xs text-gray-500">Rapport détaillé</p>
+                            </div>
+                        </div>
                     </a>
                     @endif
+
+                    <!-- Carte Paiement -->
                     @if($commande->etat_commande == 'non payé' && $commande->etat_client != 2)
-                    <a href="{{ route('pay.index', ['id' => $commande_id]) }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
-                        <i class="fas fa-credit-card mr-2"></i>Paiement
+                    <a href="{{ route('pay.index', ['id' => $commande_id]) }}"
+                        class="group bg-white border-2 border-gray-200 hover:border-emerald-500 rounded-xl p-4 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-500 transition-colors duration-300">
+                                <i class="fas fa-credit-card text-emerald-600 group-hover:text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 group-hover:text-emerald-600 transition-colors">Paiement</h4>
+                                <p class="text-xs text-gray-500">Procéder au paiement</p>
+                            </div>
+                        </div>
                     </a>
                     @endif
-                    <a href="{{ route('reglement.index', ['id' => $commande_id]) }}" class="border border-blue-600 text-blue-600 hover:bg-blue-50 px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
-                        <i class="fas fa-exchange-alt mr-2"></i>Déconsignation
+
+                    <!-- Carte Déconsignation -->
+                    <a href="{{ route('reglement.index', ['id' => $commande_id]) }}"
+                        class="group bg-white border-2 border-gray-200 hover:border-purple-500 rounded-xl p-4 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-500 transition-colors duration-300">
+                                <i class="fas fa-exchange-alt text-purple-600 group-hover:text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 group-hover:text-purple-600 transition-colors">Déconsignation</h4>
+                                <p class="text-xs text-gray-500">Gestion consignes</p>
+                            </div>
+                        </div>
                     </a>
-                    <a href="{{ route('vente.page') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
-                        <i class="fas fa-cart-plus mr-2"></i>Nouvelle vente
+
+                    <!-- Carte Nouvelle vente -->
+                    <a href="{{ route('vente.page') }}"
+                        class="group bg-white border-2 border-gray-200 hover:border-green-500 rounded-xl p-4 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-500 transition-colors duration-300">
+                                <i class="fas fa-cart-plus text-green-600 group-hover:text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 group-hover:text-green-600 transition-colors">Nouvelle vente</h4>
+                                <p class="text-xs text-gray-500">Créer une vente</p>
+                            </div>
+                        </div>
                     </a>
+                </div>
+
+                <!-- Barre de statut en bas -->
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-t border-gray-200">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <!-- Statuts -->
+                        <div class="flex flex-wrap gap-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-gray-700">Commande :</span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold 
+                        {{ $commande->etat_commande == 'payé' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200' }}">
+                                    <i class="fas fa-{{ $commande->etat_commande == 'payé' ? 'check' : 'clock' }} mr-2 text-xs"></i>
+                                    {{ ucfirst($commande->etat_commande) }}
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-gray-700">Client :</span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold 
+                        {{ $commande->etat_client == 2 ? 'bg-blue-100 text-blue-800 border border-blue-200' : 'bg-gray-100 text-gray-800 border border-gray-200' }}">
+                                    <i class="fas fa-{{ $commande->etat_client == 2 ? 'user-check' : 'user' }} mr-2 text-xs"></i>
+                                    {{ $commande->etat_client == 2 ? 'Compte rendu prêt' : 'En traitement' }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Actions rapides -->
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-medium text-gray-700 hidden sm:block">Actions :</span>
+                            <div class="flex gap-1">
+                                <button class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200" title="Imprimer">
+                                    <i class="fas fa-print"></i>
+                                </button>
+                                <button class="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200" title="Partager">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                <button class="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all duration-200" title="Télécharger">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     
-    <div class="mb-6">
+    <!-- <div class="mb-6">
         <nav class="flex" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
@@ -116,10 +243,10 @@ $montantTotal = ($deconsigneglobale - $reste < 0 ? 0 : $deconsigneglobale - $res
                 </li>
             </ol>
         </nav>
-    </div>
+    </div> -->
 
     <!-- Informations commande -->
-    <div class="mb-6">
+    <!-- <div class="mb-6">
         <div class="bg-white  shadow-sm border-l-4 border-blue-400">
             <div class="px-6 py-4 flex flex-wrap items-center justify-between border-b border-gray-200">
                 <h6 class="font-semibold text-gray-700">
@@ -175,7 +302,7 @@ $montantTotal = ($deconsigneglobale - $reste < 0 ? 0 : $deconsigneglobale - $res
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Success Message -->
     @if(session('success'))
@@ -304,7 +431,7 @@ $montantTotal = ($deconsigneglobale - $reste < 0 ? 0 : $deconsigneglobale - $res
                                             name="recu"
                                             class="flex-1 border border-gray-300 -l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                             placeholder="Montant remis par le client"
-                                            required>
+                                            >
                                         <span class="bg-gray-600 text-white px-4 py-2 -r-lg">
                                             Ar
                                         </span>
@@ -428,11 +555,11 @@ $montantTotal = ($deconsigneglobale - $reste < 0 ? 0 : $deconsigneglobale - $res
                 }
 
                 const montantRecu = parseFloat(montantRecuInput.value) || 0;
-                if (montantRecu <= 0) {
-                    e.preventDefault();
-                    alert('Veuillez saisir le montant reçu');
-                    return;
-                }
+                // if (montantRecu <= 0) {
+                //     e.preventDefault();
+                //     alert('Veuillez saisir le montant reçu');
+                //     return;
+                // }
 
                 const submitBtn = paymentForm.querySelector('[type="submit"]');
                 submitBtn.disabled = true;

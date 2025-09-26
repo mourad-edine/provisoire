@@ -25,7 +25,16 @@
                 'text' => 'text-white',
                 'link' => route('achat.page'),
                 'action' => true
-            ]
+            ],
+            [
+    'title' => 'Statistiques',
+    'value' => 'statistique',
+    'icon' => 'fa-chart-bar', // Icône plus appropriée
+    'color' => 'bg-purple-500',
+    'text' => 'text-white',
+    'link' => route('stat'),
+    'action' => true
+]
         ];
         @endphp
 
@@ -142,30 +151,9 @@
                             </tr>
 
                             <!-- Modal de suppression -->
-                            <div id="supprimerModal{{ $article['id'] }}" class="fixed inset-0 bg-slate-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-                                <div class="relative top-20 mx-auto p-4 border w-full max-w-sm bg-white rounded-lg shadow-lg">
-                                    <div class="flex justify-between items-center bg-slate-800 text-white px-4 py-3 rounded-t-lg">
-                                        <h5 class="text-lg font-bold">Suppression</h5>
-                                        <button onclick="closeModal('supprimerModal{{ $article['id'] }}')" class="text-white">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                    <div class="p-4">
-                                        <p>Voulez-vous vraiment supprimer cet article <span class="text-yellow-500">{{ $article['nom'] }}</span> ?</p>
-                                    </div>
-                                    <div class="flex justify-end space-x-2 p-4 bg-slate-100 rounded-b-lg">
-                                        <button onclick="closeModal('supprimerModal{{ $article['id'] }}')" class="bg-slate-500 hover:bg-slate-600 text-white px-3 py-1 rounded text-sm">
-                                            Annuler
-                                        </button>
-                                        <a href="{{ route('delete.article', ['id' => $article['id']]) }}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
-                                            Supprimer
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-
+                           
                             <!-- Modal de modification -->
-                            <div id="editArticleModal{{ $article['id'] }}" class="fixed inset-0 bg-slate-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+                            <div style="z-index: 20 !important;" id="editArticleModal{{ $article['id'] }}" class="fixed inset-0 bg-slate-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
                                 <div class="relative top-20 mx-auto p-4 border w-full max-w-2xl bg-white rounded-lg shadow-lg">
                                    
                                     <div class="p-4">
@@ -382,7 +370,7 @@
                 @if(count($faible) > 0)
                 <div class="bg-white p-3 flex justify-between items-center">
                     <span class="text-slate-500 text-xs"><i class="fas fa-clock mr-1"></i> Dernière mise à jour</span>
-                    <a href="{{ route('achat.page') }}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                    <a href="{{ route('achat.page') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
                         <i class="fas fa-plus mr-1"></i>Approvisionner
                     </a>
                 </div>
@@ -391,6 +379,8 @@
         </div>
     </div>
 </div>
+
+
 
 <!-- Script pour gérer les modals et le dropdown -->
 <script>

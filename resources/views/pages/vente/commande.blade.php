@@ -5,22 +5,85 @@
 @section('content')
 <div class="container mx-auto px-4 py-6">
     <!-- Onglets de navigation -->
-    <div class="border-b border-gray-200 mb-6">
+    <!-- <div class="border-b border-gray-200 mb-6">
         <nav class="flex space-x-8">
             <a href="#" class="py-4 px-1 border-b-2 border-blue-600 text-blue-600 font-medium text-sm flex items-center">
                 <i class="fas fa-list-alt mr-2"></i>Listes par commandes
             </a>
-            <a href="#" class="py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm flex items-center">
-                <i class="fas fa-shopping-cart mr-2"></i>Listes ventes
-            </a>
+          
             <a href="#" class="py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm flex items-center">
                 <i class="fas fa-cart-plus mr-2"></i>Nouvelle vente
             </a>
         </nav>
+    </div> -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
+        <div class="w-full">
+            <div class="bg-white shadow-lg  border border-gray-100 overflow-hidden">
+                <!-- En-tête avec titre -->
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <i class="fas fa-cog mr-3 text-blue-600"></i>
+                        Menu
+                    </h3>
+                </div>
+
+                <!-- Grille des actions -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+                    <!-- Carte Détails commande -->
+                    <a href="{{ route('commande.liste.vente') }}"
+                        class="group bg-white border-2 border-gray-200 hover:border-blue-500 rounded-xl p-4 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-500 transition-colors duration-300">
+                                <i class="fas fa-file-alt text-blue-600 group-hover:text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">Listes par commandes</h4>
+                                <p class="text-xs text-gray-500">Voir les informations détaillées</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Carte Historique paiements -->
+                    <a href="{{ route('sortie.stat') }}"
+                        class="group bg-white border-2 border-gray-200 hover:border-green-500 rounded-xl p-4 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-500 transition-colors duration-300">
+                                <i class="fas fa-history text-green-600 group-hover:text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 group-hover:text-green-600 transition-colors">Historique</h4>
+                                <p class="text-xs text-gray-500">Consulter l'historique</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Carte Articles à rendre -->
+                    <a href="{{ route('vente.page') }}"
+                        class="group bg-white border-2 border-gray-200 hover:border-amber-500 rounded-xl p-4 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center group-hover:bg-amber-500 transition-colors duration-300">
+                                <i class="fas fa-cart-plus text-amber-600 group-hover:text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 group-hover:text-amber-600 transition-colors"> Nouvelle vente
+                                </h4>
+                                <p class="text-xs text-gray-500">Vendre</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Carte Compte rendu -->
+
+                </div>
+
+                <!-- Barre de statut en bas -->
+
+            </div>
+        </div>
     </div>
 
     <!-- Carte principale -->
-    <div class="bg-white rounded-lg shadow-lg border border-gray-200">
+    <div class="bg-white  shadow-lg border border-gray-200">
         <!-- En-tête avec formulaire de recherche -->
         <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 rounded-t-lg">
             <form method="GET" action="#" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
@@ -189,7 +252,7 @@
 
                 <!-- Pagination -->
                 @if($commandes->hasPages())
-                <div class="mt-6 flex justify-center">
+                <div class="mt-6 flex justify-end">
                     <div class="bg-white px-4 py-3 border border-gray-200 rounded-lg">
                         {{ $commandes->links('pagination::tailwind') }}
                     </div>
