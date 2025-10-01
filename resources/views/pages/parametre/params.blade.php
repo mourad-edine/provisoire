@@ -126,13 +126,13 @@
 </style>
 
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         <!-- En-tête -->
-        <div class="glass-effect shadow-lg mb-8 border-b border-gray-200">
+        <div class="glass-effect shadow-md mb-8 border-b border-gray-200">
             <div class="px-6 py-4">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
                     <div class="flex items-center space-x-3">
-                        <div class="p-3 bg-blue-500 shadow-lg">
+                        <div class="p-3 bg-blue-500 shadow-md">
                             <i class="fas fa-cog text-white text-xl"></i>
                         </div>
                         <div>
@@ -152,20 +152,20 @@
 
         <!-- Message de succès -->
         <div id="successMessage" class="hidden mb-6">
-            <div class="bg-green-50 border-l-4 border-green-400 p-4 shadow-sm">
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 shadow-sm">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <i class="fas fa-check-circle text-green-400 text-lg"></i>
+                            <i class="fas fa-check-circle text-blue-400 text-md"></i>
                         </div>
                         <div class="ml-3">
-                            <p class="text-sm font-medium text-green-800">
+                            <p class="text-sm font-medium text-blue-800">
                                 Modifications enregistrées avec succès
                             </p>
                         </div>
                     </div>
                     <button type="button" onclick="document.getElementById('successMessage').classList.add('hidden')" 
-                            class="text-green-400 hover:text-green-600 transition-colors">
+                            class="text-blue-400 hover:text-blue-600 transition-colors">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -173,7 +173,7 @@
         </div>
 
         <!-- Contenu principal -->
-        <div class="glass-effect shadow-lg border border-gray-200">
+        <div class="glass-effect shadow-md border border-gray-200">
             <!-- Onglets -->
             <div class="border-b border-gray-200 bg-white">
                 <div class="px-6">
@@ -206,7 +206,7 @@
                         <div>
                             <div class="flex items-center space-x-3 mb-6">
                                 <div class="w-1 h-8 bg-blue-500"></div>
-                                <h3 class="text-lg font-semibold text-gray-900">
+                                <h3 class="text-md font-semibold text-gray-900">
                                     <i class="fas fa-info-circle mr-2 text-blue-500"></i>
                                     Informations de l'entreprise
                                 </h3>
@@ -280,7 +280,7 @@
                                 </div>
 
                                 <button type="button" onclick="showSuccess()" 
-                                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 text-sm font-medium transition-all duration-200 shadow-md hover:shadow-xl">
                                     <i class="fas fa-save mr-2"></i>Enregistrer les informations
                                 </button>
                             </form>
@@ -291,9 +291,9 @@
                             <!-- Logo -->
                             <div class="bg-white shadow-sm border border-gray-100 p-6">
                                 <div class="flex items-center space-x-3 mb-6">
-                                    <div class="w-1 h-8 bg-purple-500"></div>
-                                    <h3 class="text-lg font-semibold text-gray-900">
-                                        <i class="fas fa-image mr-2 text-purple-500"></i>
+                                    <div class="w-1 h-8 bg-blue-500"></div>
+                                    <h3 class="text-md font-semibold text-gray-900">
+                                        <i class="fas fa-image mr-2 text-blue-500"></i>
                                         Logo de l'entreprise
                                     </h3>
                                 </div>
@@ -315,66 +315,20 @@
                                     </div>
                                     
                                     <button type="button" 
-                                            class="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-6 py-3 text-sm font-medium transition-all duration-200">
+                                            class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 text-sm font-medium transition-all duration-200">
                                         <i class="fas fa-sync-alt mr-2"></i>Mettre à jour le logo
                                     </button>
                                 </div>
                             </div>
 
                             <!-- Informations légales -->
-                            <div class="bg-white shadow-sm border border-gray-100 p-6">
-                                <div class="flex items-center space-x-3 mb-6">
-                                    <div class="w-1 h-8 bg-green-500"></div>
-                                    <h3 class="text-lg font-semibold text-gray-900">
-                                        <i class="fas fa-gavel mr-2 text-green-500"></i>
-                                        Informations légales
-                                    </h3>
-                                </div>
-
-                                <div class="space-y-4">
-                                    <div class="info-card p-4">
-                                        <div class="flex justify-between items-start">
-                                            <div>
-                                                <span class="text-gray-700 font-medium">Capital social</span>
-                                                <p class="text-gray-500 text-sm">Capital de l'entreprise</p>
-                                            </div>
-                                            <div class="text-right">
-                                                <span class="text-xl font-bold text-green-600">10 000 000 Ar</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="info-card p-4">
-                                        <div class="flex justify-between items-start">
-                                            <div>
-                                                <span class="text-gray-700 font-medium">RCS</span>
-                                                <p class="text-gray-500 text-sm">Registre du Commerce</p>
-                                            </div>
-                                            <div class="text-right">
-                                                <span class="text-lg font-semibold text-gray-800">2024A001</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="info-card p-4">
-                                        <div class="flex justify-between items-start">
-                                            <div>
-                                                <span class="text-gray-700 font-medium">Date de création</span>
-                                                <p class="text-gray-500 text-sm">Fondation de l'entreprise</p>
-                                            </div>
-                                            <div class="text-right">
-                                                <span class="text-lg font-semibold text-gray-800">15/01/2010</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                         
 
                             <!-- Paramètres d'impression -->
                             <div class="bg-white shadow-sm border border-gray-100 p-6">
                                 <div class="flex items-center space-x-3 mb-6">
                                     <div class="w-1 h-8 bg-orange-500"></div>
-                                    <h3 class="text-lg font-semibold text-gray-900">
+                                    <h3 class="text-md font-semibold text-gray-900">
                                         <i class="fas fa-print mr-2 text-orange-500"></i>
                                         Paramètres d'impression
                                     </h3>
@@ -427,7 +381,7 @@
                         <div>
                             <div class="flex items-center space-x-3 mb-6">
                                 <div class="w-1 h-8 bg-blue-500"></div>
-                                <h3 class="text-lg font-semibold text-gray-900">
+                                <h3 class="text-md font-semibold text-gray-900">
                                     <i class="fas fa-list mr-2 text-blue-500"></i>
                                     Tarifs actuels
                                 </h3>
@@ -440,7 +394,7 @@
                                             <span class="text-gray-700 font-medium">Bouteille 30-33 cl</span>
                                             <p class="text-gray-500 text-sm">Consignation standard</p>
                                         </div>
-                                        <span class="text-2xl font-bold text-blue-600">200 Ar</span>
+                                        <span class="text-md font-bold text-gray-600">200 Ar</span>
                                     </div>
                                 </div>
                                 
@@ -450,7 +404,7 @@
                                             <span class="text-gray-700 font-medium">Bouteille 50-65 cl</span>
                                             <p class="text-gray-500 text-sm">Format moyen</p>
                                         </div>
-                                        <span class="text-2xl font-bold text-blue-600">300 Ar</span>
+                                        <span class="text-md font-bold text-gray-600">300 Ar</span>
                                     </div>
                                 </div>
                                 
@@ -460,7 +414,7 @@
                                             <span class="text-gray-700 font-medium">Bouteille 100 cl</span>
                                             <p class="text-gray-500 text-sm">Grand format</p>
                                         </div>
-                                        <span class="text-2xl font-bold text-blue-600">500 Ar</span>
+                                        <span class="text-md font-bold text-gray-600">500 Ar</span>
                                     </div>
                                 </div>
                                 
@@ -470,7 +424,7 @@
                                             <span class="text-gray-700 font-medium">Cageot</span>
                                             <p class="text-gray-500 text-sm">Conditionnement</p>
                                         </div>
-                                        <span class="text-2xl font-bold text-blue-600">1 000 Ar</span>
+                                        <span class="text-md font-bold text-gray-600">1 000 Ar</span>
                                     </div>
                                 </div>
                             </div>
@@ -479,9 +433,9 @@
                         <!-- Formulaire de modification -->
                         <div>
                             <div class="flex items-center space-x-3 mb-6">
-                                <div class="w-1 h-8 bg-green-500"></div>
-                                <h3 class="text-lg font-semibold text-gray-900">
-                                    <i class="fas fa-edit mr-2 text-green-500"></i>
+                                <div class="w-1 h-8 bg-blue-500"></div>
+                                <h3 class="text-md font-semibold text-gray-900">
+                                    <i class="fas fa-edit mr-2 text-blue-500"></i>
                                     Modifier les tarifs
                                 </h3>
                             </div>
@@ -524,7 +478,7 @@
                                 </div>
                                 
                                 <button type="button" onclick="showSuccess()" 
-                                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 text-sm font-medium transition-all duration-200 shadow-md hover:shadow-xl">
                                     <i class="fas fa-save mr-2"></i>Enregistrer les modifications
                                 </button>
                             </form>
@@ -539,9 +493,9 @@
                         <!-- Ajouter utilisateur -->
                         <div class="bg-white shadow-sm border border-gray-100 p-6">
                             <div class="flex items-center space-x-3 mb-6">
-                                <div class="w-1 h-8 bg-purple-500"></div>
-                                <h3 class="text-lg font-semibold text-gray-900">
-                                    <i class="fas fa-user-plus mr-2 text-purple-500"></i>
+                                <div class="w-1 h-8 bg-blue-500"></div>
+                                <h3 class="text-md font-semibold text-gray-900">
+                                    <i class="fas fa-user-plus mr-2 text-blue-500"></i>
                                     Ajouter un utilisateur
                                 </h3>
                             </div>
@@ -581,7 +535,7 @@
                                 </div>
                                 
                                 <button type="button" 
-                                        class="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-6 py-3 text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 text-sm font-medium transition-all duration-200 shadow-md hover:shadow-xl">
                                     <i class="fas fa-plus mr-2"></i>Créer l'utilisateur
                                 </button>
                             </form>
@@ -590,9 +544,9 @@
                         <!-- Liste utilisateurs -->
                         <div class="bg-white shadow-sm border border-gray-100 p-6">
                             <div class="flex items-center space-x-3 mb-6">
-                                <div class="w-1 h-8 bg-green-500"></div>
-                                <h3 class="text-lg font-semibold text-gray-900">
-                                    <i class="fas fa-users mr-2 text-green-500"></i>
+                                <div class="w-1 h-8 bg-blue-500"></div>
+                                <h3 class="text-md font-semibold text-gray-900">
+                                    <i class="fas fa-users mr-2 text-blue-500"></i>
                                     Liste des utilisateurs
                                     <span class="text-blue-600 ml-2">(3)</span>
                                 </h3>
@@ -602,9 +556,9 @@
                                 <table class="user-table w-full">
                                     <thead>
                                         <tr class="bg-gray-200">
-                                            <th class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">Nom</th>
-                                            <th class="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">Email</th>
-                                            <th class="px-6 py-4 text-right text-xs font-medium uppercase tracking-wider">Actions</th>
+                                            <th class="px-6 py-1 text-left text-xs font-medium uppercase tracking-wider">Nom</th>
+                                            <th class="px-6 py-1 text-left text-xs font-medium uppercase tracking-wider">Email</th>
+                                            <th class="px-6 py-1 text-right text-xs font-medium uppercase tracking-wider">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>

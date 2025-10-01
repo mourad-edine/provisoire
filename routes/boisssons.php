@@ -88,6 +88,8 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
     Route::get('/stock-by-id/{id}', [StockController::class, 'stockbyCategorie'])->name('stock.liste.id');
     Route::get('/statistique', [StatController::class, 'show'])->name('stat');
     Route::get('/statistique_sortie', [StatController::class, 'sortie'])->name('sortie.stat');
+    Route::get('/emballage', [StockController::class, 'emballage'])->name('emballage.index');
+    Route::get('/emballage_achat', [StockController::class, 'emballage_achat'])->name('emballage.achat');
 
     Route::get('/depense', [AchatController::class, 'depense'])->name('depense');
     Route::post('/depense_store', [DepenseController::class, 'store'])->name('depense.store');

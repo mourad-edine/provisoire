@@ -49,7 +49,7 @@
 
             <div class="overflow-x-auto">
                 <table class="w-full text-center border-collapse">
-                    <thead class="bg-gray-800 text-white">
+                    <thead class="bg-gray-700 text-white">
                         <tr>
                             <th class="p-2">ID</th>
                             <th class="p-2">Nom</th>

@@ -81,4 +81,10 @@ class StockController extends Controller
             'categories' => Categorie::withCount('articles')->get()
         ]);
     }
+    public function emballage(){
+        return view('pages.stock.Emballage');
+    }
+    public function emballage_achat(){
+        return view('pages.stock.Buy');
+    }
 }

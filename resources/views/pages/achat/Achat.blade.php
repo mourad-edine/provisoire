@@ -59,13 +59,6 @@
             height: 44px;
         }
 
-        .nav-active {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
         .nav-active:hover {
             background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
             color: white;
@@ -88,15 +81,8 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .glass-effect {
@@ -111,17 +97,69 @@
             border-radius: 6px;
             margin: 2px 0;
         }
+
+        /* Améliorations pour les sous-menus */
+        .dropdown-group {
+            position: relative;
+        }
+
+        .dropdown-content {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .dropdown-group:hover .dropdown-content,
+        .dropdown-group:focus-within .dropdown-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        /* Délai pour éviter la fermeture accidentelle */
+        .dropdown-content {
+            transition-delay: 0.1s;
+        }
+
+        /* Triangle indicateur pour les sous-menus */
+        .dropdown-content::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 20px;
+            width: 12px;
+            height: 12px;
+            background: white;
+            transform: rotate(45deg);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-left: 1px solid rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+
+        /* Amélioration pour mobile */
+        .mobile-dropdown-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .mobile-dropdown-open .mobile-dropdown-content {
+            max-height: 500px;
+        }
     </style>
 </head>
 
 <body class="bg-gray-50">
     <!-- Main Navigation -->
-    <nav class="fixed top-0 left-0 w-full bg-gradient-to-r from-gray-900 to-gray-800 text-white shadowrounded-md z-50 border-b border-gray-700">
+    <nav class="fixed top-0 left-0 w-full bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-lg z-50 border-b border-gray-700">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center py-3">
                 <!-- Logo -->
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-md flex items-center justify-center">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                         <i class="fas fa-store text-white"></i>
                     </div>
                     <span class="text-xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
@@ -132,135 +170,144 @@
                 <!-- Desktop Menu -->
                 <div id="mainNavbar" class="hidden md:flex items-center space-x-1">
                     <!-- Accueil -->
-                    <a href="{{ route('page.accueil') }}"
-                        class="nav-item flex items-center space-x-2 {{ request()->routeIs('page.accueil') ? 'nav-active' : '' }}">
+                    <a href="{{ route('page.accueil') }}" 
+                       class="nav-item flex items-center space-x-2 {{ request()->routeIs('page.accueil') ||  request()->routeIs('stat')? 'nav-active' : '' }}">
                         <i class="fas fa-home text-sm"></i>
                         <span>Accueil</span>
                     </a>
 
                     <!-- Paramétrage d'articles -->
-                    <div class="relative group">
+                    <div class="dropdown-group">
                         <button class="nav-item flex items-center space-x-2 {{ request()->routeIs('article.liste') || request()->routeIs('categorie.liste') || request()->routeIs('depense') ? 'nav-active' : '' }}">
                             <i class="fas fa-cogs text-sm"></i>
                             <span>Paramétrage</span>
-                            <i class="fas fa-chevron-down text-xs ml-1"></i>
+                            <i class="fas fa-chevron-down text-xs ml-1 transition-transform duration-200 dropdown-group:hover:rotate-180"></i>
                         </button>
-                        <div class="absolute hidden group-hover:block glass-effect shadow-xl rounded-md mt-1 w-56 z-50 border border-gray-200">
-                            <a href="{{ route('article.liste') }}"
-                                class="block px-4 py-3 hover:bg-blue-50 text-gray-700 border-b border-gray-100 transition-colors {{ request()->routeIs('article.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
-                                <i class="fas fa-glass-martini-alt mr-3 text-blue-500"></i>Boissons
-                            </a>
-                            <a href="{{ route('categorie.liste') }}"
-                                class="block px-4 py-3 hover:bg-blue-50 text-gray-700 border-b border-gray-100 transition-colors {{ request()->routeIs('categorie.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
-                                <i class="fas fa-tags mr-3 text-green-500"></i>Catégories
-                            </a>
-                            <div class="border-t border-gray-200 my-1"></div>
-                            <a href="{{ route('depense') }}"
-                                class="block px-4 py-3 hover:bg-blue-50 text-gray-700 transition-colors {{ request()->routeIs('depense') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
-                                <i class="fas fa-money-bill-wave mr-3 text-yellow-500"></i>Dépenses divers
-                            </a>
+                        <div class="dropdown-content absolute left-0 mt-2 w-56 z-50">
+                            <div class="glass-effect shadow-xl rounded-lg border border-gray-200">
+                                <a href="{{ route('article.liste') }}" 
+                                   class="block px-4 py-3 hover:bg-blue-50 text-gray-700 border-b border-gray-100 transition-colors {{ request()->routeIs('article.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
+                                    <i class="fas fa-glass-martini-alt mr-3 text-blue-500"></i>Boissons
+                                </a>
+                                <a href="{{ route('categorie.liste') }}" 
+                                   class="block px-4 py-3 hover:bg-blue-50 text-gray-700 border-b border-gray-100 transition-colors {{ request()->routeIs('categorie.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
+                                    <i class="fas fa-tags mr-3 text-green-500"></i>Catégories
+                                </a>
+                                <div class="border-t border-gray-200 my-1"></div>
+                                <!-- <a href="{{ route('depense') }}" 
+                                   class="block px-4 py-3 hover:bg-blue-50 text-gray-700 transition-colors {{ request()->routeIs('depense') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
+                                    <i class="fas fa-money-bill-wave mr-3 text-yellow-500"></i>Dépenses divers
+                                </a> -->
+                            </div>
                         </div>
                     </div>
 
                     <!-- Ventes -->
-                    <a href="{{ route('commande.liste.vente') }}"
-                        class="nav-item flex items-center space-x-2 {{ request()->routeIs('commande.liste.vente') || request()->routeIs('vente.page')  ? 'nav-active' : '' }}">
+                    <a href="{{ route('commande.liste.vente') }}" 
+                       class="nav-item flex items-center space-x-2 {{ request()->routeIs('commande.liste.vente') ? 'nav-active' : '' }}">
                         <i class="fas fa-cart-plus text-sm"></i>
                         <span>Ventes</span>
                     </a>
 
                     <!-- Achats -->
-                    <a href="{{ route('achat.commande') }}"
-                        class="nav-item flex items-center space-x-2 {{ request()->routeIs('achat.commande') || request()->routeIs('achat.page')  ? 'nav-active' : '' }}">
+                    <a href="{{ route('achat.commande') }}" 
+                       class="nav-item flex items-center space-x-2 {{ request()->routeIs('achat.commande') ? 'nav-active' : '' }}">
                         <i class="fas fa-shopping-cart text-sm"></i>
                         <span>Achats</span>
                     </a>
 
                     <!-- Clients & Fournisseurs -->
-                    <div class="relative group">
+                    <div class="dropdown-group">
                         <button class="nav-item flex items-center space-x-2 {{ request()->routeIs('client.liste') || request()->routeIs('fournisseur.liste') ? 'nav-active' : '' }}">
                             <i class="fas fa-users text-sm"></i>
                             <span>Clients & Fournisseurs</span>
-                            <i class="fas fa-chevron-down text-xs ml-1"></i>
+                            <i class="fas fa-chevron-down text-xs ml-1 transition-transform duration-200 dropdown-group:hover:rotate-180"></i>
                         </button>
-                        <div class="absolute hidden group-hover:block glass-effect shadow-xl rounded-md mt-1 w-56 z-50 border border-gray-200">
-                            <a href="{{ route('client.liste') }}"
-                                class="block px-4 py-3 hover:bg-blue-50 text-gray-700 border-b border-gray-100 transition-colors {{ request()->routeIs('client.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
-                                <i class="fas fa-users mr-3 text-blue-500"></i>Clients
-                            </a>
-                            <a href="{{ route('fournisseur.liste') }}"
-                                class="block px-4 py-3 hover:bg-blue-50 text-gray-700 transition-colors {{ request()->routeIs('fournisseur.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
-                                <i class="fas fa-truck mr-3 text-green-500"></i>Fournisseurs
-                            </a>
+                        <div class="dropdown-content absolute left-0 mt-2 w-56 z-50">
+                            <div class="glass-effect shadow-xl rounded-lg border border-gray-200">
+                                <a href="{{ route('client.liste') }}" 
+                                   class="block px-4 py-3 hover:bg-blue-50 text-gray-700 border-b border-gray-100 transition-colors {{ request()->routeIs('client.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
+                                    <i class="fas fa-users mr-3 text-blue-500"></i>Clients
+                                </a>
+                                <a href="{{ route('fournisseur.liste') }}" 
+                                   class="block px-4 py-3 hover:bg-blue-50 text-gray-700 transition-colors {{ request()->routeIs('fournisseur.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
+                                    <i class="fas fa-truck mr-3 text-green-500"></i>Fournisseurs
+                                </a>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Stock -->
-                    <a href="{{ route('stock.liste') }}"
-                        class="nav-item flex items-center space-x-2 {{ request()->routeIs('stock.liste') ? 'nav-active' : '' }}">
+                    <a href="{{ route('stock.liste') }}" 
+                       class="nav-item flex items-center space-x-2 {{ request()->routeIs('stock.liste') ? 'nav-active' : '' }}">
                         <i class="fas fa-boxes text-sm"></i>
                         <span>Stock</span>
                     </a>
 
                     <!-- Paramètres -->
-                    <a href="{{ route('parametre') }}"
-                        class="nav-item flex items-center space-x-2 {{ request()->routeIs('parametre') ? 'nav-active' : '' }}">
+                    <a href="{{ route('parametre') }}" 
+                       class="nav-item flex items-center space-x-2 {{ request()->routeIs('parametre') ? 'nav-active' : '' }}">
                         <i class="fas fa-cog text-sm"></i>
                         <span>Paramètres</span>
                     </a>
                 </div>
 
                 <!-- User Menu -->
-                <div class="relative group">
+                <div class="dropdown-group">
                     <button class="nav-item flex items-center space-x-2">
                         <i class="fas fa-user-circle text-sm"></i>
                         <span class="max-w-32 truncate">{{ Auth::user()->name }}</span>
-                        <i class="fas fa-chevron-down text-xs ml-1"></i>
+                        <i class="fas fa-chevron-down text-xs ml-1 transition-transform duration-200 dropdown-group:hover:rotate-180"></i>
                     </button>
-                    <div class="absolute right-0 hidden group-hover:block glass-effect shadow-xl rounded-md mt-1 w-48 z-50 border border-gray-200">
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="block w-full text-left px-4 py-3 hover:bg-red-50 text-gray-700 transition-colors flex items-center">
-                                <i class="fas fa-sign-out-alt mr-3 text-red-500"></i>Se déconnecter
-                            </button>
-                        </form>
+                    <div class="dropdown-content absolute right-0 mt-2 w-48 z-50">
+                        <div class="glass-effect shadow-xl rounded-lg border border-gray-200">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="block w-full text-left px-4 py-3 hover:bg-red-50 text-gray-700 transition-colors flex items-center">
+                                    <i class="fas fa-sign-out-alt mr-3 text-red-500"></i>Se déconnecter
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Mobile Menu Button -->
-                <button id="mobile-menu-button" class="md:hidden text-white p-2 rounded-md hover:bg-gray-700 transition-colors">
-                    <i class="fas fa-bars textrounded-md"></i>
+                <button id="mobile-menu-button" class="md:hidden text-white p-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-bars text-lg"></i>
                 </button>
             </div>
 
             <!-- Mobile Menu -->
-            <div id="mobile-menu" class="hidden md:hidden bg-gray-800 p-4 mt-3 rounded-md border border-gray-700">
+            <div id="mobile-menu" class="hidden md:hidden bg-gray-800 p-4 mt-3 rounded-lg border border-gray-700">
                 <div class="flex flex-col space-y-2">
-                    <a href="{{ route('page.accueil') }}"
-                        class="flex items-center space-x-3 px-3 py-2 rounded-md transition-colors {{ request()->routeIs('page.accueil') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                    <a href="{{ route('page.accueil') }}" 
+                       class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('page.accueil') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                         <i class="fas fa-home w-5 text-center"></i>
                         <span>Accueil</span>
                     </a>
 
                     <!-- Paramétrage Mobile -->
-                    <div class="space-y-1">
-                        <div class="px-3 py-2 text-gray-400 font-medium flex items-center space-x-3">
-                            <i class="fas fa-cogs w-5 text-center"></i>
-                            <span>Paramétrage</span>
-                        </div>
-                        <div class="ml-6 space-y-1">
-                            <a href="{{ route('article.liste') }}"
-                                class="flex items-center space-x-3 px-3 py-2 rounded-md transition-colors {{ request()->routeIs('article.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                    <div class="mobile-dropdown-group">
+                        <button class="mobile-dropdown-toggle flex items-center justify-between w-full px-3 py-2 rounded-lg transition-colors hover:bg-gray-700">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-cogs w-5 text-center"></i>
+                                <span>Paramétrage</span>
+                            </div>
+                            <i class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
+                        </button>
+                        <div class="mobile-dropdown-content ml-6">
+                            <a href="{{ route('article.liste') }}" 
+                               class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('article.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                                 <i class="fas fa-glass-martini-alt w-5 text-center"></i>
                                 <span>Boissons</span>
                             </a>
-                            <a href="{{ route('categorie.liste') }}"
-                                class="flex items-center space-x-3 px-3 py-2 rounded-md transition-colors {{ request()->routeIs('categorie.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                            <a href="{{ route('categorie.liste') }}" 
+                               class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('categorie.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                                 <i class="fas fa-tags w-5 text-center"></i>
                                 <span>Catégories</span>
                             </a>
-                            <a href="{{ route('depense') }}"
-                                class="flex items-center space-x-3 px-3 py-2 rounded-md transition-colors {{ request()->routeIs('depense') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                            <a href="{{ route('depense') }}" 
+                               class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('depense') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                                 <i class="fas fa-money-bill-wave w-5 text-center"></i>
                                 <span>Dépenses divers</span>
                             </a>
@@ -268,31 +315,34 @@
                     </div>
 
                     <!-- Ventes & Achats -->
-                    <a href="{{ route('commande.liste.vente') }}"
-                        class="flex items-center space-x-3 px-3 py-2 rounded-md transition-colors {{ request()->routeIs('commande.liste.vente') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                    <a href="{{ route('commande.liste.vente') }}" 
+                       class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('commande.liste.vente') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                         <i class="fas fa-cart-plus w-5 text-center"></i>
                         <span>Ventes</span>
                     </a>
-                    <a href="{{ route('achat.commande') }}"
-                        class="flex items-center space-x-3 px-3 py-2 rounded-md transition-colors {{ request()->routeIs('achat.commande') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                    <a href="{{ route('achat.commande') }}" 
+                       class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('achat.commande') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                         <i class="fas fa-shopping-cart w-5 text-center"></i>
                         <span>Achats</span>
                     </a>
 
                     <!-- Clients & Fournisseurs Mobile -->
-                    <div class="space-y-1">
-                        <div class="px-3 py-2 text-gray-400 font-medium flex items-center space-x-3">
-                            <i class="fas fa-users w-5 text-center"></i>
-                            <span>Clients & Fournisseurs</span>
-                        </div>
-                        <div class="ml-6 space-y-1">
-                            <a href="{{ route('client.liste') }}"
-                                class="flex items-center space-x-3 px-3 py-2 rounded-md transition-colors {{ request()->routeIs('client.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                    <div class="mobile-dropdown-group">
+                        <button class="mobile-dropdown-toggle flex items-center justify-between w-full px-3 py-2 rounded-lg transition-colors hover:bg-gray-700">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-users w-5 text-center"></i>
+                                <span>Clients & Fournisseurs</span>
+                            </div>
+                            <i class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
+                        </button>
+                        <div class="mobile-dropdown-content ml-6">
+                            <a href="{{ route('client.liste') }}" 
+                               class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('client.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                                 <i class="fas fa-users w-5 text-center"></i>
                                 <span>Clients</span>
                             </a>
-                            <a href="{{ route('fournisseur.liste') }}"
-                                class="flex items-center space-x-3 px-3 py-2 rounded-md transition-colors {{ request()->routeIs('fournisseur.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                            <a href="{{ route('fournisseur.liste') }}" 
+                               class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('fournisseur.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                                 <i class="fas fa-truck w-5 text-center"></i>
                                 <span>Fournisseurs</span>
                             </a>
@@ -300,13 +350,13 @@
                     </div>
 
                     <!-- Stock & Paramètres -->
-                    <a href="{{ route('stock.liste') }}"
-                        class="flex items-center space-x-3 px-3 py-2 rounded-md transition-colors {{ request()->routeIs('stock.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                    <a href="{{ route('stock.liste') }}" 
+                       class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('stock.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                         <i class="fas fa-boxes w-5 text-center"></i>
                         <span>Stock</span>
                     </a>
-                    <a href="{{ route('parametre') }}"
-                        class="flex items-center space-x-3 px-3 py-2 rounded-md transition-colors {{ request()->routeIs('parametre') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                    <a href="{{ route('parametre') }}" 
+                       class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('parametre') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                         <i class="fas fa-cog w-5 text-center"></i>
                         <span>Paramètres</span>
                     </a>
@@ -406,39 +456,39 @@
                             </tr>
                         </thead>
                         <tbody id="articlesContainer" class="divide-y divide-gray-400">
-                            <tr class="article-row hover:bg-gray-50">
-                                <td class="p-3 border border-gray-400">
-                                    <select class="w-full border border-gray-400 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 select2 article-select" data-index="0">
-                                        @foreach($articles as $article)
-                                        <option value="{{ $article->id }}"
-                                            data-prix="{{ $article->prix_achat }}"
-                                            data-condi="{{ $article->conditionnement }}"
-                                            data-prixcgt="{{ $article->prix_cgt }}"
-                                            data-consignation="{{ $article->prix_consignation }}">
-                                            {{ $article->nom }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                                <td class="p-3 border border-gray-400">
-                                    <input type="number" class="w-full border border-gray-400 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 quantite-input" data-index="0" min="1">
-                                </td>
-                                <td class="p-3 border border-gray-400">
-                                    <input type="number" class="w-full border border-gray-400 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 quantiteunite-input" data-index="0" min="1">
-                                </td>
-                                <td class="p-3 border border-gray-400">
-                                    <input type="number" class="w-full border border-gray-400 rounded-md px-3 py-2 bg-gray-100 total-input" data-index="0">
-                                </td>
-                                <td class="p-3 border border-gray-400">
-                                    <input type="number" class="w-full border border-gray-400 rounded-md px-3 py-2 bg-gray-100 prixunite-input" data-index="0" min="1" step="0.01" readonly>
-                                </td>
-                                <td class="p-3 text-center border border-gray-400">
-                                    <button type="button" class="text-red-500 hover:text-red-700 remove-article" data-index="0">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
+    <tr class="article-row hover:bg-gray-50">
+        <td class="p-3 border border-gray-400">
+            <select class="w-full border border-gray-400 px-3 py-2 focus:outline-none focus:border-blue-500 select2 article-select" data-index="0">
+                @foreach($articles as $article)
+                <option value="{{ $article->id }}"
+                    data-prix="{{ $article->prix_achat }}"
+                    data-condi="{{ $article->conditionnement }}"
+                    data-prixcgt="{{ $article->prix_cgt }}"
+                    data-consignation="{{ $article->prix_consignation }}">
+                    {{ $article->nom }}
+                </option>
+                @endforeach
+            </select>
+        </td>
+        <td class="p-3 border border-gray-400">
+            <input type="number" class="w-full border border-gray-400 px-3 py-2 focus:outline-none focus:border-blue-500 quantite-input" data-index="0" min="1">
+        </td>
+        <td class="p-3 border border-gray-400">
+            <input type="number" class="w-full border border-gray-400 px-3 py-2 focus:outline-none focus:border-blue-500 quantiteunite-input" data-index="0" min="1">
+        </td>
+        <td class="p-3 border border-gray-400">
+            <input type="number" class="w-full border border-gray-400 px-3 py-2  total-input" data-index="0">
+        </td>
+        <td class="p-3 border border-gray-400">
+            <input type="number" class="w-full border border-gray-400 px-3 py-2 bg-gray-100 prixunite-input" data-index="0" min="1" step="0.01" readonly>
+        </td>
+        <td class="p-3 text-center border border-gray-400">
+            <button type="button" class="text-red-500 hover:text-red-700 remove-article" data-index="0">
+                <i class="fas fa-trash"></i>
+            </button>
+        </td>
+    </tr>
+</tbody>
                     </table>
                 </div>
 
@@ -573,37 +623,37 @@
                 articleIndex++;
                 const newRow = `
                         <tr class="article-row hover:bg-gray-100">
-            <td class="p-3 border border-gray-400">
-                <select class="w-full border border-gray-400 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 select2 article-select" data-index="${articleIndex}">
-                    @foreach($articles as $article)
-                    <option value="{{ $article->id }}"
-                            data-prix="{{ $article->prix_achat }}"
-                            data-condi="{{ $article->conditionnement }}"
-                            data-prixcgt="{{ $article->prix_cgt }}"
-                            data-consignation="{{ $article->prix_consignation }}">
-                        {{ $article->nom }}
-                    </option>
-                    @endforeach
-                </select>
-            </td>
-            <td class="p-3 border border-gray-400">
-                <input type="number" class="w-full border border-gray-400 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 quantite-input" data-index="${articleIndex}" min="1">
-            </td>
-            <td class="p-3 border border-gray-400">
-                <input type="number" class="w-full border border-gray-400 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 quantiteunite-input" data-index="${articleIndex}" min="1">
-            </td>
-            <td class="p-3 border border-gray-400">
-                <input type="number" class="w-full border border-gray-400 rounded-md px-3 py-2 bg-gray-100 total-input" data-index="${articleIndex}">
-            </td>
-            <td class="p-3 border border-gray-400">
-                <input type="number" class="w-full border border-gray-400 rounded-md px-3 py-2 bg-gray-100 prixunite-input" data-index="${articleIndex}" min="1" step="0.01" readonly>
-            </td>
-            <td class="p-3 text-center border border-gray-400">
-                <button type="button" class="text-red-500 hover:text-red-700 remove-article" data-index="${articleIndex}">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </td>
-        </tr>
+    <td class="p-3 border border-gray-400">
+        <select class="w-full border border-gray-400 px-3 py-2 focus:outline-none focus:border-blue-500 select2 article-select" data-index="${articleIndex}">
+            @foreach($articles as $article)
+            <option value="{{ $article->id }}"
+                    data-prix="{{ $article->prix_achat }}"
+                    data-condi="{{ $article->conditionnement }}"
+                    data-prixcgt="{{ $article->prix_cgt }}"
+                    data-consignation="{{ $article->prix_consignation }}">
+                {{ $article->nom }}
+            </option>
+            @endforeach
+        </select>
+    </td>
+    <td class="p-3 border border-gray-400">
+        <input type="number" class="w-full border border-gray-400 px-3 py-2 focus:outline-none focus:border-blue-500 quantite-input" data-index="${articleIndex}" min="1">
+    </td>
+    <td class="p-3 border border-gray-400">
+        <input type="number" class="w-full border border-gray-400 px-3 py-2 focus:outline-none focus:border-blue-500 quantiteunite-input" data-index="${articleIndex}" min="1">
+    </td>
+    <td class="p-3 border border-gray-400">
+        <input type="number" class="w-full border border-gray-400 px-3 py-2  total-input" data-index="${articleIndex}">
+    </td>
+    <td class="p-3 border border-gray-400">
+        <input type="number" class="w-full border border-gray-400 px-3 py-2 bg-gray-100 prixunite-input" data-index="${articleIndex}" min="1" step="0.01" readonly>
+    </td>
+    <td class="p-3 text-center border border-gray-400">
+        <button type="button" class="text-red-500 hover:text-red-700 remove-article" data-index="${articleIndex}">
+            <i class="fas fa-trash"></i>
+        </button>
+    </td>
+</tr>
 `;
                 $('#articlesContainer').append(newRow);
                 $(`.article-select[data-index="${articleIndex}"]`).select2();

@@ -35,6 +35,13 @@
                 <i class="fas fa-th-recycle mr-1"></i> Mouvement stock
             </a>
         </li>
+        <li role="presentation">
+            <a href="{{ route('emballage.index') }}"
+                class="inline-flex items-center px-4 py-2 rounded-t-lg border-b-2 
+                      {{ request()->routeIs('emballage.index') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-600 hover:text-indigo-600 hover:border-gray-300' }}">
+                <i class="fas fa-th-recycle mr-1"></i> Emballages
+            </a>
+        </li>
     </ul>
 
     <!-- Carte principale -->
@@ -54,17 +61,16 @@
                 @csrf
                 <!-- Champ de recherche -->
                 <div class="relative w-72">
-    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-    <input 
-        type="text" 
-        name="search" 
-        placeholder="Rechercher..."
-        value="{{ old('search', request('search')) }}"
-        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm placeholder-gray-400
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input
+                        type="text"
+                        name="search"
+                        placeholder="Rechercher..."
+                        value="{{ old('search', request('search')) }}"
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm placeholder-gray-400
                focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
-               shadow-sm transition duration-200"
-    >
-</div>
+               shadow-sm transition duration-200">
+                </div>
 
 
                 <!-- Dropdown tri -->
@@ -90,28 +96,27 @@
 
         <!-- Table -->
         <div class="p-4">
-            <div class="overflow-x-auto">
-                <table class="w-full border text-sm text-center">
-                    <thead class="bg-gray-800 text-white">
+            <div class="">
+                <table class="w-full border border-gray-200 text-sm text-center">
+                    <thead class="bg-gray-100 text-gray-700">
                         <tr>
-                            <th class="px-2 py-2">id</th>
-                            <th class="px-2 py-2">nom</th>
-                            <th class="px-2 py-2">categorie</th>
-
-                            <th class="px-2 py-2">quantite</th>
-                            <th class="px-2 py-2">mise à jour</th>
-                            <th class="px-2 py-2">date</th>
-                            <th class="px-2 py-2">ajouter</th>
+                            <th class="px-2 py-2 border border-gray-200">id</th>
+                            <th class="px-2 py-2 border border-gray-200">nom</th>
+                            <th class="px-2 py-2 border border-gray-200">categorie</th>
+                            <th class="px-2 py-2 border border-gray-200">quantite</th>
+                            <th class="px-2 py-2 border border-gray-200">valeur réelle(Ar)</th>
+                            <th class="px-2 py-2 border border-gray-200">mise à jour</th>
+                            <th class="px-2 py-2 border border-gray-200">date</th>
+                            <th class="px-2 py-2 border border-gray-200">actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y">
+                    <tbody class="divide-y divide-gray-200">
                         @forelse($articles as $article)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-2 py-2">{{ $article->id }}</td>
-                            <td class="px-2 py-2">{{ $article->nom }}</td>
-                            <td class="px-2 py-2">{{ $article->categorie_id }}</td>
-
-                            <td class="px-2 py-2">
+                            <td class="px-2 py-2 border border-gray-200">{{ $article->id }}</td>
+                            <td class="px-2 py-2 border border-gray-200">{{ $article->nom }}</td>
+                            <td class="px-2 py-2 border border-gray-200">{{ $article->categorie->nom }}</td>
+                            <td class="px-2 py-2 border border-gray-200">
                                 @php
                                 $quotient = intdiv($article->quantite, $article->conditionnement);
                                 $reste = $article->quantite % $article->conditionnement;
@@ -121,21 +126,33 @@
                                 @else
                                 <span class="text-red-600">{{ $quotient }} cageot{{ $quotient > 1 ? 's' : '' }} et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}</span>
                                 @endif
-
-
                             </td>
-                            <td class="px-2 py-2">{{ \Carbon\Carbon::parse($article->created_at)->format('Y-m-d') }}</td>
-                            <td class="px-2 py-2">{{ \Carbon\Carbon::parse($article->updated_at)->format('Y-m-d') }}</td>
-                            <td class="px-2 py-2">
-                                <a href="{{route('achat.page')}}" class="text-indigo-600 hover:text-indigo-800">
-                                    <i class="fas fa-edit"></i>
-                                </a>
+                            <td class="px-2 py-2 border border-gray-200">{{ $article->quantite * $article->prix_unitaire }} Ar</td>
+                            <td class="px-2 py-2 border border-gray-200">{{ \Carbon\Carbon::parse($article->created_at)->format('Y-m-d') }}</td>
+                            <td class="px-2 py-2 border border-gray-200">{{ \Carbon\Carbon::parse($article->updated_at)->format('Y-m-d') }}</td>
+                            <td class="px-2 py-2 border border-gray-200">
+                                <div class="relative inline-block">
+                                    <button onclick="toggleMenu({{ $article->id }})" class="text-gray-500 hover:text-gray-700 p-1">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div id="menu-{{ $article->id }}" class="hidden absolute right-0 mt-1 w-40 bg-white border border-gray-200 shadow-lg z-10">
+                                        <a href="{{route('achat.page')}}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-200">
+                                            <i class="fas fa-plus text-blue-500 mr-2"></i>Ajouter
+                                        </a>
+                                        <a href="#" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-200">
+                                            <i class="fas fa-trash mr-2 text-red-500"></i>Supprimer
+                                        </a>
+                                        <a href="#" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            <i class="fas fa-eye mr-2 text-green-500"></i>Voir
+                                        </a>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="10" class="px-4 py-3">
-                                <div class="bg-yellow-100 text-yellow-700 px-3 py-2 rounded-md text-sm">
+                            <td colspan="8" class="px-4 py-3 border border-gray-200">
+                                <div class="bg-yellow-50 text-yellow-700 px-3 py-2 border border-yellow-200 text-sm">
                                     <i class="fas fa-exclamation-triangle mr-1"></i>
                                     Pas de donnée trouvé --
                                 </div>
@@ -151,6 +168,28 @@
                 </div>
             </div>
         </div>
+
+        <script>
+            function toggleMenu(articleId) {
+                const menu = document.getElementById('menu-' + articleId);
+                // Fermer tous les autres menus ouverts
+                document.querySelectorAll('[id^="menu-"]').forEach(otherMenu => {
+                    if (otherMenu.id !== 'menu-' + articleId) {
+                        otherMenu.classList.add('hidden');
+                    }
+                });
+                menu.classList.toggle('hidden');
+            }
+
+            // Fermer le menu quand on clique ailleurs
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.relative')) {
+                    document.querySelectorAll('[id^="menu-"]').forEach(menu => {
+                        menu.classList.add('hidden');
+                    });
+                }
+            });
+        </script>
     </div>
 
 </div>

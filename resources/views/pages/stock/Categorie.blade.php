@@ -35,6 +35,13 @@
                 <i class="fas fa-th-recycle mr-1"></i> Mouvement stock
             </a>
         </li>
+        <li role="presentation">
+            <a href="{{ route('emballage.index') }}"
+                class="inline-flex items-center px-4 py-2 rounded-t-lg border-b-2 
+                      {{ request()->routeIs('emballage.index') ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-600 hover:text-indigo-600 hover:border-gray-300' }}">
+                <i class="fas fa-th-recycle mr-1"></i> Emballages
+            </a>
+        </li>
     </ul>
     <!-- Cartes -->
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
