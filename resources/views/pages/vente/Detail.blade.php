@@ -232,7 +232,7 @@
     $prixGlobale += $prix_total;
     }
 
-    $nombreCageots = optional($conditionnement->conditionnement)->nombre_cageot ?? 0;
+    $nombreCageots = optional($conditionnement->conditionnements)->sum('nombre_cageot') ?? 0;
     $valeurCageots = $nombreCageots * ($cgt ?? 0);
     $totalConsigne = ($totalconsigne ?? 0) + $valeurCageots;
     $montantTotal = ($deconsigneglobale - ($reste ?? 0) < 0 ? 0 : $deconsigneglobale - ($reste ?? 0)) + $totalConsigne;

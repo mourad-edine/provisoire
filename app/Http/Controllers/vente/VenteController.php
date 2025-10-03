@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Auth;
 
 class VenteController extends Controller
 {
-    
+
     //public $nombre =  10;
     public function show()
     {
@@ -248,7 +248,7 @@ class VenteController extends Controller
 
         $article = Article::where('prix_cgt', '>', 0)->first();
 
-        $commandesQuery = Commande::with(['ventes.consignation', 'ventes.article', 'client', 'conditionnement'])
+        $commandesQuery = Commande::with(['ventes.consignation', 'ventes.article', 'client', 'conditionnements'])
             ->withCount('ventes')
             ->where('disposition', 0)
             ->having('ventes_count', '>', 0);
@@ -356,7 +356,7 @@ class VenteController extends Controller
         });
         //dd($reste);
         //dd($ventes->toArray());
-        $conditionnement = Commande::with('conditionnement')->where('id', $id)->first();
+        $conditionnement = Commande::with('conditionnements')->where('id', $id)->first();
 
         $exist = Commande::where('commande_id', $id)->exists();
         return view('pages.vente.Detail', [
@@ -374,7 +374,7 @@ class VenteController extends Controller
     {
         return view('pages.vente.Vente', [
             'articles' => Article::where('status', 1)->get(),
-            'clients' => Client::where('status' , 1)->get(),
+            'clients' => Client::where('status', 1)->get(),
             'dernier' => Commande::latest()->first()
         ]);
     }
@@ -586,7 +586,7 @@ class VenteController extends Controller
                 ->payements()
                 ->orderBy('id', 'DESC')
                 ->paginate(6),
-                ''
+            ''
             // La pagination doit être ici
         ]);
     }
@@ -603,8 +603,8 @@ class VenteController extends Controller
         ]);
     }
 
-    public function historiquestore($id_article , $quantite , $vente_id , $prix , $total)
-    {   
+    public function historiquestore($id_article, $quantite, $vente_id, $prix, $total)
+    {
         $article = Article::find($id_article);
         HistoriqueVente::create([
             'id_article' => $id_article,
@@ -622,7 +622,7 @@ class VenteController extends Controller
 
     public function store(Request $request)
     {
-        
+
         //
         //dd($request->all());
         if ($request->nouveau) {
@@ -643,13 +643,36 @@ class VenteController extends Controller
         $cgs = Article::first()->prix_cgt;
 
         if ($conditionnement == 1) {
-            Conditionnement::create([
+            if($request->embale && (int)$request->embale > 0){
+                Conditionnement::create([
                 'commande_id' => $commande->id,
                 'nombre_cageot' => $request->embale ? $request->embale : 0,
+                'type_cageot' => 24,
                 'montant' => $request->embale ? $request->embale * $cgs : 0,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
+            }
+            if($request->cageot20 && (int)$request->cageot20 > 0){
+                Conditionnement::create([
+                'commande_id' => $commande->id,
+                'nombre_cageot' => $request->cageot20 ? $request->cageot20 : 0,
+                'type_cageot' => 20,
+                'montant' => $request->cageot20 ? $request->cageot20 * $cgs : 0,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            }
+            if($request->cageot12 && (int)$request->cageot12 > 0){
+                Conditionnement::create([
+                'commande_id' => $commande->id,
+                'nombre_cageot' => $request->cageot12 ? $request->cageot12 : 0,
+                'type_cageot' => 12,
+                'montant' => $request->cageot12 ? $request->cageot12  * $cgs : 0,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            }
         }
 
         if ($request->articles) {
@@ -672,8 +695,6 @@ class VenteController extends Controller
                 if (!empty($index['quantite_cageot'])) {
                     $quantiteCageot = (int)$index['quantite_cageot'];
 
-                    $article->quantite -= $quantiteCageot * $article->conditionnement;
-                    $article->save();
 
                     $venteCageot = Vente::create([
                         'article_id' => $index['id'],
@@ -689,7 +710,9 @@ class VenteController extends Controller
                         'date_sortie' => now(),
                         'cat' => $request->cat
                     ]);
-                    $this->historiquestore($article->id , $quantiteCageot * $article->conditionnement , $venteCageot->id , $index['prix_unitaire'] , $index['prix_unitaire'] * $quantiteCageot);
+                    $this->historiquestore($article->id, $quantiteCageot * $article->conditionnement, $venteCageot->id, $index['prix_unitaire'], $index['prix_unitaire'] * $quantiteCageot);
+                    $article->quantite -= $quantiteCageot * $article->conditionnement;
+                    $article->save();
 
                     // Créer une consignation si cageot non rendu
                     if ($cageot == 0 && $article->prix_cgt != 0) {
@@ -733,8 +756,7 @@ class VenteController extends Controller
                 // Vente à l’unité
                 if (!empty($index['quantite_unite'])) {
                     $quantiteUnite = (int)$index['quantite_unite'];
-                    $article->quantite -= $quantiteUnite;
-                    $article->save();
+
 
                     $venteUnite = Vente::create([
                         'article_id' => $index['id'],
@@ -751,8 +773,9 @@ class VenteController extends Controller
                         'cat' => $request->cat
 
                     ]);
-                    $this->historiquestore($article->id , $quantiteUnite , $venteUnite->id , $index['prix_unitaire'] , $index['prix_unitaire'] * $quantiteUnite);
-
+                    $this->historiquestore($article->id, $quantiteUnite, $venteUnite->id, $index['prix_unitaire'], $index['prix_unitaire'] * $quantiteUnite);
+                    $article->quantite -= $quantiteUnite;
+                    $article->save();
                     if ($bouteille == 0 && $article->prix_consignation != 0) {
                         Consignation::create([
                             'vente_id' => $venteUnite->id,
@@ -1094,7 +1117,8 @@ class VenteController extends Controller
         ]);
     }
 
-    public function delete(Request $request){
+    public function delete(Request $request)
+    {
         $id = $request->commande_id;
         $commande = Commande::find($id);
         if (!$commande) {
@@ -1102,31 +1126,29 @@ class VenteController extends Controller
         }
         try {
             DB::beginTransaction();
-            foreach($commande->ventes as $vente) {
+            foreach ($commande->ventes as $vente) {
                 // Supprimer les consignations associées à la vente
                 $article = Article::find($vente->article_id);
                 //dd($article->conditionnement);
 
-                if($vente->type_achat == "cageot" || $vente->type_achat == "pack"){
+                if ($vente->type_achat == "cageot" || $vente->type_achat == "pack") {
                     $article->quantite += $vente->quantite * (int)$article->conditionnement;
                     $article->save();
-
-                }else{
+                } else {
                     $article->quantite += $vente->quantite;
                     $article->save();
                 }
                 Consignation::where('vente_id', $vente->id)->delete();
                 //dd($article->quantite);
                 $vente->delete();
-                
             }
 
             Payement::where('commande_id', $id)->delete();
             // Supprimer la consignation associée à la commande
-            Conditionnement::where('commande_id' , $id)->delete();
+            Conditionnement::where('commande_id', $id)->delete();
             // Supprimer la commande elle-même
             Commande::where('commande_id', $id)->delete();
-            
+
             $commande->delete();
 
             DB::commit();
@@ -1139,7 +1161,7 @@ class VenteController extends Controller
     }
 
 
-      public function reglement($id)
+    public function reglement($id)
 
     {
         $article = Article::first();
@@ -1189,13 +1211,13 @@ class VenteController extends Controller
         });
         //dd($reste);
         //dd($ventes->toArray());
-        $conditionnement = Commande::with('conditionnement')->where('id', $id)->first();
-
+        $conditionnement = Commande::with('conditionnements')->where('id', $id)->get();
+        //dd($conditionnement->toArray());
         $exist = Commande::where('commande_id', $id)->exists();
         return view('pages.vente.Reglement', [
             'ventes' => $ventes,
             'commande_id' => $id,
-            'conditionnement' => $conditionnement,
+            'conditionnements' => $conditionnement,
             'cgt' => $cgt,
             'commande' => $commande,
             'reste' => $reste,
@@ -1253,8 +1275,8 @@ class VenteController extends Controller
         });
         //dd($reste);
         //dd($ventes->toArray());
-        $conditionnement = Commande::with('conditionnement')->where('id', $id)->first();
-
+        $conditionnement = Commande::with('conditionnements')->where('id', $id)->first();
+        //dd($conditionnement->toArray());
         $exist = Commande::where('commande_id', $id)->exists();
         return view('pages.vente.Pay', [
             'ventes' => $ventes,
@@ -1267,5 +1289,3 @@ class VenteController extends Controller
         ]);
     }
 }
-
-

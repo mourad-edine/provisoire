@@ -28,8 +28,8 @@ class Commande extends Model
         return $this->hasMany(Vente::class , 'commande_id');
     }
 
-    public function conditionnement(){
-        return $this->hasOne(Conditionnement::class , 'commande_id');
+    public function conditionnements(){
+        return $this->hasMany(Conditionnement::class , 'commande_id');
     }
 
     public function client(){

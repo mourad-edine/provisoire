@@ -178,8 +178,8 @@
 
                                         <td class="px-4 py-2 align-top">
                                             @php
-                                            $qi = intdiv($article->quantite, $article->conditionnement);
-                                            $ri = $article->quantite % $article->conditionnement;
+                                            $qi = intdiv($historique->quantite_initiale, $article->conditionnement);
+                                            $ri = $historique->quantite_initiale % $article->conditionnement;
                                             @endphp
                                             {{ $qi }} cageot/pack{{ $qi > 1 ? 's' : '' }}
                                             @if($ri > 0)

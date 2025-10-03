@@ -6,10 +6,94 @@
 <div class="container-fluid mx-auto px-4">
     <!-- En-tête de page -->
     <div class="flex items-center justify-between mb-6">
-        <button class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 flex items-center gap-2" data-toggle="modal" data-target="#addExpenseModal">
+        <button class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 flex items-center gap-2" onclick="openModal()">
             <i class="fas fa-plus-circle text-white text-sm"></i> Nouvelle Dépense
         </button>
     </div>
+
+    <!-- Modal pour ajouter une dépense -->
+    <div id="depenseModal" 
+     class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 hidden">
+    
+    <!-- Contenu du modal -->
+    <div class="bg-white w-full max-w-3xl mx-4 rounded-lg shadow-lg p-6 relative">
+        
+        <!-- En-tête -->
+        <div class="flex justify-between items-center pb-3 border-b">
+            <h3 class="text-xl font-semibold text-gray-900">Nouvelle Dépense</h3>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Formulaire -->
+        <form id="depenseForm" action="{{ route('depense.store') }}" method="POST" class="mt-6 space-y-5">
+            @csrf
+
+            <!-- Description -->
+            <div>
+                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <input type="text" id="description" name="description" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                    placeholder="Description de la dépense">
+            </div>
+
+            <!-- Montant -->
+            <div>
+                <label for="montant" class="block text-sm font-medium text-gray-700 mb-1">Montant (Ar)</label>
+                <input type="number" id="montant" name="montant" step="0.01" min="0" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                    placeholder="0.00">
+            </div>
+
+            <!-- Quantité -->
+            <div>
+                <label for="quantite" class="block text-sm font-medium text-gray-700 mb-1">Quantité</label>
+                <input type="number" id="quantite" name="quantite" min="1" 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+            </div>
+
+            <!-- Mode de paiement -->
+            <div>
+                <label for="mode_paye" class="block text-sm font-medium text-gray-700 mb-1">Mode de paiement</label>
+                <select id="mode_paye" name="mode_paye" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+                    <option value="">Sélectionnez un mode de paiement</option>
+                    <option value="Espèces">Espèces</option>
+                    <option value="Carte bancaire">Carte bancaire</option>
+                    <option value="Virement">Virement</option>
+                    <option value="Chèque">Chèque</option>
+                    <option value="Mobile Money">Mobile Money</option>
+                </select>
+            </div>
+
+            <!-- Type de dépense -->
+            
+
+            <!-- Date -->
+            <div>
+                <label for="date_depense" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                <input type="date" id="date_depense" name="created_at"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                    value="{{ date('Y-m-d') }}">
+            </div>
+
+            <!-- Boutons -->
+            <div class="flex justify-end space-x-3 pt-5 border-t">
+                <button type="button" onclick="closeModal()"
+                    class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition duration-200">
+                    Annuler
+                </button>
+                <button type="submit"
+                    class="px-5 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition duration-200 flex items-center gap-2">
+                    <i class="fas fa-save"></i>
+                    Enregistrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 
     <!-- Cartes de synthèse -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -22,7 +106,7 @@
                     </div>
                     <div>
                         <p class="text-xs text-gray-500 mb-1">Dépenses ce mois</p>
-                        <h5 class="text-lg font-semibold">{{$totalmois . ' Ar'}}</h5>
+                        <h5 class="text-lg font-semibold">{{ $totalmois ?? '0' }} Ar</h5>
                     </div>
                 </div>
             </div>
@@ -37,71 +121,17 @@
                     </div>
                     <div>
                         <p class="text-xs text-gray-500 mb-1">Aujourd'hui</p>
-                        <h5 class="text-lg font-semibold">{{$totalJour . ' Ar'}}</h5>
+                        <h5 class="text-lg font-semibold">{{ $totalJour ?? '0' }} Ar</h5>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Bouteille acheté aujourd'hui -->
-        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 h-full">
-            <div class="p-4">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-lg bg-yellow-50 flex items-center justify-center mr-3">
-                        <i class="fas fa-wine-bottle text-yellow-500"></i>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-500 mb-1">Bouteille acheté aujourd'hui</p>
-                        <h5 class="text-lg font-semibold">{{$bouteillejour}}</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
+       
 
         <!-- Bouteille acheté ce mois ci -->
-        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 h-full">
-            <div class="p-4">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-lg bg-yellow-50 flex items-center justify-center mr-3">
-                        <i class="fas fa-wine-bottle text-yellow-500"></i>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-500 mb-1">Bouteille acheté ce mois-ci</p>
-                        <h5 class="text-lg font-semibold">{{$bouteillemois}}</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Cageot acheté aujourd'hui -->
-        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 h-full">
-            <div class="p-4">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center mr-3">
-                        <i class="fas fa-box text-yellow-500"></i>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-500 mb-1">Cageot acheté aujourd'hui</p>
-                        <h5 class="text-lg font-semibold">{{$cageotjour}}</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Cageot acheté ce mois ci -->
-        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 h-full">
-            <div class="p-4">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center mr-3">
-                        <i class="fas fa-box-open text-yellow-500"></i>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-500 mb-1">Cageot acheté ce mois-ci</p>
-                        <h5 class="text-lg font-semibold">{{$cageotmois}}</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
+       
     </div>
 
     <!-- Tableau des dépenses -->
@@ -151,7 +181,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($depense as $item)
+                        @forelse($depenses ?? [] as $item)
                         <tr class="hover:bg-gray-50">
                             <td class="py-3 px-4 border-b">{{ \Carbon\Carbon::parse($item->created_at)->format('d/m/Y') }}</td>
                             <td class="py-3 px-4 border-b">{{ $item->description }}</td>
@@ -162,13 +192,19 @@
                                 <form action="{{ route('depense.destroy', $item->id) }}" method="POST" class="inline-block">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="p-1 hover:bg-gray-100 rounded" onclick="return confirm('Supprimer cette dépense ?')">
+                                    <button type="submit" class="p-1 hover:bg-gray-100 rounded" onclick="return confirm('Supprimer cette dépense ?')">
                                         <i class="fas fa-trash text-yellow-500"></i>
                                     </button>
                                 </form>
                             </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="6" class="py-4 px-4 border-b text-center text-gray-500">
+                                Aucune dépense enregistrée
+                            </td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -176,77 +212,45 @@
     </div>
 </div>
 
-<!-- Modal d'ajout de dépense -->
-<div class="modal fade fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="addExpenseModal" tabindex="-1" role="dialog" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
-    <div class="relative top-20 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white">
-        <form id="expenseForm" method="POST" action="{{ route('depense.store') }}">
-            @csrf
-            <div class="bg-gray-800 text-white px-6 py-4 rounded-t-lg">
-                <div class="flex justify-between items-center">
-                    <h5 class="text-lg font-semibold" id="addExpenseModalLabel">Nouvelle Dépense</h5>
-                    <button type="button" class="text-white text-2xl" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            </div>
+<script>
+// Fonctions pour gérer le modal
+function openModal() {
+    document.getElementById('depenseModal').classList.remove('hidden');
+    document.getElementById('depenseModal').classList.add('flex');
+}
 
-            <div class="px-6 py-4 space-y-4">
-                <div class="space-y-2">
-                    <label for="montant" class="block text-sm font-medium text-gray-700">Montant (Ar)</label>
-                    <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="montant" id="montant" required>
-                </div>
+function closeModal() {
+    document.getElementById('depenseModal').classList.remove('flex');
+    document.getElementById('depenseModal').classList.add('hidden');
+    // Réinitialiser le formulaire
+    document.getElementById('depenseForm').reset();
+}
 
-                <div id="quantiteContainer" class="space-y-2">
-                    <label for="quantite" class="block text-sm font-medium text-gray-700">Quantité</label>
-                    <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="quantite" id="quantite" min="1">
-                </div>
+// Fermer le modal en cliquant à l'extérieur
+document.getElementById('depenseModal').addEventListener('click', function(e) {
+    if (e.target.id === 'depenseModal') {
+        closeModal();
+    }
+});
 
-                <div class="space-y-2">
-                    <label for="mode_paye" class="block text-sm font-medium text-gray-700">Moyen de paiement</label>
-                    <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="mode_paye" id="mode_paye" required>
-                        <option value="Espèces">Espèces</option>
-                        <option value="Mobile Money">Mobile Money</option>
-                    </select>
-                </div>
-
-                <div class="space-y-2">
-                    <label for="description" class="block text-sm font-medium text-gray-700">Description (optionel <span class="text-red-500">*</span>)</label>
-                    <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" name="description" id="description" required>
-                        <option value="Bouteille">Bouteille</option>
-                        <option value="cageot">cageot</option>
-                        <option value="Autre">Autre</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end gap-3">
-                <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200" data-dismiss="modal">Annuler</button>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">Enregistrer</button>
-            </div>
-        </form>
-    </div>
-</div>
+// Gérer la soumission du formulaire
+document.getElementById('depenseForm').addEventListener('submit', function(e) {
+    // Validation côté client optionnelle
+    const montant = document.getElementById('montant').value;
+    const description = document.getElementById('description').value;
+    
+    if (!description.trim()) {
+        e.preventDefault();
+        alert('Veuillez saisir une description');
+        return;
+    }
+    
+    if (!montant || parseFloat(montant) <= 0) {
+        e.preventDefault();
+        alert('Veuillez saisir un montant valide');
+        return;
+    }
+});
+</script>
 
 @endsection
-
-@section('scripts')
-<script>
-    $(document).ready(function() {
-        // Initialisation du DataTable
-        $('#dataTable').DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/French.json"
-            },
-            "order": [
-                [0, "desc"]
-            ]
-        });
-
-        // Gestion de l'ajout de dépense
-        $('#addExpenseBtn').click(function() {
-            // Ici, vous pouvez ajouter la logique pour enregistrer la dépense
-            alert('Fonctionnalité à implémenter: Enregistrement de la dépense');
-        });
-    });
-</script>
-@endsection     

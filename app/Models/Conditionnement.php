@@ -12,6 +12,7 @@ class Conditionnement extends Model
         'nombre_cageot',
         'etat',
         'montant',
+        'type_cageot',
         'created_at',
         'updated_at'
     ];

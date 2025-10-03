@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Mon Site')</title>
     @include('Layouts.Css')
-        <link rel="stylesheet" href="{{ asset('assets/vendor/fontawesome-free/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fontawesome-free/css/all.min.css') }}">
 
     <link rel="stylesheet" href="{{ asset('assets/select2/dist/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/select2-bootstrap-5-theme.min.css') }}">
@@ -14,11 +14,13 @@
         @font-face {
             font-family: 'Bellota';
             src: url("{{ asset('assets/css/fonts/Bellota-Light.ttf') }}") format('truetype');
-            
+
         }
-        body{
+
+        body {
             font-family: "Bellota", system-ui;
         }
+
         .select2-container--default .select2-selection--single {
             height: 46px;
             padding: 0.5rem;
@@ -52,8 +54,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .glass-effect {
@@ -140,8 +149,8 @@
                 <!-- Desktop Menu -->
                 <div id="mainNavbar" class="hidden md:flex items-center space-x-1">
                     <!-- Accueil -->
-                    <a href="{{ route('page.accueil') }}" 
-                       class="nav-item flex items-center space-x-2 {{ request()->routeIs('page.accueil') ||  request()->routeIs('stat')? 'nav-active' : '' }}">
+                    <a href="{{ route('page.accueil') }}"
+                        class="nav-item flex items-center space-x-2 {{ request()->routeIs('page.accueil') ||  request()->routeIs('stat')? 'nav-active' : '' }}">
                         <i class="fas fa-home text-sm"></i>
                         <span>Accueil</span>
                     </a>
@@ -155,12 +164,12 @@
                         </button>
                         <div class="dropdown-content absolute left-0 mt-2 w-56 z-50">
                             <div class="glass-effect shadow-xl rounded-lg border border-gray-200">
-                                <a href="{{ route('article.liste') }}" 
-                                   class="block px-4 py-3 hover:bg-blue-50 text-gray-700 border-b border-gray-100 transition-colors {{ request()->routeIs('article.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
+                                <a href="{{ route('article.liste') }}"
+                                    class="block px-4 py-3 hover:bg-blue-50 text-gray-700 border-b border-gray-100 transition-colors {{ request()->routeIs('article.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
                                     <i class="fas fa-glass-martini-alt mr-3 text-blue-500"></i>Boissons
                                 </a>
-                                <a href="{{ route('categorie.liste') }}" 
-                                   class="block px-4 py-3 hover:bg-blue-50 text-gray-700 border-b border-gray-100 transition-colors {{ request()->routeIs('categorie.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
+                                <a href="{{ route('categorie.liste') }}"
+                                    class="block px-4 py-3 hover:bg-blue-50 text-gray-700 border-b border-gray-100 transition-colors {{ request()->routeIs('categorie.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
                                     <i class="fas fa-tags mr-3 text-green-500"></i>Catégories
                                 </a>
                                 <div class="border-t border-gray-200 my-1"></div>
@@ -173,15 +182,15 @@
                     </div>
 
                     <!-- Ventes -->
-                    <a href="{{ route('commande.liste.vente') }}" 
-                       class="nav-item flex items-center space-x-2 {{ request()->routeIs('commande.liste.vente') ? 'nav-active' : '' }}">
+                    <a href="{{ route('commande.liste.vente') }}"
+                        class="nav-item flex items-center space-x-2 {{ request()->routeIs('commande.liste.vente') ? 'nav-active' : '' }}">
                         <i class="fas fa-cart-plus text-sm"></i>
                         <span>Ventes</span>
                     </a>
 
                     <!-- Achats -->
-                    <a href="{{ route('achat.commande') }}" 
-                       class="nav-item flex items-center space-x-2 {{ request()->routeIs('achat.commande') ? 'nav-active' : '' }}">
+                    <a href="{{ route('achat.commande') }}"
+                        class="nav-item flex items-center space-x-2 {{ request()->routeIs('achat.commande') ? 'nav-active' : '' }}">
                         <i class="fas fa-shopping-cart text-sm"></i>
                         <span>Achats</span>
                     </a>
@@ -195,12 +204,12 @@
                         </button>
                         <div class="dropdown-content absolute left-0 mt-2 w-56 z-50">
                             <div class="glass-effect shadow-xl rounded-lg border border-gray-200">
-                                <a href="{{ route('client.liste') }}" 
-                                   class="block px-4 py-3 hover:bg-blue-50 text-gray-700 border-b border-gray-100 transition-colors {{ request()->routeIs('client.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
+                                <a href="{{ route('client.liste') }}"
+                                    class="block px-4 py-3 hover:bg-blue-50 text-gray-700 border-b border-gray-100 transition-colors {{ request()->routeIs('client.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
                                     <i class="fas fa-users mr-3 text-blue-500"></i>Clients
                                 </a>
-                                <a href="{{ route('fournisseur.liste') }}" 
-                                   class="block px-4 py-3 hover:bg-blue-50 text-gray-700 transition-colors {{ request()->routeIs('fournisseur.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
+                                <a href="{{ route('fournisseur.liste') }}"
+                                    class="block px-4 py-3 hover:bg-blue-50 text-gray-700 transition-colors {{ request()->routeIs('fournisseur.liste') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
                                     <i class="fas fa-truck mr-3 text-green-500"></i>Fournisseurs
                                 </a>
                             </div>
@@ -208,15 +217,15 @@
                     </div>
 
                     <!-- Stock -->
-                    <a href="{{ route('stock.liste') }}" 
-                       class="nav-item flex items-center space-x-2 {{ request()->routeIs('stock.liste') ? 'nav-active' : '' }}">
+                    <a href="{{ route('stock.liste') }}"
+                        class="nav-item flex items-center space-x-2 {{ request()->routeIs('stock.liste') ? 'nav-active' : '' }}">
                         <i class="fas fa-boxes text-sm"></i>
                         <span>Stock</span>
                     </a>
 
                     <!-- Paramètres -->
-                    <a href="{{ route('parametre') }}" 
-                       class="nav-item flex items-center space-x-2 {{ request()->routeIs('parametre') ? 'nav-active' : '' }}">
+                    <a href="{{ route('parametre') }}"
+                        class="nav-item flex items-center space-x-2 {{ request()->routeIs('parametre') ? 'nav-active' : '' }}">
                         <i class="fas fa-cog text-sm"></i>
                         <span>Paramètres</span>
                     </a>
@@ -250,8 +259,8 @@
             <!-- Mobile Menu -->
             <div id="mobile-menu" class="hidden md:hidden bg-gray-800 p-4 mt-3 rounded-lg border border-gray-700">
                 <div class="flex flex-col space-y-2">
-                    <a href="{{ route('page.accueil') }}" 
-                       class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('page.accueil') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                    <a href="{{ route('page.accueil') }}"
+                        class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('page.accueil') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                         <i class="fas fa-home w-5 text-center"></i>
                         <span>Accueil</span>
                     </a>
@@ -266,18 +275,18 @@
                             <i class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
                         </button>
                         <div class="mobile-dropdown-content ml-6">
-                            <a href="{{ route('article.liste') }}" 
-                               class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('article.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                            <a href="{{ route('article.liste') }}"
+                                class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('article.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                                 <i class="fas fa-glass-martini-alt w-5 text-center"></i>
                                 <span>Boissons</span>
                             </a>
-                            <a href="{{ route('categorie.liste') }}" 
-                               class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('categorie.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                            <a href="{{ route('categorie.liste') }}"
+                                class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('categorie.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                                 <i class="fas fa-tags w-5 text-center"></i>
                                 <span>Catégories</span>
                             </a>
-                            <a href="{{ route('depense') }}" 
-                               class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('depense') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                            <a href="{{ route('depense') }}"
+                                class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('depense') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                                 <i class="fas fa-money-bill-wave w-5 text-center"></i>
                                 <span>Dépenses divers</span>
                             </a>
@@ -285,13 +294,13 @@
                     </div>
 
                     <!-- Ventes & Achats -->
-                    <a href="{{ route('commande.liste.vente') }}" 
-                       class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('commande.liste.vente') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                    <a href="{{ route('commande.liste.vente') }}"
+                        class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('commande.liste.vente') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                         <i class="fas fa-cart-plus w-5 text-center"></i>
                         <span>Ventes</span>
                     </a>
-                    <a href="{{ route('achat.commande') }}" 
-                       class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('achat.commande') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                    <a href="{{ route('achat.commande') }}"
+                        class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('achat.commande') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                         <i class="fas fa-shopping-cart w-5 text-center"></i>
                         <span>Achats</span>
                     </a>
@@ -306,13 +315,13 @@
                             <i class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
                         </button>
                         <div class="mobile-dropdown-content ml-6">
-                            <a href="{{ route('client.liste') }}" 
-                               class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('client.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                            <a href="{{ route('client.liste') }}"
+                                class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('client.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                                 <i class="fas fa-users w-5 text-center"></i>
                                 <span>Clients</span>
                             </a>
-                            <a href="{{ route('fournisseur.liste') }}" 
-                               class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('fournisseur.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                            <a href="{{ route('fournisseur.liste') }}"
+                                class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('fournisseur.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                                 <i class="fas fa-truck w-5 text-center"></i>
                                 <span>Fournisseurs</span>
                             </a>
@@ -320,13 +329,13 @@
                     </div>
 
                     <!-- Stock & Paramètres -->
-                    <a href="{{ route('stock.liste') }}" 
-                       class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('stock.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                    <a href="{{ route('stock.liste') }}"
+                        class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('stock.liste') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                         <i class="fas fa-boxes w-5 text-center"></i>
                         <span>Stock</span>
                     </a>
-                    <a href="{{ route('parametre') }}" 
-                       class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('parametre') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
+                    <a href="{{ route('parametre') }}"
+                        class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('parametre') ? 'mobile-nav-active' : 'hover:bg-gray-700' }}">
                         <i class="fas fa-cog w-5 text-center"></i>
                         <span>Paramètres</span>
                     </a>
@@ -339,7 +348,7 @@
         <div class="max-w-7xl mx-auto  sm:px-6 lg:px-8 bg-white shadow-lg overflow-hidden">
             <!-- Card Header -->
 
-<div class="bg-white border-b-2 border-gray-200 py-4 px-6 flex justify-between items-center">
+            <div class="bg-white border-b-2 border-gray-200 py-4 px-6 flex justify-between items-center">
                 <h5 class="textrounded-md font-semibold flex items-center text-gray-800">
                     <svg class="w-5 h-5 mr-2 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a1 1 0 100 2 1 1 0 000-2zm-10 2H3" />
@@ -469,7 +478,7 @@
                                             data-conditionnement="{{ $article->conditionnement }}"
                                             data-quantite="{{ $article->quantite }}"
                                             data-prix_conditionne="{{ $article->prix_conditionne }}"
-                                            data-prix_gros="{{ $article->prix_gros }}">
+                                            data-type_btl="{{ $article->type_btl }}" data-prix_gros="{{ $article->prix_gros }}">
                                             {{ $article->nom }}
                                         </option>
                                         @endforeach
@@ -586,26 +595,29 @@
                                 <!-- Corps du modal -->
                                 <div class="p-6">
                                     <!-- Section Résumé compacte -->
+                                    <!-- Section Résumé compacte -->
                                     <div class="grid grid-cols-2 gap-4 mb-6">
-                                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 -lg p-4">
+                                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4">
                                             <div class="flex items-center justify-between">
                                                 <div>
-                                                    <p class="text-sm font-medium text-blue-700 mb-1">Total unités</p>
+                                                    <p class="text-sm font-medium text-blue-700 mb-1">Total cageot</p>
                                                     <span class="text-2xl font-bold text-blue-900" id="total-unites">0</span>
                                                 </div>
-                                                <div class="w-10 h-10 bg-blue-200 -full flex items-center justify-center">
+                                                <div class="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center">
                                                     <i class="fas fa-box text-blue-600"></i>
                                                 </div>
                                             </div>
+                                            <!-- Détail des cageots par type -->
+
                                         </div>
 
-                                        <div class="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 -lg p-4">
+                                        <div class="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-lg p-4">
                                             <div class="flex items-center justify-between">
                                                 <div>
                                                     <p class="text-sm font-medium text-green-700 mb-1">Montant final</p>
                                                     <span class="text-2xl font-bold text-green-900" id="global-total-modal">0 Ar</span>
                                                 </div>
-                                                <div class="w-10 h-10 bg-green-200 -full flex items-center justify-center">
+                                                <div class="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center">
                                                     <i class="fas fa-receipt text-green-600"></i>
                                                 </div>
                                             </div>
@@ -627,12 +639,29 @@
                                                 </label>
                                             </div>
                                             <div id="choix_content" class="pl-7 mt-2 hidden">
-                                                <div class="flex items-center gap-3">
-                                                    <div class="flex border border-gray-300 -lg overflow-hidden">
-                                                        <input type="number" class="w-24 px-3 py-2 border-0 focus:ring-0" name="embale" id="embale" placeholder="Nombre">
-                                                        <span class="bg-gray-100 px-3 py-2 text-gray-600 border-l border-gray-300">unités</span>
+                                                <div class="flex justify-between items-center gap-4 flex-wrap">
+                                                    <!-- Cageot 24 -->
+                                                    <!-- Dans la section des cageots vides -->
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="flex border border-gray-300 overflow-hidden">
+                                                            <input type="number" class="w-20 px-3 py-2 border-0 focus:ring-0" name="embale" id="embale" placeholder="Nombre" min="0">
+                                                            <span class="bg-gray-100 px-3 py-2 text-gray-600 border-l border-gray-300">x 24</span>
+                                                        </div>
                                                     </div>
-                                                    <span class="text-sm text-gray-500">Prix: <span id="cageot-unit-price" class="font-semibold">0</span> Ar/unité</span>
+
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="flex border border-gray-300 overflow-hidden">
+                                                            <input type="number" class="w-20 px-3 py-2 border-0 focus:ring-0" name="cageot20" id="cageot20" placeholder="Nombre" min="0">
+                                                            <span class="bg-gray-100 px-3 py-2 text-gray-600 border-l border-gray-300">x 20</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="flex border border-gray-300 overflow-hidden">
+                                                            <input type="number" class="w-20 px-3 py-2 border-0 focus:ring-0" name="cageot12" id="cageot12" placeholder="Nombre" min="0">
+                                                            <span class="bg-gray-100 px-3 py-2 text-gray-600 border-l border-gray-300">x 12</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -711,7 +740,9 @@
                             data-conditionnement="{{ $article->conditionnement }}"
                             data-quantite="{{ $article->quantite }}"
                             data-prix_gros="{{ $article->prix_gros }}"
-                            data-prix_conditionne="{{ $article->prix_conditionne }}">
+                            data-prix_conditionne="{{ $article->prix_conditionne }}"
+                            data-type_btl="{{ $article->type_btl }}" data-prix_gros="{{ $article->prix_gros }}">
+
                             {{ $article->nom }}
                         </option>
                         @endforeach
@@ -770,377 +801,463 @@
 
                 <!-- Prix total + bouton supprimer -->
                 <div class="col-span-2 p-3 text-center bg-white rounded-lg border border-gray-200 flex justify-between items-stretch h-16">
-    <div class="flex flex-col justify-center items-start flex-grow">
-        <div class="font-bold total-price text-gray-900 ml-3" data-index="{index}">0 Ar</div>
-        <div class="text-xs text-gray-500 price-details ml-3" data-index="{index}"></div>
-    </div>
-    
-    <div class="flex items-stretch ml-3">
-        <button type="button" class="delete-article bg-red-400 hover:bg-red-600 text-white w-8 h-8 flex items-center justify-center rounded-r transition-colors duration-200">
-                                            <i class="fas fa-times"></i>
-        </button>
-    </div>
-</div>
+                    <div class="flex flex-col justify-center items-start flex-grow">
+                        <div class="font-bold total-price text-gray-900 ml-3" data-index="{index}">0 Ar</div>
+                        <div class="text-xs text-gray-500 price-details ml-3" data-index="{index}"></div>
+                    </div>
+
+                    <div class="flex items-stretch ml-3">
+                        <button type="button" class="delete-article bg-red-400 hover:bg-red-600 text-white w-8 h-8 flex items-center justify-center rounded-r transition-colors duration-200">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </template>
 
     <!-- Scripts -->
-        <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-<script src="{{ asset('assets/select2/dist/js/select2.min.js') }}"></script>
-<script>
+    <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/select2/dist/js/select2.min.js') }}"></script>
+    <script>
     function disableSubmitButton(form) {
-    const button = form.querySelector('button[type="submit"]');
-    if (button) {
-        button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Confirmer la configuration';
-    }
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-    // Initialize Select2 for searchable selects
-    $('.searchable-select').select2();
-
-    // Variables globales
-    let articleIndex = 1;
-    let emptyCageotsPrice = 0;
-
-    // Bootstrap 5 Modal handling
-    const venteModal = document.getElementById('venteModal2');
-    const venteModalInstance = new bootstrap.Modal(venteModal);
-
-    // Function to format numbers with thousand separators
-    function formatNumber(number) {
-        return Math.floor(number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        const button = form.querySelector('button[type="submit"]');
+        if (button) {
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Confirmer la configuration';
+        }
     }
 
-    // Toggle new client input
-    const toggleBtn = document.getElementById("toggle_nouveau_client");
-    const clientSelect = document.getElementById("client_id");
-    const nouveauInput = document.getElementById("nouveau_client");
-    let modeNouveauClient = false;
+    document.addEventListener("DOMContentLoaded", function() {
+        // Initialize Select2 for searchable selects
+        $('.searchable-select').select2();
 
-    toggleBtn.addEventListener("click", function() {
-        modeNouveauClient = !modeNouveauClient;
-        if (modeNouveauClient) {
-            clientSelect.value = "";
-            clientSelect.disabled = true;
-            nouveauInput.disabled = false;
-            toggleBtn.classList.remove("bg-blue-600", "hover:bg-blue-700");
-            toggleBtn.classList.add("bg-green-600", "hover:bg-green-700");
-        } else {
-            nouveauInput.value = "";
-            nouveauInput.disabled = true;
-            clientSelect.disabled = false;
-            toggleBtn.classList.remove("bg-green-600", "hover:bg-green-700");
-            toggleBtn.classList.add("bg-blue-600", "hover:bg-blue-700");
-        }
-    });
+        // Variables globales
+        let articleIndex = 1;
+        let emptyCageotsPrice = 0;
 
-    // Show/hide payment fields based on 'payer' checkbox
-    $(document).on('change', '#payer', function() {
-        if ($(this).is(':checked')) {
-            $('#paiement-fields').show();
-            $('#montant-recu').val('');
-            $('#montant-rendu').val('');
-            $('#montant-recu').focus();
-        } else {
-            $('#paiement-fields').hide();
-        }
-    });
+        // Bootstrap 5 Modal handling
+        const venteModal = document.getElementById('venteModal2');
+        const venteModalInstance = new bootstrap.Modal(venteModal);
 
-    // Calculate change amount
-    $(document).on('input', '#montant-recu', function() {
-        const montantRecu = parseFloat($(this).val()) || 0;
-        const total = parseFloat($('#tot_glob').val()) || 0;
-        const montantRendu = montantRecu - total;
-        $('#montant-rendu').val(montantRendu >= 0 ? montantRendu : '0');
-    });
-
-    // Prevent form submission if payment is required but amount is not entered
-    $('#venteForm').submit(function(e) {
-        
-        return true;
-    });
-
-    // Handle type of sale change (gros/detail)
-    $('#type_vente').on('change', function() {
-        const type = $(this).val();
-        $('.article-section').each(function() {
-            const section = $(this);
-            const selectedOption = section.find('.article-select option:selected');
-            const prixDetail = parseInt(selectedOption.data('prix')) || 0;
-            const prixGros = parseInt(selectedOption.data('prix_gros')) || 0;
-            const prixFinal = (type === 'gros') ? prixGros : prixDetail;
-            section.find('input[name$="[prix_unitaire]"]').val(prixFinal);
-            calculateArticleTotal(section.data('index'));
-        });
-        calculateGlobalTotal();
-    });
-
-    // Calculate total for an article
-    function calculateArticleTotal(index) {
-        const section = $(`.article-section[data-index="${index}"]`);
-        const prixUnitaire = parseInt(section.find('input[name$="[prix_unitaire]"]').val()) || 0;
-        const quantiteCageot = parseInt(section.find('input[name$="[quantite_cageot]"]').val()) || 0;
-        const quantiteUnite = parseInt(section.find('input[name$="[quantite_unite]"]').val()) || 0;
-        const selectedOption = section.find('.article-select option:selected');
-        const prixConsignation = parseInt(selectedOption.data('consignation')) || 0;
-        const prixCgt = parseInt(selectedOption.data('cgt')) || 0;
-        const prixConditionne = parseInt(selectedOption.data('prix_conditionne')) || 0;
-        const conditionnement = parseInt(selectedOption.data('conditionnement')) || 1;
-
-        // Disable avec_cageot checkbox if quantite_cageot is 0
-        const avecCageotCheckbox = section.find('input[name$="[avec_cageot]"]');
-        if (quantiteCageot === 0 || prixCgt === 0) {
-            avecCageotCheckbox.prop('checked', false).prop('disabled', true);
-        } else {
-            avecCageotCheckbox.prop('disabled', false);
+        // Function to format numbers with thousand separators
+        function formatNumber(number) {
+            return Math.floor(number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }
 
-        // Uncheck options if price is 0
-        if (prixConsignation === 0) {
-            section.find('input[name$="[avec_bouteille]"]').prop('checked', false);
-        }
+        // Toggle new client input
+        const toggleBtn = document.getElementById("toggle_nouveau_client");
+        const clientSelect = document.getElementById("client_id");
+        const nouveauInput = document.getElementById("nouveau_client");
+        let modeNouveauClient = false;
 
-        const avecCageot = prixCgt > 0 && quantiteCageot > 0 && avecCageotCheckbox.is(':checked');
-        const avecBouteille = prixConsignation > 0 && section.find('input[name$="[avec_bouteille]"]').is(':checked');
-        const totalUnites = (quantiteCageot * conditionnement) + quantiteUnite;
-
-        let total = (quantiteUnite * prixUnitaire) + (quantiteCageot * prixConditionne);
-        let totalSansConsigne = total;
-        let details = [];
-
-        if (avecCageot && quantiteCageot > 0) {
-            const suppCageot = quantiteCageot * prixCgt;
-            total += suppCageot;
-            details.push(`+ ${quantiteCageot} cageot: ${formatNumber(suppCageot)}`);
-        }
-        if (avecBouteille && totalUnites > 0) {
-            const suppBouteille = totalUnites * prixConsignation;
-            total += suppBouteille;
-            details.push(`+ ${totalUnites} bouteille: ${formatNumber(suppBouteille)}`);
-        }
-
-        $(`.total-price[data-index="${index}"]`).text(formatNumber(total) + ' Ar');
-        $(`.price-details[data-index="${index}"]`).html(details.join('<br>'));
-
-        return {
-            totalAvecConsigne: total,
-            totalSansConsigne: totalSansConsigne,
-            prixCgt: prixCgt,
-            totalUnites: totalUnites
-        };
-    }
-
-    // Calculate global total
-    function calculateGlobalTotal() {
-        let globalTotal = 0;
-        let globalNonConsigne = 0;
-        let prixCgtReference = 0;
-        let totalUnitesGlobal = 0;
-
-        $('.article-section').each(function() {
-            const index = $(this).data('index');
-            const result = calculateArticleTotal(index);
-            globalTotal += result.totalAvecConsigne;
-            globalNonConsigne += result.totalSansConsigne;
-            if (prixCgtReference === 0) {
-                prixCgtReference = result.prixCgt;
+        toggleBtn.addEventListener("click", function() {
+            modeNouveauClient = !modeNouveauClient;
+            if (modeNouveauClient) {
+                clientSelect.value = "";
+                clientSelect.disabled = true;
+                nouveauInput.disabled = false;
+                toggleBtn.classList.remove("bg-blue-600", "hover:bg-blue-700");
+                toggleBtn.classList.add("bg-green-600", "hover:bg-green-700");
+            } else {
+                nouveauInput.value = "";
+                nouveauInput.disabled = true;
+                clientSelect.disabled = false;
+                toggleBtn.classList.remove("bg-green-600", "hover:bg-green-700");
+                toggleBtn.classList.add("bg-blue-600", "hover:bg-blue-700");
             }
-            totalUnitesGlobal += result.totalUnites;
         });
 
-        const emptyCageots = parseInt($('#embale').val()) || 0;
-        emptyCageotsPrice = emptyCageots * prixCgtReference;
-        const totalWithEmptyCageots = globalTotal + emptyCageotsPrice;
+        // Show/hide payment fields based on 'payer' checkbox
+        $(document).on('change', '#payer', function() {
+            if ($(this).is(':checked')) {
+                $('#paiement-fields').show();
+                $('#montant-recu').val('');
+                $('#montant-rendu').val('');
+                $('#montant-recu').focus();
+            } else {
+                $('#paiement-fields').hide();
+            }
+        });
 
-        $('#global-total').text(formatNumber(totalWithEmptyCageots) + ' Ar');
-        $('#total_non_consignee').val(globalNonConsigne);
-        $('#tot_glob').val(totalWithEmptyCageots);
-        $('#global-total-modal').text(formatNumber(totalWithEmptyCageots) + ' Ar');
-        $('#cageot-unit-price').text(formatNumber(prixCgtReference));
-        $('#total-unites-global').text(totalUnitesGlobal); // Display total units
+        // Calculate change amount
+        $(document).on('input', '#montant-recu', function() {
+            const montantRecu = parseFloat($(this).val()) || 0;
+            const total = parseFloat($('#tot_glob').val()) || 0;
+            const montantRendu = montantRecu - total;
+            $('#montant-rendu').val(montantRendu >= 0 ? montantRendu : '0');
+        });
 
-        if ($('#choix').is(':checked') && emptyCageots > 0) {
-            $('#empty-cageots-supplement').show();
-            $('#empty-cageots-supplement span').text(formatNumber(emptyCageotsPrice) + ' Ar');
-        } else {
-            $('#empty-cageots-supplement').hide();
+        // Prevent form submission if payment is required but amount is not entered
+        $('#venteForm').submit(function(e) {
+            return true;
+        });
+
+        // Handle type of sale change (gros/detail)
+        $('#type_vente').on('change', function() {
+            const type = $(this).val();
+            $('.article-section').each(function() {
+                const section = $(this);
+                const selectedOption = section.find('.article-select option:selected');
+                const prixDetail = parseInt(selectedOption.data('prix')) || 0;
+                const prixGros = parseInt(selectedOption.data('prix_gros')) || 0;
+                const prixFinal = (type === 'gros') ? prixGros : prixDetail;
+                section.find('input[name$="[prix_unitaire]"]').val(prixFinal);
+                calculateArticleTotal(section.data('index'));
+            });
+            calculateGlobalTotal();
+        });
+
+        // Fonction pour calculer le nombre de cageots par type
+        function calculateCageotsByType() {
+            let cageots24 = 0;
+            let cageots20 = 0;
+            let cageots12 = 0;
+
+            $('.article-section').each(function() {
+                const section = $(this);
+                const selectedOption = section.find('.article-select option:selected');
+                const typeBtl = parseInt(selectedOption.data('type_btl')) || 0;
+                const quantiteCageot = parseInt(section.find('input[name$="[quantite_cageot]"]').val()) || 0;
+                const avecCageot = section.find('input[name$="[avec_cageot]"]').is(':checked');
+
+                // Incrémenter seulement si "avec cageot" est coché ET il y a des cageots
+                if (avecCageot && quantiteCageot > 0) {
+                    switch(typeBtl) {
+                        case 30:
+                        case 33:
+                            cageots24 += quantiteCageot;
+                            break;
+                        case 50:
+                        case 65:
+                            cageots20 += quantiteCageot;
+                            break;
+                        case 100:
+                            cageots12 += quantiteCageot;
+                            break;
+                        default:
+                            // Type non reconnu, on ne compte pas
+                            break;
+                    }
+                }
+            });
+
+            return {
+                cageots24: cageots24,
+                cageots20: cageots20,
+                cageots12: cageots12,
+                totalCageots: cageots24 + cageots20 + cageots12
+            };
         }
 
-        if ($('#payer').is(':checked') && $('#montant-recu').val()) {
-            $('#montant-recu').trigger('input');
-        }
-    }
+        // Fonction pour synchroniser les cageots achetés avec les champs modifiables
+        function syncCageotsFields() {
+            const cageotsByType = calculateCageotsByType();
 
-    // Show modal and calculate totals
-    $('#final2').on('click', function() {
-        calculateGlobalTotal();
-        venteModalInstance.show();
-    });
+            // Mettre à jour les champs seulement s'ils ne sont pas en cours de modification
+            if (!$('#embale').is(':focus') || $('#embale').val() === '') {
+                $('#embale').val(cageotsByType.cageots24);
+            }
+            if (!$('#cageot20').is(':focus') || $('#cageot20').val() === '') {
+                $('#cageot20').val(cageotsByType.cageots20);
+            }
+            if (!$('#cageot12').is(':focus') || $('#cageot12').val() === '') {
+                $('#cageot12').val(cageotsByType.cageots12);
+            }
 
-    // Close modal
-    venteModal.querySelector('[data-dismiss="modal"]').addEventListener('click', function() {
-        venteModalInstance.hide();
-    });
-
-    // Handle empty cageots option
-    $(document).on('change', '#choix', function() {
-        if ($(this).is(':checked')) {
-            $('#choix_content').show();
-        } else {
-            $('#choix_content').hide();
-            $('#embale').val('');
+            // Recalculer le total
             calculateGlobalTotal();
         }
-    });
 
-    $(document).on('input', '#embale', function() {
-        calculateGlobalTotal();
-    });
+        // Calculate total for an article
+        function calculateArticleTotal(index) {
+            const section = $(`.article-section[data-index="${index}"]`);
+            const prixUnitaire = parseInt(section.find('input[name$="[prix_unitaire]"]').val()) || 0;
+            const quantiteCageot = parseInt(section.find('input[name$="[quantite_cageot]"]').val()) || 0;
+            const quantiteUnite = parseInt(section.find('input[name$="[quantite_unite]"]').val()) || 0;
+            const selectedOption = section.find('.article-select option:selected');
+            const prixConsignation = parseInt(selectedOption.data('consignation')) || 0;
+            const prixCgt = parseInt(selectedOption.data('cgt')) || 0;
+            const prixConditionne = parseInt(selectedOption.data('prix_conditionne')) || 0;
+            const conditionnement = parseInt(selectedOption.data('conditionnement')) || 1;
 
-    // Update stock display
-    function updateStockDisplay(section) {
-        const selectedOption = section.find('.article-select option:selected');
-        const conditionnement = parseInt(selectedOption.data('conditionnement')) || 1;
-        const stockTotal = parseInt(selectedOption.data('quantite')) || 0;
-        const cageots = Math.floor(stockTotal / conditionnement);
-        const unites = stockTotal % conditionnement;
+            // Disable avec_cageot checkbox if quantite_cageot is 0
+            const avecCageotCheckbox = section.find('input[name$="[avec_cageot]"]');
+            if (quantiteCageot === 0 || prixCgt === 0) {
+                avecCageotCheckbox.prop('checked', false).prop('disabled', true);
+            } else {
+                avecCageotCheckbox.prop('disabled', false);
+            }
 
-        section.find('input[name$="[stock_cageots]"]').val(cageots);
-        section.find('input[name$="[stock_unites]"]').val(unites);
-    }
+            // Uncheck options if price is 0
+            if (prixConsignation === 0) {
+                section.find('input[name$="[avec_bouteille]"]').prop('checked', false);
+            }
 
-    // Handle article selection
-    $(document).on('change', '.article-select', function() {
-        const selectedOption = $(this).find('option:selected');
-        const type = $('#type_vente').val();
-        const prixDetail = parseInt(selectedOption.data('prix')) || 0;
-        const prixGros = parseInt(selectedOption.data('prix_gros')) || 0;
-        const prixUnitaire = (type === 'gros') ? prixGros : prixDetail;
-        const prixCgt = parseInt(selectedOption.data('cgt')) || 0;
-        const prixConsignation = parseInt(selectedOption.data('consignation')) || 0;
-        const prixConditionne = parseInt(selectedOption.data('prix_conditionne')) || 0;
-        const parentSection = $(this).closest('.article-section');
+            const avecCageot = prixCgt > 0 && quantiteCageot > 0 && avecCageotCheckbox.is(':checked');
+            const avecBouteille = prixConsignation > 0 && section.find('input[name$="[avec_bouteille]"]').is(':checked');
+            const totalUnites = (quantiteCageot * conditionnement) + quantiteUnite;
 
-        parentSection.find('input[name$="[prix_unitaire]"]').val(prixUnitaire);
-        parentSection.find('input[name$="[prix_cgt]"]').val(prixConditionne);
+            // Calcul du prix de base (unités + cageots complets)
+            let total = (quantiteUnite * prixUnitaire) + (quantiteCageot * prixConditionne);
+            let totalSansConsigne = total;
+            let details = [];
 
-        // Disable avec_cageot if quantite_cageot is 0 or prixCgt is 0
-        const quantiteCageot = parseInt(parentSection.find('input[name$="[quantite_cageot]"]').val()) || 0;
-        if (quantiteCageot === 0 || prixCgt === 0) {
-            parentSection.find('input[name$="[avec_cageot]"]').prop('checked', false).prop('disabled', true);
-        } else {
-            parentSection.find('input[name$="[avec_cageot]"]').prop('disabled', false);
+            // Ajout du prix des cageots si coché
+            if (avecCageot && quantiteCageot > 0) {
+                const suppCageot = quantiteCageot * prixCgt;
+                total += suppCageot;
+                details.push(`+ ${quantiteCageot} cageot: ${formatNumber(suppCageot)} Ar`);
+            }
+
+            // Ajout du prix des bouteilles si coché
+            if (avecBouteille && totalUnites > 0) {
+                const suppBouteille = totalUnites * prixConsignation;
+                total += suppBouteille;
+                details.push(`+ ${totalUnites} bouteille: ${formatNumber(suppBouteille)} Ar`);
+            }
+
+            $(`.total-price[data-index="${index}"]`).text(formatNumber(total) + ' Ar');
+            $(`.price-details[data-index="${index}"]`).html(details.join('<br>'));
+
+            return {
+                totalAvecConsigne: total,
+                totalSansConsigne: totalSansConsigne,
+                prixCgt: prixCgt,
+                totalUnites: totalUnites
+            };
         }
 
-        if (prixConsignation === 0) {
-            parentSection.find('input[name$="[avec_bouteille]"]').prop('checked', false);
+        // Calculate global total
+        function calculateGlobalTotal() {
+            let globalTotal = 0;
+            let globalNonConsigne = 0;
+            let totalUnitesGlobal = 0;
+
+            $('.article-section').each(function() {
+                const index = $(this).data('index');
+                const result = calculateArticleTotal(index);
+                globalTotal += result.totalAvecConsigne;
+                globalNonConsigne += result.totalSansConsigne;
+                totalUnitesGlobal += result.totalUnites;
+            });
+
+            // Récupérer les valeurs des champs de cageots vides
+            const emptyCageots24 = parseInt($('#embale').val()) || 0;
+            const emptyCageots20 = parseInt($('#cageot20').val()) || 0;
+            const emptyCageots12 = parseInt($('#cageot12').val()) || 0;
+
+            // Tous les cageots ont le même prix (8000 Ar)
+            const cageotPrice = 8000;
+            emptyCageotsPrice = (emptyCageots24 + emptyCageots20 + emptyCageots12) * cageotPrice;
+            const totalWithEmptyCageots = globalTotal + emptyCageotsPrice;
+
+            // Mettre à jour l'affichage
+            $('#global-total').text(formatNumber(totalWithEmptyCageots) + ' Ar');
+            $('#total_non_consignee').val(globalNonConsigne);
+            $('#tot_glob').val(totalWithEmptyCageots);
+            $('#global-total-modal').text(formatNumber(totalWithEmptyCageots) + ' Ar');
+
+            // Afficher le nombre total de cageots (achetés + modifiés)
+            const totalCageots = emptyCageots24 + emptyCageots20 + emptyCageots12;
+            $('#total-unites').text(totalCageots);
+
+            // Afficher le détail des cageots (achetés + modifiés)
+            $('#detail-cageots-24').text(emptyCageots24);
+            $('#detail-cageots-20').text(emptyCageots20);
+            $('#detail-cageots-12').text(emptyCageots12);
+
+            // Gérer l'affichage des cageots supplémentaires
+            if ($('#choix').is(':checked') && emptyCageotsPrice > 0) {
+                $('#empty-cageots-supplement').show();
+                $('#empty-cageots-supplement span').text(formatNumber(emptyCageotsPrice) + ' Ar');
+            } else {
+                $('#empty-cageots-supplement').hide();
+            }
+
+            // Recalculer la monnaie si nécessaire
+            if ($('#payer').is(':checked') && $('#montant-recu').val()) {
+                $('#montant-recu').trigger('input');
+            }
         }
 
-        updateStockDisplay(parentSection);
-        calculateGlobalTotal();
-    });
+        // Update stock display
+        function updateStockDisplay(section) {
+            const selectedOption = section.find('.article-select option:selected');
+            const conditionnement = parseInt(selectedOption.data('conditionnement')) || 1;
+            const stockTotal = parseInt(selectedOption.data('quantite')) || 0;
+            const cageots = Math.floor(stockTotal / conditionnement);
+            const unites = stockTotal % conditionnement;
 
-    // Handle quantity changes and options
-    $(document).on('change input', 'input[name$="[quantite_cageot]"], input[name$="[quantite_unite]"], input[name$="[avec_cageot]"], input[name$="[avec_bouteille]"]', function() {
-        const parentSection = $(this).closest('.article-section');
-        const index = parentSection.data('index');
-        const selectedOption = parentSection.find('.article-select option:selected');
-        const conditionnement = parseInt(selectedOption.data('conditionnement')) || 1;
-        const stockTotal = parseInt(selectedOption.data('quantite')) || 0;
-        const quantiteCageot = parseInt(parentSection.find('input[name$="[quantite_cageot]"]').val()) || 0;
-        const quantiteUnite = parseInt(parentSection.find('input[name$="[quantite_unite]"]').val()) || 0;
-        const prixCgt = parseInt(selectedOption.data('cgt')) || 0;
-        const totalDemande = (quantiteCageot * conditionnement) + quantiteUnite;
-
-        // Disable/enable avec_cageot based on quantite_cageot
-        if (quantiteCageot === 0 || prixCgt === 0) {
-            parentSection.find('input[name$="[avec_cageot]"]').prop('checked', false).prop('disabled', true);
-        } else {
-            parentSection.find('input[name$="[avec_cageot]"]').prop('disabled', false);
+            section.find('input[name$="[stock_cageots]"]').val(cageots);
+            section.find('input[name$="[stock_unites]"]').val(unites);
         }
 
-        if (totalDemande > stockTotal) {
-            alert('La quantité demandée dépasse le stock disponible!');
-            parentSection.find('input[name$="[quantite_cageot]"]').val('');
-            parentSection.find('input[name$="[quantite_unite]"]').val('');
-            parentSection.find('input[name$="[avec_cageot]"]').prop('checked', false).prop('disabled', true);
-        }
+        // Écouter les modifications des quantités d'articles
+        $(document).on('change input', 'input[name$="[quantite_cageot]"], input[name$="[quantite_unite]"], input[name$="[avec_cageot]"], input[name$="[avec_bouteille]"]', function() {
+            const parentSection = $(this).closest('.article-section');
+            const selectedOption = parentSection.find('.article-select option:selected');
+            const conditionnement = parseInt(selectedOption.data('conditionnement')) || 1;
+            const stockTotal = parseInt(selectedOption.data('quantite')) || 0;
+            const quantiteCageot = parseInt(parentSection.find('input[name$="[quantite_cageot]"]').val()) || 0;
+            const quantiteUnite = parseInt(parentSection.find('input[name$="[quantite_unite]"]').val()) || 0;
+            const prixCgt = parseInt(selectedOption.data('cgt')) || 0;
+            const totalDemande = (quantiteCageot * conditionnement) + quantiteUnite;
 
-        calculateGlobalTotal();
-    });
+            // Disable/enable avec_cageot based on quantite_cageot
+            if (quantiteCageot === 0 || prixCgt === 0) {
+                parentSection.find('input[name$="[avec_cageot]"]').prop('checked', false).prop('disabled', true);
+            } else {
+                parentSection.find('input[name$="[avec_cageot]"]').prop('disabled', false);
+            }
 
-    // Add new article
-    $('#add-article').click(function() {
-        const template = $('#article-template').html();
-        const newArticle = template.replace(/{index}/g, articleIndex);
-        $('#articles-container').append(newArticle);
-        $('#articles-container .article-select').last().select2();
-        articleIndex++;
-    });
+            // Vérifier le stock
+            if (totalDemande > stockTotal) {
+                alert('La quantité demandée dépasse le stock disponible!');
+                parentSection.find('input[name$="[quantite_cageot]"]').val('');
+                parentSection.find('input[name$="[quantite_unite]"]').val('');
+                parentSection.find('input[name$="[avec_cageot]"]').prop('checked', false).prop('disabled', true);
+            }
 
-    // Remove article
-    $(document).on('click', '.delete-article', function() {
-        const section = $(this).closest('.article-section');
-        section.remove();
-
-        // Réindexer les lignes pour garder une cohérence des data-index
-        $('.article-section').each(function(i) {
-            $(this).attr('data-index', i);
-            $(this).find('[data-index]').attr('data-index', i);
+            syncCageotsFields();
         });
 
-        // Recalculer après suppression
-        calculateGlobalTotal();
-    });
+        // Écouter les modifications manuelles des champs de cageots vides
+        $(document).on('input', '#embale, #cageot20, #cageot12', function() {
+            calculateGlobalTotal();
+        });
 
-    // Form validation
-    $('#venteForm').submit(function(e) {
-        if ($('.article-section').length === 0) {
-            e.preventDefault();
-            alert('Veuillez ajouter au moins un article');
-            return false;
-        }
-        let isValid = true;
-        $('.article-select').each(function() {
-            if ($(this).val() === '') {
-                isValid = false;
-                return false;
+        // Écouter la sélection d'article
+        $(document).on('change', '.article-select', function() {
+            const parentSection = $(this).closest('.article-section');
+            const selectedOption = $(this).find('option:selected');
+            const type = $('#type_vente').val();
+            const prixDetail = parseInt(selectedOption.data('prix')) || 0;
+            const prixGros = parseInt(selectedOption.data('prix_gros')) || 0;
+            const prixUnitaire = (type === 'gros') ? prixGros : prixDetail;
+            const prixCgt = parseInt(selectedOption.data('cgt')) || 0;
+            const prixConsignation = parseInt(selectedOption.data('consignation')) || 0;
+            const prixConditionne = parseInt(selectedOption.data('prix_conditionne')) || 0;
+
+            parentSection.find('input[name$="[prix_unitaire]"]').val(prixUnitaire);
+            parentSection.find('input[name$="[prix_cgt]"]').val(prixConditionne);
+
+            // Disable avec_cageot if quantite_cageot is 0 or prixCgt is 0
+            const quantiteCageot = parseInt(parentSection.find('input[name$="[quantite_cageot]"]').val()) || 0;
+            if (quantiteCageot === 0 || prixCgt === 0) {
+                parentSection.find('input[name$="[avec_cageot]"]').prop('checked', false).prop('disabled', true);
+            } else {
+                parentSection.find('input[name$="[avec_cageot]"]').prop('disabled', false);
+            }
+
+            if (prixConsignation === 0) {
+                parentSection.find('input[name$="[avec_bouteille]"]').prop('checked', false);
+            }
+
+            updateStockDisplay(parentSection);
+            syncCageotsFields();
+        });
+
+        // Show modal and calculate totals
+        $('#final2').on('click', function() {
+            syncCageotsFields();
+            venteModalInstance.show();
+        });
+
+        // Close modal
+        venteModal.querySelector('[data-dismiss="modal"]').addEventListener('click', function() {
+            venteModalInstance.hide();
+        });
+
+        // Handle empty cageots option
+        $(document).on('change', '#choix', function() {
+            if ($(this).is(':checked')) {
+                $('#choix_content').show();
+                // Réinitialiser les champs avec les cageots achetés
+                syncCageotsFields();
+            } else {
+                $('#choix_content').hide();
+                $('#embale').val('0');
+                $('#cageot20').val('0');
+                $('#cageot12').val('0');
+                calculateGlobalTotal();
             }
         });
-        if (!isValid) {
-            e.preventDefault();
-            alert('Veuillez sélectionner un article pour chaque ligne');
-            return false;
-        }
-        return true;
-    });
 
-    // Handle checkbox exclusivity
-    const disposition = document.getElementById('disposition');
-    const payer = document.getElementById('payer');
-    const fidele = document.getElementById('fidele');
+        // Add new article
+        $('#add-article').click(function() {
+            const template = $('#article-template').html();
+            const newArticle = template.replace(/{index}/g, articleIndex);
+            $('#articles-container').append(newArticle);
+            $('#articles-container .article-select').last().select2();
+            articleIndex++;
+        });
 
-    disposition.addEventListener('change', function() {
-        if (disposition.checked) {
-            payer.checked = false;
-            fidele.checked = false;
-        }
-    });
+        // Remove article
+        $(document).on('click', '.delete-article', function() {
+            const section = $(this).closest('.article-section');
+            section.remove();
 
-    payer.addEventListener('change', function() {
-        if (payer.checked) {
-            disposition.checked = false;
-        }
-    });
+            // Réindexer les lignes pour garder une cohérence des data-index
+            $('.article-section').each(function(i) {
+                $(this).attr('data-index', i);
+                $(this).find('[data-index]').attr('data-index', i);
+            });
 
-    fidele.addEventListener('change', function() {
-        if (fidele.checked) {
-            disposition.checked = false;
-        }
+            // Recalculer après suppression
+            syncCageotsFields();
+        });
+
+        // Form validation
+        $('#venteForm').submit(function(e) {
+            if ($('.article-section').length === 0) {
+                e.preventDefault();
+                alert('Veuillez ajouter au moins un article');
+                return false;
+            }
+            let isValid = true;
+            $('.article-select').each(function() {
+                if ($(this).val() === '') {
+                    isValid = false;
+                    return false;
+                }
+            });
+            if (!isValid) {
+                e.preventDefault();
+                alert('Veuillez sélectionner un article pour chaque ligne');
+                return false;
+            }
+            return true;
+        });
+
+        // Handle checkbox exclusivity
+        const disposition = document.getElementById('disposition');
+        const payer = document.getElementById('payer');
+        const fidele = document.getElementById('fidele');
+
+        disposition.addEventListener('change', function() {
+            if (disposition.checked) {
+                payer.checked = false;
+                fidele.checked = false;
+            }
+        });
+
+        payer.addEventListener('change', function() {
+            if (payer.checked) {
+                disposition.checked = false;
+            }
+        });
+
+        fidele.addEventListener('change', function() {
+            if (fidele.checked) {
+                disposition.checked = false;
+            }
+        });
+
+        // Initialisation
+        syncCageotsFields();
     });
-});
 </script>
+</body>
+</html>

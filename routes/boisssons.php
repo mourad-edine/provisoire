@@ -8,6 +8,7 @@ use App\Http\Controllers\client\ClientController;
 use App\Http\Controllers\commande\CommandeController;
 use App\Http\Controllers\consignation\ConsignationController;
 use App\Http\Controllers\depense\DepenseController;
+use App\Http\Controllers\entreprise\EntrepriseController;
 use App\Http\Controllers\fournisseur\FournisseurController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\stat\StatController;
@@ -90,9 +91,16 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
     Route::get('/statistique_sortie', [StatController::class, 'sortie'])->name('sortie.stat');
     Route::get('/emballage', [StockController::class, 'emballage'])->name('emballage.index');
     Route::get('/emballage_achat', [StockController::class, 'emballage_achat'])->name('emballage.achat');
+    Route::get('/emballage_bouteille/{type}', [StockController::class, 'emballage_bouteille'])->name('emballage.bouteille');
+    Route::put('/emballage_edit', [StockController::class, 'editemballage'])->name('emballage.edit');
+    Route::put('/emballage_edit_bouteille', [StockController::class, 'editbouteille'])->name('emballage.bouteille.edit');
+
 
     Route::get('/depense', [AchatController::class, 'depense'])->name('depense');
+    Route::get('/depense_historique', [DepenseController::class, 'depenseEmb'])->name('depense.historique');
+
     Route::post('/depense_store', [DepenseController::class, 'store'])->name('depense.store');
+    Route::post('/depense_emballage', [DepenseController::class, 'depenseemballage'])->name('depense.emballage');
     Route::delete('/depense_delete/{id}', [DepenseController::class, 'destroy'])->name('depense.destroy');
 
 
@@ -109,4 +117,7 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
     Route::post('/parametre-boissons', [ConsignationController::class, 'prix'])->name('parametre.store');
 
     Route::post('/parametre-user', [ConsignationController::class, 'adduser'])->name('add.user');
+    Route::put('/parametre_magasin', [EntrepriseController::class, 'magasinUpdate'])->name('edit.magasin');
+    Route::put('/parametre_logo', [EntrepriseController::class, 'uploadlogo'])->name('edit.logo');
+
 });

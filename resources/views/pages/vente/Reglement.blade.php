@@ -41,7 +41,7 @@ $deconsigneglobale += $prix_total_deconsigne;
 $prixGlobale += $prix_total;
 }
 
-$nombreCageots = optional($conditionnement->conditionnement)->nombre_cageot ?? 0;
+$nombreCageots = 0;
 $valeurCageots = $nombreCageots * ($cgt ?? 0);
 $totalConsigne = ($totalconsigne ?? 0) + $valeurCageots;
 $montantTotal = ($deconsigneglobale - ($reste ?? 0) < 0 ? 0 : $deconsigneglobale - ($reste ?? 0)) + $totalConsigne;
@@ -214,94 +214,7 @@ $montantTotal = ($deconsigneglobale - ($reste ?? 0) < 0 ? 0 : $deconsigneglobale
                 </div>
             </div>
         </div>
-        <!-- <div class="mb-6">
-            <nav class="flex" aria-label="Breadcrumb">
-                <ol class="inline-flex items-center space-x-1 md:space-x-3">
-                    <li class="inline-flex items-center">
-                        <a href="{{ route('dashboard') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
-                            Tableau de bord
-                        </a>
-                    </li>
-                    <li>
-                        <div class="flex items-center">
-                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <a href="{{ route('commande.liste.vente') }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2">Commandes</a>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="flex items-center">
-                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <a href="{{ route('commande.liste.vente.detail', ['id' => $commande_id]) }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2">C-{{ $commande->id }}</a>
-                        </div>
-                    </li>
-                    <li aria-current="page">
-                        <div class="flex items-center">
-                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">Déconsignation</span>
-                        </div>
-                    </li>
-                </ol>
-            </nav>
-        </div> -->
 
-        <!-- Informations commande -->
-        <!-- <div class="mb-6">
-            <div class="bg-white  shadow-sm border-l-4 border-blue-500">
-                <div class="px-6 py-4 flex flex-wrap items-center justify-between border-b border-gray-200">
-                    <h6 class="font-semibold text-gray-700">
-                        <i class="fas fa-receipt mr-2 text-blue-500"></i>Commande C-{{ $commande->id }} - Déconsignation
-                    </h6>
-                    <div class="flex gap-2 mt-2 md:mt-0">
-                        <a href="{{ route('pdf.download', ['id' => $commande_id]) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
-                            <i class="fas fa-print mr-1"></i> Facture
-                        </a>
-                        <a href="{{ url()->previous() }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
-                            <i class="fas fa-arrow-left mr-1"></i> Retour
-                        </a>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div class="flex items-center">
-                            <div class="bg-blue-500 p-2 rounded mr-3">
-                                <i class="fas fa-user text-white"></i>
-                            </div>
-                            <div>
-                                <small class="text-gray-500 text-sm">Client</small>
-                                <p class="font-semibold text-gray-800">{{ $commande->client->nom ?? 'N/A' }}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center">
-                            <div class="bg-blue-400 p-2 rounded mr-3">
-                                <i class="fas fa-phone text-white"></i>
-                            </div>
-                            <div>
-                                <small class="text-gray-500 text-sm">Téléphone</small>
-                                <p class="font-semibold text-gray-800">{{ $commande->client->telephone ?? 'N/A' }}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center">
-                            <div class="bg-yellow-500 p-2 rounded mr-3">
-                                <i class="fas fa-calendar text-white"></i>
-                            </div>
-                            <div>
-                                <small class="text-gray-500 text-sm">Date commande</small>
-                                <p class="font-semibold text-gray-800">{{ $commande->created_at }}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center">
-                            <div class="bg-{{ $commande->etat_commande == 'non payé' ? 'red' : 'green' }}-500 p-2 rounded mr-3">
-                                <i class="fas fa-{{ $commande->etat_commande == 'non payé' ? 'times' : 'check' }}-circle text-white"></i>
-                            </div>
-                            <div>
-                                <small class="text-gray-500 text-sm">État</small>
-                                <p class="font-semibold text-gray-800">{{ $commande->etat_commande }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
 
         <!-- Success Message -->
         @if(session('success'))
@@ -309,6 +222,18 @@ $montantTotal = ($deconsigneglobale - ($reste ?? 0) < 0 ? 0 : $deconsigneglobale
             <div class="flex items-center">
                 <i class="fas fa-check-circle mr-2"></i>
                 <span class="block sm:inline">{{ session('success') }}</span>
+            </div>
+            <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none'">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        @endif
+        <!-- Error Message -->
+        @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span class="block sm:inline">{{ session('error') }}</span>
             </div>
             <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none'">
                 <i class="fas fa-times"></i>
@@ -328,9 +253,7 @@ $montantTotal = ($deconsigneglobale - ($reste ?? 0) < 0 ? 0 : $deconsigneglobale
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bouteille</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantité BTL</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Casse BTL</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cageot</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantité CGT</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Casse CGT</th>
+                              
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                             </tr>
                         </thead>
@@ -353,77 +276,58 @@ $montantTotal = ($deconsigneglobale - ($reste ?? 0) < 0 ? 0 : $deconsigneglobale
                                     </td>
 
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center mb-2">
-                                            <input class="h-4 w-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
-                                                type="checkbox"
-                                                name="check_bouteille"
-                                                id="check_bouteille{{ $vente['id'] }}"
-                                                {{ $vente['prix_consignation'] != 0 ? ($vente['consignation'] / $vente['prix_consignation'] == 0 ? 'disabled' : '') : 'disabled' }}>
-                                            <label class="ml-2 text-sm text-gray-700" for="check_bouteille{{ $vente['id'] }}">
-                                                {{ $vente['prix_consignation'] != 0 ? ($vente['consignation'] / $vente['prix_consignation']) : 0 }}
-                                            </label>
-                                        </div>
-                                    </td>
+    <div class="flex items-center mb-2">
+        @php
+            $bouteillesARendre = $vente['prix_consignation'] != 0 ? ($vente['consignation'] / $vente['prix_consignation']) : 0;
+        @endphp
+        <input class="h-4 w-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+            type="checkbox"
+            name="check_bouteille"
+            id="check_bouteille{{ $vente['id'] }}"
+            {{ $bouteillesARendre == 0 ? 'disabled' : '' }}>
+        <label class="ml-2 text-sm text-gray-700" for="check_bouteille{{ $vente['id'] }}">
+            {{ $bouteillesARendre }}
+        </label>
+    </div>
+</td>
+
+<td class="px-6 py-4 whitespace-nowrap">
+    <input type="number"
+        name="quantite_buteille"
+        id="quantite_buteille{{ $vente['id'] }}"
+        class="w-full border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        placeholder="Quantité"
+        min="0"
+        step="1"
+        data-max="{{ $bouteillesARendre }}"
+        {{ $bouteillesARendre == 0 ? 'readonly' : '' }}>
+</td>
+
+<td class="px-6 py-4 whitespace-nowrap">
+    <input type="number"
+        name="casse"
+        id="casse{{ $vente['id'] }}"
+        class="w-full border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        placeholder="Casse"
+        min="0"
+        step="1"
+        data-max="{{ $bouteillesARendre }}"
+        {{ $bouteillesARendre == 0 ? 'readonly' : '' }}>
+</td>
+
+
+                                    
 
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <input type="number"
-                                            name="quantite_buteille"
-                                            class="w-full border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            placeholder="Quantité"
-                                            min="0"
-                                            step="1"
-                                            {{ $vente['prix_consignation'] != 0 ? ($vente['consignation'] / $vente['prix_consignation'] == 0 ? 'readonly' : '') : 'readonly' }}>
-                                    </td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <input type="number"
-                                            name="casse"
-                                            class="w-full border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            placeholder="Casse"
-                                            min="0"
-                                            step="1"
-                                            {{ $vente['prix_consignation'] != 0 ? ($vente['consignation'] / $vente['prix_consignation'] == 0 ? 'readonly' : '') : 'readonly' }}>
-                                    </td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center mb-2">
-                                            <input class="h-4 w-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
-                                                type="checkbox"
-                                                name="check_cageot"
-                                                id="check_cageot{{ $vente['id'] }}"
-                                                {{ $vente['consi_cgt'] != 0 ? ($vente['prix_cgt'] / $vente['consi_cgt'] == 0 ? 'disabled' : '') : 'disabled' }}>
-                                            <label class="ml-2 text-sm text-gray-700" for="check_cageot{{ $vente['id'] }}">
-                                                {{ $vente['consi_cgt'] != 0 ? ($vente['prix_cgt'] / $vente['consi_cgt']) : 0 }}
-                                            </label>
-                                        </div>
-                                    </td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <input type="number"
-                                            name="quantite_cageot"
-                                            class="w-full border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            placeholder="Quantité"
-                                            min="0"
-                                            step="1"
-                                            {{ $vente['consi_cgt'] != 0 ? ($vente['prix_cgt'] / $vente['consi_cgt'] == 0 ? 'readonly' : '') : 'readonly' }}>
-                                    </td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <input type="number"
-                                            name="cageot_casse"
-                                            class="w-full border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            placeholder="Casse"
-                                            min="0"
-                                            step="1"
-                                            {{ $vente['consi_cgt'] != 0 ? ($vente['prix_cgt'] / $vente['consi_cgt'] == 0 ? 'readonly' : '') : 'readonly' }}>
-                                    </td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <button type="submit" 
-    {{ $vente['prix_consignation'] != 0 ? ($vente['consignation'] / $vente['prix_consignation'] == 0 ? 'disabled' : '') : 'disabled' }} 
-    class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-3 py-1 rounded text-sm font-medium transition duration-150 flex items-center">
-    <i class="fas fa-check mr-1"></i> Valider
-</button>
+                                        <button type="submit"
+                                            @php
+                                            $hasBouteilles=$vente['prix_consignation'] !=0 && ($vente['consignation'] / $vente['prix_consignation'])> 0;
+                                            $hasCageots = $vente['consi_cgt'] != 0 && ($vente['prix_cgt'] / $vente['consi_cgt']) > 0;
+                                            @endphp
+                                            {{ !($hasBouteilles || $hasCageots) ? 'disabled' : '' }}
+                                            class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-3 py-1 rounded text-sm font-medium transition duration-150 flex items-center">
+                                            <i class="fas fa-check mr-1"></i> Valider
+                                        </button>
                                     </td>
                                 </form>
                             </tr>
@@ -439,77 +343,22 @@ $montantTotal = ($deconsigneglobale - ($reste ?? 0) < 0 ? 0 : $deconsigneglobale
                             @endforelse
 
                             <!-- Cageots supplémentaires -->
-                            @if(optional($conditionnement->conditionnement)->id)
-                            <tr class="bg-blue-50 hover:bg-blue-100">
-                                <form action="{{ route('payer.condi') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="commande_id" value="{{ $commande_id }}">
-                                    <input type="hidden" name="conditionnement_id" value="{{ optional($conditionnement->conditionnement)->id ?? '' }}">
-                                    <input type="hidden" name="cgt" value="{{ $cgt }}">
-                                    <input type="hidden" name="nombre_cageot" value="{{ optional($conditionnement->conditionnement)->nombre_cageot ?? 0 }}">
 
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="bg-blue-500 rounded-full p-2 mr-3">
-                                                <i class="fas fa-box text-white text-xs"></i>
-                                            </div>
-                                            <div class="font-semibold text-gray-900">Cageots supplémentaires</div>
-                                        </div>
-                                    </td>
-
-                                    <td class="px-6 py-4" colspan="2"></td>
-
-                                    <td class="px-6 py-4"></td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center mb-2">
-                                            <input class="h-4 w-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
-                                                type="checkbox"
-                                                name="check_cageot"
-                                                id="check_cageot_global"
-                                                {{ optional($conditionnement->conditionnement)->nombre_cageot > 0 ? '' : 'disabled' }}>
-                                            <label class="ml-2 text-sm text-gray-700" for="check_cageot_global">
-                                                {{ optional($conditionnement->conditionnement)->nombre_cageot ?? 0 }} unités
-                                            </label>
-                                        </div>
-                                    </td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <input type="number"
-                                            name="quantite_cageot"
-                                            class="w-full border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            placeholder="Quantité"
-                                            min="0"
-                                            step="1"
-                                            {{ optional($conditionnement->conditionnement)->nombre_cageot > 0 ? '' : 'readonly' }}>
-                                    </td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <input type="number"
-                                            name="cageot_casse"
-                                            class="w-full border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            placeholder="Casse"
-                                            min="0"
-                                            step="1"
-                                            {{ optional($conditionnement->conditionnement)->nombre_cageot > 0 ? '' : 'readonly' }}>
-                                    </td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium transition duration-150 flex items-center">
-                                            <i class="fas fa-check mr-1"></i> Valider
-                                        </button>
-                                    </td>
-                                </form>
-                            </tr>
-                            @endif
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Conditionnement Details -->
-                @if(optional($conditionnement->conditionnement)->id)
-                <div class="bg-white border border-gray-200  shadow-sm mt-6">
-                    <div class="bg-gray-100 px-4 py-3 border-b border-gray-200">
+                <!-- Conditionnements Details -->
+                @php
+                // Correction : Accéder au premier élément du tableau puis à conditionnements
+                $firstCommande = $conditionnements[0] ?? null;
+                $conditionnementsData = $firstCommande['conditionnements'] ?? [];
+                $hasConditionnements = count($conditionnementsData) > 0;
+                @endphp
+
+                @if($hasConditionnements)
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm mt-6">
+                    <div class="bg-gray-100 px-4 py-3 border-b border-gray-200 rounded-t-lg">
                         <h6 class="font-semibold text-gray-700">DÉTAILS DU CONDITIONNEMENT</h6>
                     </div>
                     <div class="p-4">
@@ -518,6 +367,7 @@ $montantTotal = ($deconsigneglobale - ($reste ?? 0) < 0 ? 0 : $deconsigneglobale
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type Cageot</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix Cageot</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre Cageot</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
@@ -527,30 +377,65 @@ $montantTotal = ($deconsigneglobale - ($reste ?? 0) < 0 ? 0 : $deconsigneglobale
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ optional($conditionnement->conditionnement)->id ?? 'N/A' }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $cgt }} Ar/CGT</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ optional($conditionnement->conditionnement)->nombre_cageot }} CGT</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-blue-600">{{ number_format(optional($conditionnement->conditionnement)->nombre_cageot * $cgt, 0, ',', ' ') }} Ar</td>
+                                    @foreach($conditionnementsData as $emballage)
+                                    <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $emballage['id'] ?? 'N/A' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $emballage['type_cageot'] ?? 'N/A' }} BTL</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $cgt ?? 0 }} Ar/CGT</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $emballage['nombre_cageot'] ?? 0 }} CGT</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-blue-600">
+                                            {{ number_format(($emballage['nombre_cageot'] ?? 0) * ($cgt ?? 0), 0, ',', ' ') }} Ar
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ optional($conditionnement->conditionnement)->etat == 'rendu' ? 'green' : 'yellow' }}-100 text-{{ optional($conditionnement->conditionnement)->etat == 'rendu' ? 'green' : 'yellow' }}-800">
-                                                {{ optional($conditionnement->conditionnement)->etat ?? 'N/A' }}
+                                            @php
+                                            $etat = $emballage['etat'] ?? 'non rendu';
+                                            $bgColor = $etat == 'rendu' ? 'green' : 'yellow';
+                                            $textColor = $etat == 'rendu' ? 'green' : 'yellow';
+                                            @endphp
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $bgColor }}-100 text-{{ $textColor }}-800">
+                                                {{ $etat }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ optional($conditionnement->conditionnement)->created_at ? optional($conditionnement->conditionnement)->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            @if(isset($emballage['created_at']))
+                                            {{ \Carbon\Carbon::parse($emballage['created_at'])->format('d/m/Y H:i') }}
+                                            @else
+                                            N/A
+                                            @endif
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <button onclick="openModal()" class="text-blue-600 hover:text-blue-900 border border-blue-600 hover:bg-blue-50 px-3 py-1 rounded text-sm transition duration-150 flex items-center">
-                                                <i class="fas fa-edit mr-1"></i> Modifier
-                                            </button>
+                                            <form action="{{ route('payer.condi') }}" method="POST" class="inline">
+                                                @csrf
+                                                <input type="hidden" name="commande_id" value="{{ $firstCommande['id'] ?? '' }}">
+                                                <input type="hidden" name="conditionnement_id" value="{{ $emballage['id'] ?? '' }}">
+                                                <input type="hidden" name="cgt" value="{{ $cgt ?? 0 }}">
+                                                <input type="hidden" name="montant_total" value="{{ ($emballage['nombre_cageot'] ?? 0) * ($cgt ?? 0) }}">
+
+                                                <div class="flex items-center space-x-2">
+                                                    <input type="number"
+                                                        name="quantite_cageot"
+                                                        class="w-20 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        placeholder="0"
+                                                        min="0"
+                                                        max="{{ $emballage['nombre_cageot'] ?? 0 }}"
+                                                        step="1"
+                                                        value="0">
+                                                    <button type="submit"
+                                                        class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center font-medium text-sm">
+                                                        <i class="fas fa-check mr-1 text-sm"></i> Valider
+                                                    </button>
+                                                </div>
+                                            </form>
                                         </td>
                                     </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
                 @else
-                <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mt-6">
+                <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-lg mt-6">
                     <div class="flex items-center">
                         <i class="fas fa-info-circle mr-2"></i>
                         <span>Aucun conditionnement enregistré pour cette commande</span>
@@ -562,63 +447,27 @@ $montantTotal = ($deconsigneglobale - ($reste ?? 0) < 0 ? 0 : $deconsigneglobale
     </div>
 
     <!-- Modal de déconsignation cageot -->
-    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden" id="venteModal2">
-        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg  bg-white">
-            <div class="mt-3">
-                <div class="bg-blue-600 text-white px-4 py-3 rounded-t-md flex justify-between items-center">
-                    <h3 class="text-lg font-semibold">
-                        <i class="fas fa-box mr-2"></i>Déconsignation cageot
-                    </h3>
-                    <button type="button" class="text-white close-modal" onclick="closeModal()">
-                        <span class="text-xl">&times;</span>
-                    </button>
-                </div>
-                <form action="{{ route('payer.condi') }}" method="POST">
-                    @csrf
-                    <div class="px-4 py-6">
-                        <input type="hidden" name="commande_id" value="{{ $commande_id }}">
-                        <input type="hidden" name="conditionnement_id" value="{{ optional($conditionnement->conditionnement)->id ?? '' }}">
-                        <input type="hidden" name="cgt" value="{{ $cgt }}">
-                        <input type="hidden" name="nombre_cageot" value="{{ optional($conditionnement->conditionnement)->nombre_cageot ?? 0 }}">
-                        <input type="hidden" name="montant_total" value="{{ (optional($conditionnement->conditionnement)->nombre_cageot ?? 0) * $cgt }}">
-                        <input type="hidden" name="montant_tot" value="{{ $montantTotal }}">
-                        <input type="hidden" name="totalconsigne" value="{{ $totalconsigne + ((optional($conditionnement->conditionnement)->nombre_cageot ?? 0) * $cgt) }}">
-                        <input type="hidden" name="reste" value="{{ $reste }}">
-                        <input type="hidden" name="prixGlobale" value="{{ $prixGlobale }}">
 
-                        <div class="mb-4">
-                            <label for="quantite_cageot_modal" class="block text-sm font-semibold text-gray-700 mb-2">Quantité de cageots à rendre</label>
-                            <input type="number"
-                                id="quantite_cageot_modal"
-                                name="quantite_cageot"
-                                class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="Quantité de cageots à rendre"
-                                min="0"
-                                step="1"
-                                value="{{ optional($conditionnement->conditionnement)->nombre_cageot ?? 0 }}">
-                        </div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll("input[name='quantite_buteille'], input[name='casse']").forEach(input => {
+        input.addEventListener("input", function () {
+            let rowId = this.id.replace(/[^0-9]/g, ""); // récupère l'id numérique (vente['id'])
+            let quantite = parseInt(document.getElementById("quantite_buteille" + rowId)?.value || 0);
+            let casse = parseInt(document.getElementById("casse" + rowId)?.value || 0);
+            let max = parseInt(this.dataset.max);
 
-                        <div class="bg-blue-50 border border-blue-200 rounded px-3 py-2">
-                            <small class="text-blue-700">
-                                <i class="fas fa-info-circle mr-1"></i>
-                                Montant total: {{ number_format((optional($conditionnement->conditionnement)->nombre_cageot ?? 0) * $cgt, 0, ',', ' ') }} Ar
-                            </small>
-                        </div>
-                    </div>
-                    <div class="bg-gray-100 px-4 py-3 rounded-b-md flex justify-end space-x-3">
-                        <button type="button" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm font-medium transition duration-150 close-modal" onclick="closeModal()">
-                            <i class="fas fa-times mr-1"></i> Annuler
-                        </button>
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition duration-150">
-                            <i class="fas fa-check mr-1"></i> Confirmer
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+            if (quantite + casse > max) {
+                alert("⚠️ La somme (Quantité + Casse) ne doit pas dépasser " + max + " bouteilles.");
+                this.value = "";
+            }
+        });
+    });
+});
+</script>
 
     <script>
+        
         function openModal() {
             document.getElementById('venteModal2').classList.remove('hidden');
         }

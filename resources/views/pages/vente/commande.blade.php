@@ -174,7 +174,7 @@
                                     {{ number_format(
                                         $commande->ventes_consignation_sum_prix 
                                         + $commande->ventes_consignation_sum_prix_cgt 
-                                        + optional($commande->conditionnement)->nombre_cageot * $cgt, 
+                                        + optional($commande->conditionnements)->sum('nombre_cageot') * $cgt, 
                                         0, ',', ' '
                                     ) }} Ar
                                 </span>
@@ -188,7 +188,7 @@
                                     $commande->ventes_total 
                                     + $commande->ventes_consignation_sum_prix 
                                     + $commande->ventes_consignation_sum_prix_cgt 
-                                    + (optional($commande->conditionnement)->nombre_cageot * $cgt), 
+                                    + (optional($commande->conditionnements)->sum('nombre_cageot') * $cgt), 
                                     0, ',', ' '
                                 ) }} Ar
                                 @endif

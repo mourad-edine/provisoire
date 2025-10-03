@@ -19,7 +19,7 @@ class ClientController extends Controller
         $query = Client::with([
             'commandes.ventes.consignation',
             'commandes.ventes.article',
-            'commandes.conditionnement',
+            'commandes.conditionnements',
             'commandes.payements',
         ])->where('status' , 1)->withCount('commandes');
 
@@ -112,7 +112,7 @@ class ClientController extends Controller
                 'consignation_sum_prix' => $client->consignation_sum_prix,
                 'consignation_sum_prix_cgt' => $client->consignation_sum_prix_cgt,
                 'conditionnement' => $client->commandes->sum(function ($commande) {
-                    return $commande->conditionnement->nombre_cageot ?? 0;
+                    return $commande->conditionnements->sum('nombre_cageot') ?? 0;
                 }),
             ];
         });
@@ -163,7 +163,7 @@ class ClientController extends Controller
     {
         $article = Article::where('prix_cgt', '>', 0)->first();
 
-        $query = Commande::with(['ventes.consignation', 'ventes.article', 'client', 'conditionnement'])
+        $query = Commande::with(['ventes.consignation', 'ventes.article', 'client', 'conditionnements'])
             ->where('client_id', $id)
             ->where('disposition', 0)
             ->withCount('ventes');

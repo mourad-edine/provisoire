@@ -45,142 +45,20 @@
             </ul>
         </div>
         <div>
-            <a href="{{route('emballage.achat')}}" class="p-2 border-none bg-blue-600 text-white"> <i class="fa fa-plus"></i> acheter</a>
+            <a href="{{ url()->previous() }}" class="p-2 border-none bg-blue-600 text-white"> <i class="fa fa-arrow"></i> retour</a>
         </div>
     </div>
-    @if (session('success'))
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6" role="alert">
-        <span class="block sm:inline">{{ session('success') }}</span>  
-    </div>
-    @endif
-    @if (session('error'))
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
-        <span class="block sm:inline">{{ session('error') }}</span>
-    </div>
-    @endif
-    @if ($errors->any())
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
-        <ul class="list-disc list-inside">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-    @endif
 
     <!-- Section Bouteilles Vides - Bières et Softs -->
     <div id="emptyBottlesSection">
-        <div class="bg-white shadow-sm p-6 mb-6 border border-gray-100">
-            <div class="bg-blue-50 border border-gray-200 p-4 mb-4">
-                <h2 class="text-xl font-semibold text-gray-800 flex items-center">
-                    <i class="fas fa-wine-bottle-alt text-gray-600 mr-3 text-lg"></i>
-                    Bouteilles Vides - Bierre & boissoins-gazeuse
-                    <span class="ml-3 text-sm font-normal text-gray-600 bg-gray-100 px-2 py-1">Inventaire</span>
-                </h2>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                @foreach($emballages as $type => $data)
-                <div class="bg-gray-50 border border-gray-200 p-4 hover:shadow-md transition-shadow duration-200">
-                    <div class="flex justify-between items-start mb-3">
-                        <h3 class="text-lg font-semibold text-gray-700">Bouteilles {{ $type }}</h3>
-                        <div class="flex space-x-2">
-                            <a href="{{route('emballage.bouteille' , ['type' => $type])}}" class="text-blue-600 hover:text-blue-800 transition-colors duration-200" title="Modifier">
-                                <i class="fas fa-list"></i>
-                            </a>
-                           
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center p-2 bg-white border border-gray-100">
-                            <span class="text-sm text-gray-700">Total bouteilles</span>
-                            <div id="display-bouteille-{{ $type }}" class="flex items-center space-x-2">
-                                <span class="text-sm font-semibold text-gray-700">{{ $data['total_vide'] }}</span>
-                            </div>
-                            
-                        </div>
-                    </div>
-                    <div class="mt-4 pt-3 border-t border-gray-200">
-                        <div class="space-y-2">
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Valeur réelle:</span>
-                                <span class="font-semibold text-green-600">{{ number_format($data['valeur_reelle'], 0, ',', ' ') }} Ar</span>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Mise à jour:</span>
-                                <span class="text-gray-500">-------</span>
-                            </div>
-                            <div class="flex justify-between font-semibold text-sm">
-                                <span class="text-gray-700">Total:</span>
-                                <span class="text-gray-700">{{ $data['total_vide'] }} bouteilles</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-
-            <!-- Cageots Vides -->
-            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                @foreach($cageots as $cageot)
-                <div class="bg-gray-50 border border-gray-200 p-4 hover:shadow-md transition-shadow duration-200">
-                    <div class="flex justify-between items-start mb-3">
-                        <h3 class="text-lg font-semibold text-gray-700">Cageot de {{$cageot->type_cageot}} Bouteilles</h3>
-                        <div class="flex space-x-2">
-                            <button onclick="toggleEdit('cageot-{{ $cageot->id }}')" class="text-blue-600 hover:text-blue-800 transition-colors duration-200" title="Modifier">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button onclick="resetQuantity('cageot-{{ $cageot->id }}')" class="text-red-600 hover:text-red-800 transition-colors duration-200" title="Réinitialiser">
-                                <i class="fas fa-undo"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center p-2 bg-white border border-gray-100">
-                            <span class="text-sm text-gray-700">Total cageots</span>
-                            <div id="display-cageot-{{ $cageot->id }}" class="flex items-center space-x-2">
-                                <span class="text-sm font-semibold text-gray-700">{{$cageot->quantite}}</span>
-                            </div>
-                            <div id="edit-cageot-{{ $cageot->id }}" class="hidden">
-                                <form id="form-cageot-{{ $cageot->id }}" class="flex items-center space-x-2" method="POST" action="{{ route('emballage.edit') }}">
-                                    @csrf
-                                    @method('PUT')
-                                    <input type="hidden" name="type" value="cageot">
-                                    <input type="hidden" name="id" value="{{ $cageot->id }}">
-                                    <input type="number" name="quantite" value="{{$cageot->quantite}}" class="w-20 px-2 py-1 border border-gray-300 rounded text-sm">
-                                    <button type="submit" class="text-green-600 hover:text-green-800" title="Valider">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button type="button" onclick="cancelEdit('cageot-{{ $cageot->id }}')" class="text-gray-600 hover:text-gray-800" title="Annuler">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-4 pt-3 border-t border-gray-200">
-                        <div class="space-y-2">
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Valeur réelle:</span>
-                                <span class="font-semibold text-green-600">{{$cageot->quantite * $cageot->prix}}</span>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Mise à jour:</span>
-                                <span class="text-gray-500">------</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
+        
 
         <!-- Section Bouteilles Vides - Alcools Forts -->
         <div class="bg-white shadow-sm p-6 border border-gray-100">
             <div class="bg-blue-50 border border-gray-200 p-4 mb-4">
                 <h2 class="text-xl font-semibold text-gray-800 flex items-center">
                     <i class="fas fa-glass-whiskey text-gray-600 mr-3 text-lg"></i>
-                    Bouteilles Vides - Alcools Forts
+                    Bouteilles Vides - {{$type}}
                     <span class="ml-3 text-sm font-normal text-gray-600 bg-gray-100 px-2 py-1">Inventaire</span>
                 </h2>
             </div>
@@ -224,7 +102,7 @@
                                         </span>
                                     </div>
                                     <div id="edit-alcool-{{ $article->id }}" class="hidden">
-                                        <form id="form-alcool-{{ $article->id }}" class="flex items-center space-x-2" method="POST" action="{{ route('emballage.bouteille.edit') }}">
+                                        <form id="form-alcool-{{ $article->id }}" class="flex items-center space-x-2" method="POST" action="{{ route('emballage.bouteille.edit') }}" >
                                             @csrf
                                             @method('PUT')
                                             <input type="hidden" name="type" value="alcool">
@@ -245,7 +123,7 @@
                                     {{$article->vides * $article->prix_consignation}} Ar
                                 </span>
                             </td>
-                            <td class="px-4 py-3 whitespace-nowrap relative">
+                           <td class="px-4 py-3 whitespace-nowrap relative">
     <div class="flex justify-center">
         <!-- Bouton menu -->
         <button onclick="toggleMenu('menu-{{ $article->id }}')" 

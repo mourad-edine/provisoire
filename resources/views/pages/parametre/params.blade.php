@@ -26,8 +26,15 @@
     }
 
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .glass-effect {
@@ -140,7 +147,7 @@
                             <p class="text-gray-600 text-sm">Gestion de la configuration de l'application</p>
                         </div>
                     </div>
-                    
+
                     <nav class="flex items-center space-x-1 text-sm">
                         <a href="#" class="text-blue-600 hover:text-blue-800 font-medium transition-colors">DASHBOARD</a>
                         <span class="text-gray-400">/</span>
@@ -151,26 +158,30 @@
         </div>
 
         <!-- Message de succès -->
-        <div id="successMessage" class="hidden mb-6">
-            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 shadow-sm">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-check-circle text-blue-400 text-md"></i>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium text-blue-800">
-                                Modifications enregistrées avec succès
-                            </p>
-                        </div>
-                    </div>
-                    <button type="button" onclick="document.getElementById('successMessage').classList.add('hidden')" 
-                            class="text-blue-400 hover:text-blue-600 transition-colors">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
+        @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span class="block sm:inline">{{ session('success') }}</span>
             </div>
+            <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none'">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
+        @endif
+        @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span class="block sm:inline">{{ session('error') }}</span>
+            </div>
+            <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none'">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        @endif
+
+
 
         <!-- Contenu principal -->
         <div class="glass-effect shadow-md border border-gray-200">
@@ -178,18 +189,18 @@
             <div class="border-b border-gray-200 bg-white">
                 <div class="px-6">
                     <nav class="flex space-x-8" id="settingsTabs" role="tablist">
-                        <button class="py-4 px-1 text-sm font-medium transition-all duration-200 inactive-tab active-tab" 
-                                data-tab="entreprise">
+                        <button class="py-4 px-1 text-sm font-medium transition-all duration-200 inactive-tab active-tab"
+                            data-tab="entreprise">
                             <i class="fas fa-building mr-2"></i>
                             ENTREPRISE
                         </button>
-                        <button class="py-4 px-1 text-sm font-medium transition-all duration-200 inactive-tab" 
-                                data-tab="consignation">
+                        <button class="py-4 px-1 text-sm font-medium transition-all duration-200 inactive-tab"
+                            data-tab="consignation">
                             <i class="fas fa-wine-bottle mr-2"></i>
                             CONSIGNATION
                         </button>
-                        <button class="py-4 px-1 text-sm font-medium transition-all duration-200 inactive-tab" 
-                                data-tab="utilisateur">
+                        <button class="py-4 px-1 text-sm font-medium transition-all duration-200 inactive-tab"
+                            data-tab="utilisateur">
                             <i class="fas fa-users mr-2"></i>
                             UTILISATEURS
                         </button>
@@ -211,76 +222,84 @@
                                     Informations de l'entreprise
                                 </h3>
                             </div>
-                            
-                            <form class="space-y-6 p-6 bg-white shadow-sm border border-gray-100">
+
+                            <form action="{{ route('edit.magasin') }}" method="POST" class="space-y-6 p-6 bg-white shadow-sm border border-gray-100">
+                                @csrf
+                                @method('PUT')
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Nom de l'entreprise *</label>
-                                        <input type="text" value="Mon Entreprise SARL" 
-                                               class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                                               required>
+                                        <input type="text" value="{{$entreprise->nom}}"
+                                            name="nom"
+                                            class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                            required>
                                     </div>
-                                    
+
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Slogan</label>
-                                        <input type="text" value="Votre partenaire de confiance" 
-                                               class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                                        <input disabled type="text" value="Votre partenaire de confiance"
+                                            class="w-full px-4 py-3 border border-gray-200 bg-gray-400 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors">
                                     </div>
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Adresse *</label>
-                                    <textarea rows="3" 
-                                              class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                                              placeholder="Adresse complète de l'entreprise">Lot II B 41 Bis Antanimena</textarea>
+                                    <textarea rows="3"
+                                        name="adresse"
+                                        class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                        placeholder="Adresse complète de l'entreprise">{{$entreprise->adresse}}</textarea>
                                 </div>
 
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone *</label>
-                                        <input type="tel" value="+261 34 00 000 00" 
-                                               class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                                               required>
+                                        <input type="tel" value="{{$entreprise->numero}}"
+                                            name="numero"
+                                            class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                            required>
                                     </div>
-                                    
+
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                                        <input type="email" value="contact@monentreprise.mg" 
-                                               class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                                        <input type="email" value="{{$entreprise->email}}"
+                                            name="email"
+                                            class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors">
                                     </div>
-                                    
+
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Site web</label>
-                                        <input type="url" value="https://www.monentreprise.mg" 
-                                               class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2 bg-gray-400">Site web</label>
+                                        <input disabled type="url" value="----------"
+                                            class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors">
                                     </div>
                                 </div>
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">NIF *</label>
-                                        <input type="text" value="1234567890" 
-                                               class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                                               required>
+                                        <input type="text" value="{{$entreprise->nif}}"
+                                            name="nif"
+                                            class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                            required>
                                     </div>
-                                    
+
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">STAT *</label>
-                                        <input type="text" value="987654321" 
-                                               class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                                               required>
+                                        <input type="text" value="{{$entreprise->stat}}"
+                                            name="stat"
+                                            class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                            required>
                                     </div>
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                                    <textarea rows="4" 
-                                              class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                                              placeholder="Description de l'activité de l'entreprise">Spécialisée dans la distribution de boissons depuis 2010, nous sommes votre partenaire de confiance pour tous vos besoins.</textarea>
+                                    <textarea rows="4"
+                                        class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                        placeholder="Description de l'activité de l'entreprise">Spécialisée dans la distribution de boissons depuis 2010, nous sommes votre partenaire de confiance pour tous vos besoins.</textarea>
                                 </div>
 
-                                <button type="button" onclick="showSuccess()" 
-                                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 text-sm font-medium transition-all duration-200 shadow-md hover:shadow-xl">
+                                <button type="submit"
+                                    class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 text-sm font-medium transition-all duration-200 shadow-md hover:shadow-xl">
                                     <i class="fas fa-save mr-2"></i>Enregistrer les informations
                                 </button>
                             </form>
@@ -289,40 +308,43 @@
                         <!-- Logo et apparence -->
                         <div class="space-y-8">
                             <!-- Logo -->
-                            <div class="bg-white shadow-sm border border-gray-100 p-6">
-                                <div class="flex items-center space-x-3 mb-6">
-                                    <div class="w-1 h-8 bg-blue-500"></div>
-                                    <h3 class="text-md font-semibold text-gray-900">
-                                        <i class="fas fa-image mr-2 text-blue-500"></i>
-                                        Logo de l'entreprise
-                                    </h3>
-                                </div>
+                            <form action="{{ route('edit.logo') }}" method="POST"  enctype="multipart/form-data">
+                                @csrf
+                                @method('PUT')
+                                <div class="bg-white shadow-sm border border-gray-100 p-6">
+                                    <div class="flex items-center space-x-3 mb-6">
+                                        <div class="w-1 h-8 bg-blue-500"></div>
+                                        <h3 class="text-md font-semibold text-gray-900">
+                                            <i class="fas fa-image mr-2 text-blue-500"></i>
+                                            Logo de l'entreprise
+                                        </h3>
+                                    </div>
 
-                                <div class="text-center space-y-4">
-                                    <div class="logo-preview mx-auto cursor-pointer" onclick="document.getElementById('logoUpload').click()">
-                                        <i class="fas fa-building text-4xl text-gray-400"></i>
-                                        <img id="logoPreview" src="" alt="Logo" class="hidden">
-                                    </div>
-                                    
-                                    <input type="file" id="logoUpload" accept="image/*" class="hidden" onchange="previewLogo(event)">
-                                    
-                                    <div class="upload-area p-6 cursor-pointer" onclick="document.getElementById('logoUpload').click()">
-                                        <div class="text-center">
-                                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
-                                            <p class="text-sm text-gray-600">Cliquez pour télécharger ou glissez-déposez</p>
-                                            <p class="text-xs text-gray-500 mt-1">PNG, JPG max. 2MB</p>
+                                    <div class="text-center space-y-4">
+                                        <div class="logo-preview mx-auto cursor-pointer" onclick="document.getElementById('logoUpload').click()">
+                                            <img id="logoPreview" src="{{ asset('images/' . $entreprise->logo) }}" alt="Logo" class="">
                                         </div>
-                                    </div>
-                                    
-                                    <button type="button" 
+
+                                        <input name="logo" type="file" id="logoUpload" accept="image/*" class="hidden" onchange="previewLogo(event)">
+
+                                        <div class="upload-area p-6 cursor-pointer" onclick="document.getElementById('logoUpload').click()">
+                                            <div class="text-center">
+                                                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                                <p class="text-sm text-gray-600">Cliquez pour télécharger ou glissez-déposez</p>
+                                                <p class="text-xs text-gray-500 mt-1">PNG, JPG max. 2MB</p>
+                                            </div>
+                                        </div>
+
+                                        <button type="submit"
                                             class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 text-sm font-medium transition-all duration-200">
-                                        <i class="fas fa-sync-alt mr-2"></i>Mettre à jour le logo
-                                    </button>
+                                            <i class="fas fa-sync-alt mr-2"></i>Mettre à jour le logo
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
 
                             <!-- Informations légales -->
-                         
+
 
                             <!-- Paramètres d'impression -->
                             <div class="bg-white shadow-sm border border-gray-100 p-6">
@@ -345,7 +367,7 @@
                                             <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                                         </label>
                                     </div>
-                                    
+
                                     <div class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200">
                                         <div>
                                             <span class="text-sm font-medium text-gray-700">Pied de page</span>
@@ -356,7 +378,7 @@
                                             <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                                         </label>
                                     </div>
-                                    
+
                                     <div class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200">
                                         <div>
                                             <span class="text-sm font-medium text-gray-700">Signature numérique</span>
@@ -386,47 +408,30 @@
                                     Tarifs actuels
                                 </h3>
                             </div>
-                            
+
                             <div class="space-y-3">
+                                @php
+                                $tarifs = [
+                                'Bouteille 30-33 cl' => $type33->prix_consignation ?? 0,
+                                'Bouteille 50-65 cl' => $type65->prix_consignation ?? 0,
+                                'Bouteille 100 cl' => $type100->prix_consignation ?? 0,
+                                'Cageot' => $type33->prix_cgt ?? 0,
+                                ];
+                                @endphp
+                                @foreach($tarifs as $label => $prix)
+
                                 <div class="price-card p-4 shadow-sm border border-gray-100">
                                     <div class="flex justify-between items-center">
                                         <div>
-                                            <span class="text-gray-700 font-medium">Bouteille 30-33 cl</span>
+                                            <span class="text-gray-700 font-medium">{{ $label }}</span>
                                             <p class="text-gray-500 text-sm">Consignation standard</p>
                                         </div>
-                                        <span class="text-md font-bold text-gray-600">200 Ar</span>
+                                        <span class="text-md font-bold text-gray-600">{{ number_format($prix, 0, ',', ' ') }} Ar</span>
                                     </div>
                                 </div>
-                                
-                                <div class="price-card p-4 shadow-sm border border-gray-100">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <span class="text-gray-700 font-medium">Bouteille 50-65 cl</span>
-                                            <p class="text-gray-500 text-sm">Format moyen</p>
-                                        </div>
-                                        <span class="text-md font-bold text-gray-600">300 Ar</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="price-card p-4 shadow-sm border border-gray-100">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <span class="text-gray-700 font-medium">Bouteille 100 cl</span>
-                                            <p class="text-gray-500 text-sm">Grand format</p>
-                                        </div>
-                                        <span class="text-md font-bold text-gray-600">500 Ar</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="price-card p-4 shadow-sm border border-gray-100">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <span class="text-gray-700 font-medium">Cageot</span>
-                                            <p class="text-gray-500 text-sm">Conditionnement</p>
-                                        </div>
-                                        <span class="text-md font-bold text-gray-600">1 000 Ar</span>
-                                    </div>
-                                </div>
+                                @endforeach
+
+
                             </div>
                         </div>
 
@@ -439,46 +444,28 @@
                                     Modifier les tarifs
                                 </h3>
                             </div>
-                            
-                            <form class="space-y-4 p-6 bg-white shadow-sm border border-gray-100">
+
+                            <form action="{{ route('parametre.store') }}" method="POST" class="space-y-4 p-6 bg-white shadow-sm border border-gray-100">
+                                @csrf
+                                @foreach([
+                                'Bouteille 30-33 cl' => 'consignation_bouteille_33',
+                                'Bouteille 50-65 cl' => 'consignation_bouteille_65',
+                                'Bouteille 100 cl' => 'consignation_bouteille_100',
+                                'Cageot' => 'consignation_cageot'
+                                ] as $label => $name)
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Bouteille 30-33 cl</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ $label }}</label>
                                     <div class="input-group flex">
-                                        <input type="number" step="0.01" value="200" 
-                                               class="flex-1 px-4 py-3 text-gray-900 text-sm focus:outline-none">
+                                        <input type="number" step="0.01" name="{{ $name }}"
+                                            class="flex-1 px-4 py-3 text-gray-900 text-sm focus:outline-none">
                                         <span class="bg-gray-50 px-4 py-3 text-gray-700 text-sm font-medium border-l border-gray-200">Ar</span>
                                     </div>
                                 </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Bouteille 50-65 cl</label>
-                                    <div class="input-group flex">
-                                        <input type="number" step="0.01" value="300" 
-                                               class="flex-1 px-4 py-3 text-gray-900 text-sm focus:outline-none">
-                                        <span class="bg-gray-50 px-4 py-3 text-gray-700 text-sm font-medium border-l border-gray-200">Ar</span>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Bouteille 100 cl</label>
-                                    <div class="input-group flex">
-                                        <input type="number" step="0.01" value="500" 
-                                               class="flex-1 px-4 py-3 text-gray-900 text-sm focus:outline-none">
-                                        <span class="bg-gray-50 px-4 py-3 text-gray-700 text-sm font-medium border-l border-gray-200">Ar</span>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Cageot</label>
-                                    <div class="input-group flex">
-                                        <input type="number" step="0.01" value="1000" 
-                                               class="flex-1 px-4 py-3 text-gray-900 text-sm focus:outline-none">
-                                        <span class="bg-gray-50 px-4 py-3 text-gray-700 text-sm font-medium border-l border-gray-200">Ar</span>
-                                    </div>
-                                </div>
-                                
-                                <button type="button" onclick="showSuccess()" 
-                                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 text-sm font-medium transition-all duration-200 shadow-md hover:shadow-xl">
+                                @endforeach
+
+
+                                <button type="submit" onclick="showSuccess()"
+                                    class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 text-sm font-medium transition-all duration-200 shadow-md hover:shadow-xl">
                                     <i class="fas fa-save mr-2"></i>Enregistrer les modifications
                                 </button>
                             </form>
@@ -500,42 +487,44 @@
                                 </h3>
                             </div>
 
-                            <form class="space-y-5" autocomplete="off">
+                            <form action="{{ route('add.user') }}" method="POST" class="space-y-5" autocomplete="off">
+                                @csrf
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Nom complet</label>
-                                    <input type="text" autocomplete="off" 
-                                           class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                                           required>
+                                    <input type="text" autocomplete="off" name="name"
+                                        class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                        required>
                                 </div>
-                                
+
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                                    <input type="email" autocomplete="off" 
-                                           class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                                           required>
+                                    <input type="email" autocomplete="off"
+                                        name="email"
+                                        class="w-full px-4 py-3 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                                        required>
                                 </div>
-                                
+
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
                                     <div class="input-group flex">
-                                        <input type="password" autocomplete="new-password" 
-                                               class="flex-1 px-4 py-3 text-gray-900 text-sm focus:outline-none">
+                                        <input type="password" autocomplete="new-password" name="password"
+                                            class="flex-1 px-4 py-3 text-gray-900 text-sm focus:outline-none">
                                         <button type="button" class="toggle-password bg-gray-50 px-4 py-3 text-gray-600 hover:text-gray-800 transition-colors border-l border-gray-200">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     </div>
                                 </div>
-                                
+
                                 <div class="flex items-center space-x-3 p-3 bg-gray-50 border border-gray-200">
-                                    <input class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" 
-                                           type="checkbox" id="is_admin">
+                                    <input class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                        type="checkbox" id="is_admin">
                                     <label class="text-sm text-gray-700 font-medium" for="is_admin">
                                         Accès administrateur
                                     </label>
                                 </div>
-                                
-                                <button type="button" 
-                                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 text-sm font-medium transition-all duration-200 shadow-md hover:shadow-xl">
+
+                                <button type="submit"
+                                    class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 text-sm font-medium transition-all duration-200 shadow-md hover:shadow-xl">
                                     <i class="fas fa-plus mr-2"></i>Créer l'utilisateur
                                 </button>
                             </form>
@@ -552,31 +541,70 @@
                                 </h3>
                             </div>
 
-                            <div class="overflow-hidden border border-gray-200">
-                                <table class="user-table w-full">
+                            <div class=" border border-gray-200">
+                                <table class="w-full">
                                     <thead>
-                                        <tr class="bg-gray-200">
-                                            <th class="px-6 py-1 text-left text-xs font-medium uppercase tracking-wider">Nom</th>
-                                            <th class="px-6 py-1 text-left text-xs font-medium uppercase tracking-wider">Email</th>
-                                            <th class="px-6 py-1 text-right text-xs font-medium uppercase tracking-wider">Actions</th>
+                                        <tr class="bg-gray-100">
+                                            <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider border-b border-gray-200">Nom</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider border-b border-gray-200">Email</th>
+                                            <th class="px-4 py-2 text-right text-xs font-medium uppercase tracking-wider border-b border-gray-200">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm text-gray-900">Admin Principal</td>
-                                            <td class="px-6 py-4 text-sm text-gray-600">admin@example.com</td>
-                                            <td class="px-6 py-4 text-right text-sm">
-                                                <button class="text-blue-600 hover:text-blue-800 transition-colors mr-3">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                <button class="text-red-600 hover:text-red-800 transition-colors">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
+                                        @foreach($users as $user)
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-4 py-2 border-b border-gray-200">
+                                                <div class="flex items-center">
+                                                    <span class="text-gray-900">{{ $user->name }}</span>
+                                                    @if($user->is_admin)
+                                                    <span class="ml-2 bg-gray-800 text-white px-2 py-1 text-xs">Admin</span>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-2 border-b border-gray-200 text-gray-900">{{ $user->email }}</td>
+                                            <td class="px-4 py-2 border-b border-gray-200 text-center">
+                                                <div class="relative inline-block">
+                                                    <button onclick="toggleUserMenu({{ $user->id }})" class="text-gray-500 hover:text-gray-700 p-1">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <div id="user-menu-{{ $user->id }}" class="hidden absolute right-0 mt-1 w-40 bg-white border border-gray-200 shadow-lg z-10">
+                                                        <a href="#" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-200">
+                                                            <i class="fas fa-edit mr-2 text-blue-500"></i>Modifier
+                                                        </a>
+
+                                                        <a href="#" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                            <i class="fas fa-trash mr-2 text-red-500"></i>Supprimer
+                                                        </a>
+                                                    </div>
+                                                </div>
                                             </td>
                                         </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
+
+                            <script>
+                                function toggleUserMenu(userId) {
+                                    const menu = document.getElementById('user-menu-' + userId);
+                                    // Fermer tous les autres menus utilisateur ouverts
+                                    document.querySelectorAll('[id^="user-menu-"]').forEach(otherMenu => {
+                                        if (otherMenu.id !== 'user-menu-' + userId) {
+                                            otherMenu.classList.add('hidden');
+                                        }
+                                    });
+                                    menu.classList.toggle('hidden');
+                                }
+
+                                // Fermer le menu quand on clique ailleurs
+                                document.addEventListener('click', function(event) {
+                                    if (!event.target.closest('.relative')) {
+                                        document.querySelectorAll('[id^="user-menu-"]').forEach(menu => {
+                                            menu.classList.add('hidden');
+                                        });
+                                    }
+                                });
+                            </script>
                         </div>
                     </div>
                 </div>
@@ -598,16 +626,16 @@
         const input = event.target;
         const preview = document.getElementById('logoPreview');
         const placeholder = preview.previousElementSibling;
-        
+
         if (input.files && input.files[0]) {
             const reader = new FileReader();
-            
+
             reader.onload = function(e) {
                 preview.src = e.target.result;
                 preview.classList.remove('hidden');
                 placeholder.classList.add('hidden');
             }
-            
+
             reader.readAsDataURL(input.files[0]);
         }
     }
@@ -615,39 +643,39 @@
     function setupDragAndDrop() {
         const uploadArea = document.querySelector('.upload-area');
         const logoUpload = document.getElementById('logoUpload');
-        
+
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             uploadArea.addEventListener(eventName, preventDefaults, false);
         });
-        
+
         function preventDefaults(e) {
             e.preventDefault();
             e.stopPropagation();
         }
-        
+
         ['dragenter', 'dragover'].forEach(eventName => {
             uploadArea.addEventListener(eventName, highlight, false);
         });
-        
+
         ['dragleave', 'drop'].forEach(eventName => {
             uploadArea.addEventListener(eventName, unhighlight, false);
         });
-        
+
         function highlight() {
             uploadArea.classList.add('dragover');
         }
-        
+
         function unhighlight() {
             uploadArea.classList.remove('dragover');
         }
-        
+
         uploadArea.addEventListener('drop', handleDrop, false);
-        
+
         function handleDrop(e) {
             const dt = e.dataTransfer;
             const files = dt.files;
             logoUpload.files = files;
-            
+
             // Déclencher l'événement change pour afficher l'aperçu
             const event = new Event('change');
             logoUpload.dispatchEvent(event);

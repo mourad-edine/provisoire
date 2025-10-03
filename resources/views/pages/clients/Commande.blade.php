@@ -177,7 +177,7 @@
                                 {{ number_format(
                                         $commande->ventes_consignation_sum_prix 
                                         + $commande->ventes_consignation_sum_prix_cgt 
-                                        + optional($commande->conditionnement)->nombre_cageot * $cgt, 
+                                        + optional($commande->conditionnement)->sum('nombre_cageot') * $cgt, 
                                         0, ',', ' '
                                 ) }} Ar
                                 @endif
@@ -186,7 +186,7 @@
                                 @if($commande->etat_client == 1)
                                 {{ number_format($commande->ventes_total, 0, ',', ' ') }} Ar
                                 @else
-                                {{ number_format($commande->ventes_total + $commande->ventes_consignation_sum_prix + $commande->ventes_consignation_sum_prix_cgt + (optional($commande->conditionnement)->nombre_cageot * $cgt), 0, ',', ' ') }} Ar
+                                {{ number_format($commande->ventes_total + $commande->ventes_consignation_sum_prix + $commande->ventes_consignation_sum_prix_cgt + (optional($commande->conditionnement)->sum('nombre_cageot') * $cgt), 0, ',', ' ') }} Ar
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">

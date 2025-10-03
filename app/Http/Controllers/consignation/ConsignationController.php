@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers\consignation;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\Param;
+use App\Models\Vente;
 use App\Models\Article;
 use App\Models\Commande;
-use App\Models\Conditionnement;
-use App\Models\Consignation;
-use App\Models\ConsignationAchat;
-use App\Models\Param;
 use App\Models\Payement;
-use App\Models\User;
-use App\Models\Vente;
+use App\Models\Emballage;
+use App\Models\Entreprise;
+use App\Models\Consignation;
 use Illuminate\Http\Request;
+use App\Models\Conditionnement;
+use App\Models\ConsignationAchat;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 
 class ConsignationController extends Controller
@@ -35,21 +38,32 @@ class ConsignationController extends Controller
             'operation' => $operation
         ]);
     }
+    public function vides($id_article, $quantite)
+    {
+        $article = Article::find($id_article);
+        if ($article) {
+            $article->vides += $quantite;
+            $article->save();
+        }
+        //dd($article);
+    }
+
 
     public function payer(Request $request)
     {
-        $article = Article::find($request->article_id);
+        return DB::transaction(function () use ($request) {
+            $article = Article::findOrFail($request->article_id);
+            $consignation = Consignation::findOrFail($request->consignation_id);
+            $vente = Vente::findOrFail($request->vente_id);
+            $vente_id = $request->vente_id;
 
-        if ($request) {
-            $consignation = Consignation::find($request->consignation_id);
-
-            $casse = $request->casse != null ||  $request->input('casse') != 0 ? 1 : 0;
+            $casse = $request->casse != null || $request->input('casse') != 0 ? 1 : 0;
             $casse_cageot = $request->cageot_casse != null || isset($request->cageot_casse) ? 1 : 0;
+
             if ($casse == 1 || $casse_cageot == 1) {
                 if ($casse == 1) {
                     $nouveauPrix = $consignation->prix - ($request->casse);
                     $etat = ($nouveauPrix == 0) ? 'rendu' : $consignation->etat;
-
                     $consignation->prix = $nouveauPrix;
                     $consignation->etat = $etat;
                     $consignation->casse += $request->casse;
@@ -60,7 +74,6 @@ class ConsignationController extends Controller
                 if ($casse_cageot == 1) {
                     $nouveauPrixCgt = $consignation->prix_cgt - ($request->cageot_casse);
                     $etatCgt = ($nouveauPrixCgt == 0) ? 'rendu' : $consignation->etat_cgt;
-
                     $consignation->prix_cgt = $nouveauPrixCgt;
                     $consignation->etat_cgt = $etatCgt;
                     $consignation->casse_cgt += $request->cageot_casse;
@@ -69,32 +82,11 @@ class ConsignationController extends Controller
                 }
 
                 $this->verification($request->commande_id);
-
-                // return redirect()->back()
-                //     ->with('success', 'Paiement enregistré avec succès.')
-                //     ->with('highlighted_id', $request->vente_id);
             }
 
-            //dd('sorti');
-            //dd([$casse ,$casse_cageot]);
             $bouteille = $request->has('check_bouteille') ? 1 : 0;
             $cageot = $request->has('check_cageot') ? 1 : 0;
-            $vente_id = $request->vente_id;
-            $vente = Vente::find($vente_id);
-            // dd([
-            //     'bouteille' => $bouteille,
-            //     'cageot' => $cageot,
-            //     'article' => $article,
-            // ]);
-            // Mise à jour de la consignation si elle existe
-            //dd($consignation->prix);
-            // if ($consignation) {
-            //     $consignation->etat = ($bouteille == 1) ? 'rendu' : $consignation->etat;
-            //     $consignation->etat_cgt = ($cageot == 1) ? 'rendu' : $consignation->etat_cgt;
-            //     $consignation->prix = ($bouteille == 1) ? 0 : ($consignation->prix - ((int)$request->quantite_bouteille * $article->prix_consignation));
-            //     $consignation->prix_cgt = ($cageot == 1) ? 0 : ($consignation->prix_cgt - ((int)$request->quantite_cageot * $article->prix_cgt));
-            //     $consignation->save();
-            // }
+
             if ($bouteille == 1 && $cageot == 1) {
                 $consignation->etat = 'rendu';
                 $consignation->etat_cgt = 'rendu';
@@ -108,10 +100,12 @@ class ConsignationController extends Controller
                 $totentrecgt = $request->total_cgt * $article->prix_cgt;
                 $this->operation('Déconsignation BTL', $request->commande_id, $request->mode_paye, $totentrebtl);
                 $this->operation('Déconsignation CGT', $request->commande_id, $request->mode_paye, $totentrecgt);
+                $this->vides($article->id, $request->total_btl);
                 return redirect()->back()
                     ->with('success', 'Paiement enregistré avec succès.')
                     ->with('highlighted_id', $vente_id);
             }
+
             if ($bouteille == 0 && $cageot == 1) {
                 $consignation->etat_cgt = 'rendu';
                 $consignation->prix_cgt = 0;
@@ -124,8 +118,8 @@ class ConsignationController extends Controller
                     ->with('success', 'Paiement enregistré avec succès.')
                     ->with('highlighted_id', $vente_id);
             }
+
             if ($bouteille == 1 && $cageot == 0) {
-                //dd('eto');
                 $consignation->etat = 'rendu';
                 $consignation->prix = 0;
                 $consignation->rendu_btl += $request->total_btl;
@@ -133,15 +127,15 @@ class ConsignationController extends Controller
                 $this->verification($request->commande_id);
                 $totentre = $request->total_btl * $article->prix_consignation;
                 $this->operation('bouteille', $request->commande_id, $request->mode_paye, $totentre);
+                $this->vides($article->id, $request->total_btl);
                 return redirect()->back()
                     ->with('success', 'Paiement enregistré avec succès.')
                     ->with('highlighted_id', $vente_id);
             }
+
             if ($bouteille == 0 && $cageot == 0) {
                 $prix_bouteille = (int)$request->quantite_buteille;
                 $prix_cageot = (int)$request->quantite_cageot;
-                //dd($consignation->prix_cgt);
-
                 $actions_effectuees = false;
 
                 if ($consignation->prix > $prix_bouteille) {
@@ -154,7 +148,7 @@ class ConsignationController extends Controller
                     $consignation->rendu_btl += $request->quantite_buteille;
                     $actions_effectuees = true;
                 }
-                //dd($request->quantite_cageot);
+
                 if ($consignation->prix_cgt > $prix_cageot) {
                     $consignation->prix_cgt -= $prix_cageot;
                     $consignation->rendu_cgt += $request->quantite_cageot;
@@ -170,34 +164,22 @@ class ConsignationController extends Controller
                     $consignation->save();
                     $this->operation('cageot', $request->commande_id, $request->mode_paye, ($prix_cageot * $article->prix_cgt));
                     $this->operation('bouteille', $request->commande_id, $request->mode_paye, ($prix_bouteille * $article->prix_consignation));
-
+                    $this->vides($article->id, $request->quantite_buteille);
                     $this->verification($request->commande_id);
                     return redirect()->back()
                         ->with('success', 'Paiement enregistré avec succès.')
                         ->with('highlighted_id', $vente_id);
                 }
+
                 return redirect()->back()
                     ->with('success', 'Paiement enregistré avec succès.')
-                    ->with('highlighted_id', $request->vente->id);
-
-                // Si aucun cas ne s'est déclenché
-                dd([
-                    'prix attendu bouteille' => $prix_bouteille,
-                    'prix consignation bouteille' => $consignation->prix,
-                    'prix attendu cageot' => $prix_cageot,
-                    'prix consignation cageot' => $consignation->prix_cgt,
-                    'bouteille égalité ?' => $consignation->prix == $prix_bouteille,
-                    'cageot égalité ?' => $consignation->prix_cgt == $prix_cageot,
-                ]);
+                    ->with('highlighted_id', $vente_id);
             }
-
-            // Vérifier si toutes les ventes liées à la commande ont prix et prix_cgt égaux à 0
-
-        }
+        }, 5); // 5 tentatives de réessai en cas de deadlock
     }
     public function verification($commande_id)
     {
-        $commande = Commande::with(['ventes.consignation', 'conditionnement'])
+        $commande = Commande::with(['ventes.consignation', 'conditionnements'])
             ->where('id', $commande_id)
             ->first();
 
@@ -244,6 +226,7 @@ class ConsignationController extends Controller
 
     public function parametre()
     {
+        $entreprise = Entreprise::where('id', 1)->first();
         $articles = Article::whereIn('type_btl', [33, 65, 100])
             ->get()
             ->keyBy('type_btl');
@@ -253,6 +236,7 @@ class ConsignationController extends Controller
             'type100' => $articles->get(100),
             'cageots' => Article::whereBetween('type_btl', [1, 65])->first(),
             'users' => User::all(),
+            'entreprise' => $entreprise
         ]);
     }
 
@@ -321,66 +305,112 @@ class ConsignationController extends Controller
             ->with('success', 'utilisateur enregistré avec succès.');
     }
 
-    public function rendrecondi(Request $request)
+    public function operations($commande_id, $type_cageot, $quantite)
     {
-        //dd($request->all());
-        if ($request->has('commande_id')) {
-            $ventes = Vente::where('commande_id', $request->commande_id)->get();
-            //dd($ventes[id);
-            // Vérification et mise à jour des consignations associées
+        $article = Article::where('conditionnement', $type_cageot)->first();
 
+        if ($article && in_array($type_cageot, [12, 20, 24])) {
+            $article->vides += $quantite;
+            $article->save();
 
-            // Suppression du conditionnement s'il existe
-            $conditionnement = Conditionnement::where('commande_id', $request->commande_id)->first();
-            if ($conditionnement->nombre_cageot == $request->quantite_cageot) {
-                foreach ($ventes as $vente) {
-                    if ($vente->consignation && $vente->consignation->etat_cgt === 'conditionné') {
-                        $vente->consignation->update(['etat_cgt' => 'rendu']);
-                    }
-                }
-            }else{
-                $conditionnement->nombre_cageot -= $request->quantite_cageot;
-                $conditionnement->save();
-                return redirect()->back()->with('success', 'Rendu avec succès.');
-
-            }
-            $vente = Vente::where('commande_id', $request->commande_id)->first();
-            if ($conditionnement) {
-                $consignation = Consignation::where('vente_id', $vente->id)->first();
-                if (!$consignation) {
-                    Consignation::create([
-                        'vente_id' => $vente->id,
-                        'prix' => 0,
-                        'prix_cgt' => 0,
-                        'etat' => 'rendu',
-                        'etat_cgt' => 'rendu',
-                        'rendu_btl' => 0,
-                        'rendu_cgt' => $conditionnement->nombre_cageot,
-                    ]);
-                } else {
-                    $consignation->rendu_cgt += $conditionnement->nombre_cageot;
-                    $consignation->save();
-                }
-                $conditionnement->delete();
-            }
-
-            // Vérification si toutes les consignations ont prix = 0 et prix_cgt = 0
-            $commande = Commande::with('ventes.consignation')->where('id', $request->commande_id)->first();
-
-            if ($commande) {
-                $toutesConsignationsAZero = $commande->ventes->every(function ($vente) {
-                    return optional($vente->consignation)->prix == 0 && optional($vente->consignation)->prix_cgt == 0;
-                });
-
-                if ($toutesConsignationsAZero) {
-                    $commande->etat_client = 0;
-                    $commande->save();
-                }
+            Payement::create([
+                'commande_id' => $commande_id,
+                'mode_paye'   => 'espèce',
+                'quantite'    => $quantite,
+                'somme'       => $quantite * $article->prix_cgt,
+                'operation'   => 'Déconsignation cageot'
+            ]);
+            $cageot = Emballage::where('type_cageot', $type_cageot)->first();
+            if ($cageot) {
+                $cageot->quantite += $quantite;
+                $cageot->save();
             }
         }
-
-        return redirect()->back()->with('success', 'Rendu avec succès.');
     }
+
+
+    public function rendrecondi(Request $request)
+    {
+        if (!$request->has('commande_id')) {
+            return redirect()->back()->with('error', 'Commande introuvable.');
+        }
+
+        try {
+            DB::transaction(function () use ($request) {
+                $ventes = Vente::where('commande_id', $request->commande_id)->get();
+                $conditionnement = Conditionnement::where('commande_id', $request->commande_id)->first();
+
+                if (!$conditionnement) {
+                    throw new \Exception("Aucun conditionnement trouvé pour cette commande.");
+                }
+
+                // Si le rendu correspond exactement au nombre de cageots
+                if ($conditionnement->nombre_cageot == $request->quantite_cageot) {
+                    foreach ($ventes as $vente) {
+                        if ($vente->consignation && $vente->consignation->etat_cgt === 'conditionné') {
+                            $vente->consignation->update(['etat_cgt' => 'rendu']);
+                        }
+                    }
+                } else {
+                    // Rendu partiel
+                    $conditionnement->nombre_cageot -= $request->quantite_cageot;
+                    $conditionnement->save();
+
+                    // On enregistre quand même l’opération de déconsignation
+                    $this->operations($request->commande_id, $conditionnement->type_cageot, $request->quantite_cageot);
+
+                    // On arrête ici car le conditionnement reste
+                    return;
+                }
+
+                // Enregistre l’opération de déconsignation
+                $this->operations($request->commande_id, $conditionnement->type_cageot, $request->quantite_cageot);
+
+                // Gestion de la consignation
+                $vente = Vente::where('commande_id', $request->commande_id)->first();
+                if ($vente) {
+                    $consignation = Consignation::where('vente_id', $vente->id)->first();
+
+                    if (!$consignation) {
+                        Consignation::create([
+                            'vente_id'   => $vente->id,
+                            'prix'       => 0,
+                            'prix_cgt'   => 0,
+                            'etat'       => 'rendu',
+                            'etat_cgt'   => 'rendu',
+                            'rendu_btl'  => 0,
+                            'rendu_cgt'  => $conditionnement->nombre_cageot,
+                        ]);
+                    } else {
+                        $consignation->rendu_cgt += $conditionnement->nombre_cageot;
+                        $consignation->save();
+                    }
+                }
+
+                // Supprime le conditionnement une fois traité
+                $conditionnement->delete();
+
+                // Vérification de toutes les consignations
+                $commande = Commande::with('ventes.consignation')->find($request->commande_id);
+
+                if ($commande) {
+                    $toutesConsignationsAZero = $commande->ventes->every(function ($vente) {
+                        return optional($vente->consignation)->prix == 0 && optional($vente->consignation)->prix_cgt == 0;
+                    });
+
+                    if ($toutesConsignationsAZero) {
+                        $commande->etat_client = 0;
+                        $commande->save();
+                    }
+                }
+            });
+
+            return redirect()->back()->with('success', 'Rendu avec succès.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', "Erreur lors du rendu : " . $e->getMessage());
+        }
+    }
+
 
     public function ajour($vente_id, $quantite)
     {

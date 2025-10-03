@@ -44,7 +44,7 @@ $deconsigneglobale += $prix_total_deconsigne; // Variable correctement assignée
 $prixGlobale += $prix_total;
 }
 
-$nombreCageots = optional($conditionnement->conditionnement)->nombre_cageot ?? 0;
+$nombreCageots = optional($conditionnement->conditionnements)->sum('nombre_cageot') ?? 0;
 $valeurCageots = $nombreCageots * ($cgt ?? 0);
 $totalConsigne = ($totalconsigne ?? 0) + $valeurCageots;
 $montantTotal = ($deconsigneglobale - $reste < 0 ? 0 : $deconsigneglobale - $reste) + $totalConsigne;
@@ -215,96 +215,7 @@ $montantTotal = ($deconsigneglobale - $reste < 0 ? 0 : $deconsigneglobale - $res
         </div>
     </div>
     
-    <!-- <div class="mb-6">
-        <nav class="flex" aria-label="Breadcrumb">
-            <ol class="inline-flex items-center space-x-1 md:space-x-3">
-                <li class="inline-flex items-center">
-                    <a href="{{ route('dashboard') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
-                        Tableau de bord
-                    </a>
-                </li>
-                <li>
-                    <div class="flex items-center">
-                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <a href="{{ route('commande.liste.vente') }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2">Commandes</a>
-                    </div>
-                </li>
-                <li>
-                    <div class="flex items-center">
-                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <a href="{{ route('commande.liste.vente.detail', ['id' => $commande_id]) }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2">C-{{ $commande->id }}</a>
-                    </div>
-                </li>
-                <li aria-current="page">
-                    <div class="flex items-center">
-                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">Paiement</span>
-                    </div>
-                </li>
-            </ol>
-        </nav>
-    </div> -->
 
-    <!-- Informations commande -->
-    <!-- <div class="mb-6">
-        <div class="bg-white  shadow-sm border-l-4 border-blue-400">
-            <div class="px-6 py-4 flex flex-wrap items-center justify-between border-b border-gray-200">
-                <h6 class="font-semibold text-gray-700">
-                    <i class="fas fa-receipt mr-2 text-blue-500"></i>Commande C-{{ $commande->id }}
-                </h6>
-                <div class="flex gap-2 mt-2 md:mt-0">
-                    <a href="{{ route('pdf.download', ['id' => $commande_id]) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
-                        <i class="fas fa-print mr-1"></i> Facture
-                    </a>
-                    <a href="{{ url()->previous() }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
-                        <i class="fas fa-arrow-left mr-1"></i> Retour
-                    </a>
-                </div>
-            </div>
-            <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="flex items-center">
-                        <div class="bg-blue-500 p-2  mr-3">
-                            <i class="fas fa-user text-white"></i>
-                        </div>
-                        <div>
-                            <small class="text-gray-500 text-sm">Client</small>
-                            <p class="font-semibold text-gray-800">{{ $commande->client->nom ?? 'N/A' }}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center">
-                        <div class="bg-blue-400 p-2  mr-3">
-                            <i class="fas fa-phone text-white"></i>
-                        </div>
-                        <div>
-                            <small class="text-gray-500 text-sm">Téléphone</small>
-                            <p class="font-semibold text-gray-800">{{ $commande->client->telephone ?? 'N/A' }}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center">
-                        <div class="bg-yellow-500 p-2  mr-3">
-                            <i class="fas fa-calendar text-white"></i>
-                        </div>
-                        <div>
-                            <small class="text-gray-500 text-sm">Date commande</small>
-                            <p class="font-semibold text-gray-800">{{ $commande->created_at }}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center">
-                        <div class="bg-{{ $commande->etat_commande == 'non payé' ? 'red' : 'green' }}-500 p-2  mr-3">
-                            <i class="fas fa-{{ $commande->etat_commande == 'non payé' ? 'times' : 'check' }}-circle text-white"></i>
-                        </div>
-                        <div>
-                            <small class="text-gray-500 text-sm">État</small>
-                            <p class="font-semibold text-gray-800">{{ $commande->etat_commande }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
-
-    <!-- Success Message -->
     @if(session('success'))
     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3  relative mb-6" role="alert">
         <div class="flex items-center">
@@ -326,7 +237,7 @@ $montantTotal = ($deconsigneglobale - $reste < 0 ? 0 : $deconsigneglobale - $res
                 <input type="hidden" name="commande_id" value="{{ $commande_id }}">
                 <input type="hidden" name="montant_total" value="{{ $deconsigneglobale }}">
                 <input type="hidden" name="montant_tot" value="{{ $montantTotal }}">
-                <input type="hidden" name="totalconsigne" value="{{ $totalconsigne + (optional($conditionnement->conditionnement)->nombre_cageot * $cgt) }}">
+                <input type="hidden" name="totalconsigne" value="{{ $totalconsigne + (optional($conditionnement->conditionnements)->sum('nombre_cageot') * $cgt) }}">
 
                 <!-- Payment Status -->
                 @if($deconsigneglobale - $reste <= 0)

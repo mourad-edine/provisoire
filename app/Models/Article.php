@@ -20,6 +20,7 @@ class Article extends Model
         'prix_gros',
         'prix_achat',
         'status',
+        'vides',
         'prix_cgt',
         'quantite',
         'type_btl'

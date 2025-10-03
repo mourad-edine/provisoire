@@ -11,7 +11,8 @@ class Payement extends Model
         'commande_id',
         'mode_paye',
         'somme',
-        'operation'
+        'operation',
+        'quantite'
     ];
 
     public function commande()

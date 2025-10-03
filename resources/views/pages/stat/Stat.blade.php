@@ -344,19 +344,35 @@
         </div>
         
         <div class="p-4">
-            <form id="dateSearchForm" action="{{ route('stat') }}" class="mb-4">
-                <div class="flex flex-col md:flex-row gap-3 items-start md:items-end">
-                    <div class="flex-1">
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Date</label>
-                        <input name="date_vente" type="date" id="searchDate" value="{{ date('Y-m-d') }}" 
-                               class="w-full border border-gray-300 px-3 py-2 text-xs focus:outline-none focus:border-blue-500">
-                    </div>
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 text-xs font-medium hover:bg-blue-700 transition-colors flex items-center gap-1">
-                        <i class="fas fa-chart-bar"></i>
-                        Analyser
-                    </button>
+           <form id="dateSearchForm" action="{{ route('stat') }}" class="mb-6">
+    <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <!-- Champ Date -->
+        <div class="flex-1">
+            <label for="searchDate" class="sr-only">Date d'analyse</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-calendar-day text-gray-400 text-sm"></i>
                 </div>
-            </form>
+                <input 
+                    name="date_vente" 
+                    type="date" 
+                    id="searchDate" 
+                    value="{{ date('Y-m-d') }}" 
+                    class="block w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                >
+            </div>
+        </div>
+        
+        <!-- Bouton Analyser -->
+        <button 
+            type="submit" 
+            class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 text-sm font-medium transition-colors duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow"
+        >
+            <i class="fas fa-chart-bar text-white text-sm"></i>
+            Analyser
+        </button>
+    </div>
+</form>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 <!-- Résumé -->
