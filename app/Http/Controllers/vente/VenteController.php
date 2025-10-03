@@ -1057,65 +1057,30 @@ class VenteController extends Controller
 
 
     public function rendu($id)
-    {
-        $article = Article::first();
-        $cgt = $article->prix_cgt;
-        $commande = Commande::where('commande_id', $id)->with('payements')->first();
-        //sdd($commande);
+{
+    $article = Article::first();
+    $cgt = $article->prix_cgt ?? 0;
 
-        $reste = $commande->payements()->where('operation', 'partiel')->sum('somme');
-        $ventes = Vente::with(['article', 'consignation', 'commande'])
-            ->where('commande_id', $commande->id)
-            ->orderBy('id', 'DESC')
-            ->paginate(10); // La pagination doit être ici
+    // ⚡ Correction : chercher directement la commande par id
+    $commande = Commande::with('payements')->findOrFail($id);
 
-        // Transformer chaque vente après la pagination
-        $ventes->getCollection()->transform(function ($vente) {
-            return [
-                'id' => $vente->id,
-                'etat_client_commande' => $vente->commande ? $vente->commande->etat_client : null,
-                'article' => $vente->article ? $vente->article->nom : null,
-                'article_id' => $vente->article ? $vente->article->id : null,
-                'consi_cgt' => $vente->article ? $vente->article->prix_cgt : null,
-                'prix_unitaire' => $vente->prix ? $vente->prix : null,
-                'reference' => $vente->article ? $vente->article->reference : null,
-                'numero_commande' => $vente->commande_id,
-                'consignation_id' => $vente->consignation ? $vente->consignation->id : null,
-                'casse' => $vente->consignation ? $vente->consignation->casse : null,
-                'rendu_btl' => $vente->consignation ? $vente->consignation->rendu_btl : null,
-                'rendu_cgt' => $vente->consignation ? $vente->consignation->rendu_cgt : null,
-                'casse_cgt' => $vente->consignation ? $vente->consignation->casse_cgt : null,
-                'consignation' => $vente->consignation ? $vente->consignation->prix * $vente->article->prix_consignation : null,
-                'etat' => $vente->consignation ? $vente->consignation->etat : null,
-                'etat_cgt' => $vente->consignation ? $vente->consignation->etat_cgt : null,
-                'quantite' => $vente->quantite,
-                'type_achat' => $vente->type_achat,
-                'created_at' => Carbon::parse($vente->created_at)->format('d/m/Y H:i:s'),
-                'prix_consignation' => $vente->article ? $vente->article->prix_consignation : null,
-                'prix_cgt' => $vente->consignation ? $vente->consignation->prix_cgt * $vente->article->prix_cgt : null,
-                'conditionnement' => $vente->article ? $vente->article->conditionnement : null,
-                'btl' => $vente->btl,
-                'cgt' => $vente->cgt,
-                'commande_id' => $vente->commande_id,
-                'etat_payement' => $vente->etat,
-                'etat_client' => $vente->client,
-                'prix_cage' => $vente->prix_cage,
-            ];
-        });
-        //dd($reste);
-        //dd($ventes->toArray());
-        $conditionnement = Commande::with('conditionnement')->where('id', $id)->first();
+    // ⚡ Correction : utiliser paginate directement sur la requête
+    $ventes = Vente::with(['article', 'consignation', 'commande'])
+        ->where('commande_id', $commande->id)
+        ->orderBy('id', 'DESC')
+        ->paginate(10);
 
-        //dd($conditionnement->toArray());
-        return view('pages.vente.Rendu', [
-            'ventes' => $ventes,
-            'commande_id' => $id,
-            'conditionnement' => $conditionnement,
-            'cgt' => $cgt,
-            'commande' => $commande,
-            'reste' => $reste,
-        ]);
-    }
+    $conditionnement = Commande::with('conditionnements')->find($id);
+
+    return view('pages.vente.Rendu', [
+        'ventes' => $ventes,
+        'commande_id' => $id,
+        'conditionnement' => $conditionnement,
+        'cgt' => $cgt,
+        'commande' => $commande,
+    ]);
+}
+
 
     public function delete(Request $request)
     {

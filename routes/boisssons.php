@@ -11,6 +11,7 @@ use App\Http\Controllers\depense\DepenseController;
 use App\Http\Controllers\entreprise\EntrepriseController;
 use App\Http\Controllers\fournisseur\FournisseurController;
 use App\Http\Controllers\PdfController;
+use App\Http\Controllers\rendu\RenduController;
 use App\Http\Controllers\stat\StatController;
 use App\Http\Controllers\stock\StockController;
 use App\Http\Controllers\vente\VenteController;
@@ -38,6 +39,9 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
     Route::get('/ventes-rendu/{id}', [VenteController::class, 'rendu'])->name('vente.rendu');
     Route::get('/vente_reglement/{id}', [VenteController::class, 'reglement'])->name('reglement.index');
     Route::get('/pay/{id}', [VenteController::class, 'pay'])->name('pay.index');
+    Route::put('/article_rendu', [RenduController::class, 'articlerendu'])->name('article.rendu');
+    Route::put('/article_rendu_all', [RenduController::class, 'articlerenduall'])->name('article.rendu.all');
+    Route::get('/article_rendu_historique/{id}', [RenduController::class, 'articlerenduhistorique'])->name('article.rendu.historique');
 
     Route::post('/ventes', [VenteController::class, 'store'])->name('vente.store');
 

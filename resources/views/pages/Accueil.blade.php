@@ -193,7 +193,7 @@
                                                 </div>
                                                 <div class="flex items-center">
                                                     <input type="radio" class="h-4 w-4 text-blue-600 condi_jet_radio" data-id="{{ $article['id'] }}" id="condi_jet_{{ $article['id'] }}" name="choix_{{ $article['id'] }}" value="jet" {{ $article['prix_consignation'] > 0 && ($article['prix_cgt'] == 0 || $article['prix_cgt'] == null) ? 'checked' : '' }}>
-                                                    <label for="condi_jet_{{ $article['id'] }}" class="ml-2 text-sm">BTL consigné / Emb jetable</label>
+                                                    <label for="condi_jet_{{ $article['id'] }}" class="ml-2 text-sm">consigné/Emb jetable</label>
                                                 </div>
                                             </div>
 
