@@ -1062,7 +1062,7 @@ class VenteController extends Controller
     $cgt = $article->prix_cgt ?? 0;
 
     // ⚡ Correction : chercher directement la commande par id
-    $commande = Commande::with('payements')->findOrFail($id);
+    $commande = Commande::where('commande_id' , $id)->with('payements')->first();
 
     // ⚡ Correction : utiliser paginate directement sur la requête
     $ventes = Vente::with(['article', 'consignation', 'commande'])

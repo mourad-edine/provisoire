@@ -119,8 +119,8 @@ class RenduController extends Controller
 
     public function articlerenduhistorique($id)
     {
-        $commande = Commande::where('commande_id' , $id)->first($id);
-        dd($commande);
+        $commande = Commande::where('commande_id' , $id)->first();
+        
         $articlerendus = ArticleRendu::with(['vente'])
             ->where('commande_id', $commande->id)
             ->orderBy('id', 'DESC')
