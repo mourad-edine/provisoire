@@ -50,11 +50,12 @@ class AccueilController extends Controller
                 'prix_gros' => $article->prix_gros,
             ];
         });
-        $bestseller = Article::withCount('achats')  // Charge le nombre d'achats associés à chaque article
+        $bestseller = Article::withCount('achats')
+            ->where('status' , 1)  // Charge le nombre d'achats associés à chaque article
             ->orderByDesc('achats_count')  // Trie les articles par le nombre d'achats, en ordre décroissant
             ->take(3)  // Limite à 3 articles
             ->get();
-        $faible = Article::where('quantite', '<', 20)->take(3)->get();
+        $faible = Article::where('quantite', '<', 20)->where('status' , 1)->take(3)->get();
 
         //dd($faible);
 
@@ -253,13 +254,14 @@ class AccueilController extends Controller
         });
 
         $bestseller = Article::select('articles.*')
+            ->where('articles.status', 1)
             ->join('ventes', 'articles.id', '=', 'ventes.article_id')
             ->selectRaw('COUNT(ventes.article_id) as ventes_count')
             ->groupBy('articles.id')
             ->orderByDesc('ventes_count')
             ->take(3)
             ->get();
-        $faible = Article::where('quantite', '<', 20)->take(3)->get();
+        $faible = Article::where('quantite', '<', 20)->where('status' , 1)->take(3)->get();
 
         //dd($faible);
 

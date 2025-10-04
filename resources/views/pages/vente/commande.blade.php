@@ -133,6 +133,22 @@
             </div>
         </div>
         @endif
+        @if(session('error'))
+        <div id="errorMessage" class="bg-red-50 border-l-4 border-red-400 p-4 mx-6 mt-4 rounded">
+            <div class="flex items-center justify-between">
+                <div class="flex items
+-center">
+                    <i class="fas fa-exclamation-circle text-red-400 mr-2"></i>
+                    <span class="text-red-700 text-sm">{{ session('error') }}</span>
+                </div>
+                <button type="button" onclick="document.getElementById('errorMessage').remove()" 
+                        class="text-red-400 hover:text-red-600 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+        </div>
+        @endif
 
         <!-- Contenu du tableau -->
         <div class="p-6">

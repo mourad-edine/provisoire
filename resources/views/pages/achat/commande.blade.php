@@ -3,10 +3,7 @@
 @section('title', 'Gestion des Achats')
 
 @section('content')
-<div class=" mx-auto">
-    <!-- En-tête de section -->
-
-
+<div class="mx-auto">
     <!-- Navigation Tabs -->
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
         <div class="w-full">
@@ -54,22 +51,15 @@
                         class="group bg-white border-2 border-gray-200 hover:border-amber-500 rounded-xl p-4 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
                         <div class="flex items-center gap-3">
                             <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center group-hover:bg-amber-500 transition-colors duration-300">
-                                <i class="fas fa-shopping-cart  text-amber-600 group-hover:text-white text-lg"></i>
+                                <i class="fas fa-shopping-cart text-amber-600 group-hover:text-white text-lg"></i>
                             </div>
                             <div>
-                                <h4 class="font-semibold text-gray-800 group-hover:text-amber-600 transition-colors"> Nouvel achat
-                                </h4>
+                                <h4 class="font-semibold text-gray-800 group-hover:text-amber-600 transition-colors">Nouvel achat</h4>
                                 <p class="text-xs text-gray-500">Acheter</p>
                             </div>
                         </div>
                     </a>
-
-                    <!-- Carte Compte rendu -->
-
                 </div>
-
-                <!-- Barre de statut en bas -->
-
             </div>
         </div>
     </div>
@@ -122,8 +112,6 @@
                             <option value="desc" {{ request('tri') == 'desc' ? 'selected' : '' }}>Décroissant</option>
                             <option value="asc" {{ request('tri') == 'asc' ? 'selected' : '' }}>Croissant</option>
                         </select>
-                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                        </div>
                     </div>
                 </div>
                 <div>
@@ -176,7 +164,7 @@
                                 <!-- Menu déroulant -->
                                 <div class="relative inline-block text-left">
                                     <button type="button"
-                                        class="inline-flex justify-center  ml-20 w-8 h-8 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100  transition-colors duration-200"
+                                        class="inline-flex justify-center ml-20 w-8 h-8 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors duration-200"
                                         onclick="toggleDropdown('dropdown-commande-{{ $commande->id }}')">
                                         <i class="fas fa-ellipsis-v"></i>
                                     </button>
@@ -202,13 +190,10 @@
                                             <!-- Séparateur -->
                                             <div class="border-t border-gray-100 my-1"></div>
 
-                                            <!-- Modifier -->
-                                         
-                                            <!-- Séparateur -->
-                                            <div class="border-t border-gray-100 my-1"></div>
-
                                             <!-- Supprimer -->
-                                            <button class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors duration-150 w-full text-left">
+                                            <button type="button"
+                                                onclick="openDeleteModal({{ $commande->id }}, '{{ $commande->numero ?: 'C-' . $commande->id }}')"
+                                                class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors duration-150 w-full text-left">
                                                 <i class="fas fa-trash-alt mr-3 w-4"></i>
                                                 Supprimer
                                             </button>
@@ -229,81 +214,6 @@
                         </tr>
                         @endforelse
                     </tbody>
-
-                    <script>
-                        // Fonction pour ouvrir/fermer le menu déroulant
-                        function toggleDropdown(menuId) {
-                            const menu = document.getElementById(menuId);
-                            menu.classList.toggle('hidden');
-
-                            // Fermer les autres menus ouverts
-                            document.querySelectorAll('[id^="dropdown-commande-"]').forEach(otherMenu => {
-                                if (otherMenu.id !== menuId) {
-                                    otherMenu.classList.add('hidden');
-                                }
-                            });
-
-                            // Empêcher la propagation pour éviter la fermeture immédiate
-                            event.stopPropagation();
-                        }
-
-                        // Fermer les menus quand on clique ailleurs
-                        document.addEventListener('click', function(event) {
-                            if (!event.target.closest('.relative.inline-block')) {
-                                document.querySelectorAll('[id^="dropdown-commande-"]').forEach(menu => {
-                                    menu.classList.add('hidden');
-                                });
-                            }
-                        });
-
-                        // Fermer le menu quand une option est cliquée
-                        document.addEventListener('click', function(event) {
-                            if (event.target.closest('[id^="dropdown-commande-"] a, [id^="dropdown-commande-"] button')) {
-                                document.querySelectorAll('[id^="dropdown-commande-"]').forEach(menu => {
-                                    menu.classList.add('hidden');
-                                });
-                            }
-                        });
-                    </script>
-
-                    <style>
-                        .relative.inline-block {
-                            position: relative;
-                        }
-
-                        [id^="dropdown-commande-"] {
-                            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-                            backdrop-filter: blur(8px);
-                        }
-
-                        /* Animation d'apparition */
-                        [id^="dropdown-commande-"]:not(.hidden) {
-                            animation: fadeInScale 0.2s ease-out;
-                        }
-
-                        @keyframes fadeInScale {
-                            from {
-                                opacity: 0;
-                                transform: scale(0.95) translateY(-5px);
-                            }
-
-                            to {
-                                opacity: 1;
-                                transform: scale(1) translateY(0);
-                            }
-                        }
-
-                        /* Style pour les icônes dans le menu */
-                        .py-2 a,
-                        .py-2 button {
-                            transition: all 0.2s ease;
-                        }
-
-                        .py-2 a:hover,
-                        .py-2 button:hover {
-                            transform: translateX(2px);
-                        }
-                    </style>
                 </table>
             </div>
 
@@ -314,7 +224,164 @@
     </div>
 </div>
 
+<!-- Modal de suppression -->
+<div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center h-full w-full hidden z-50 transition-opacity duration-300">
+    <div class="relative mx-auto p-6 border max-w-[400px] w-[90%] bg-white shadow-xl rounded-lg transform transition-all duration-300">
+        <div class="text-center">
+            <!-- Icône d'alerte -->
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+            </div>
+            
+            <!-- Titre et message -->
+            <h3 class="text-lg font-semibold text-gray-900 mt-4">Confirmer la suppression</h3>
+            <div class="mt-3 px-4 py-2">
+                <p class="text-sm text-gray-600">
+                    Êtes-vous sûr de vouloir supprimer la commande <span id="commandeNom" class="font-semibold"></span> ?
+                </p>
+                <p class="text-xs text-red-600 mt-2 flex items-center justify-center">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Cette action est irréversible et supprimera tous les achats associés.
+                </p>
+            </div>
+            
+            <!-- Boutons d'action -->
+            <div class="flex justify-center gap-4 mt-6">
+                <button type="button"
+                    onclick="closeDeleteModal()"
+                    class="px-4 py-2 bg-gray-200 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 transition duration-150 flex items-center">
+                    <i class="fas fa-times mr-2"></i>
+                    Annuler
+                </button>
+                <form id="deleteForm" method="POST" class="inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                        class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-150 flex items-center">
+                        <i class="fas fa-trash-alt mr-2"></i>
+                        Supprimer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Fonction pour ouvrir/fermer le menu déroulant
+    function toggleDropdown(menuId) {
+        const menu = document.getElementById(menuId);
+        menu.classList.toggle('hidden');
+
+        // Fermer les autres menus ouverts
+        document.querySelectorAll('[id^="dropdown-commande-"]').forEach(otherMenu => {
+            if (otherMenu.id !== menuId) {
+                otherMenu.classList.add('hidden');
+            }
+        });
+
+        // Empêcher la propagation pour éviter la fermeture immédiate
+        event.stopPropagation();
+    }
+
+    // Fermer les menus quand on clique ailleurs
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.relative.inline-block')) {
+            document.querySelectorAll('[id^="dropdown-commande-"]').forEach(menu => {
+                menu.classList.add('hidden');
+            });
+        }
+    });
+
+    // Fermer le menu quand une option est cliquée
+    document.addEventListener('click', function(event) {
+        if (event.target.closest('[id^="dropdown-commande-"] a, [id^="dropdown-commande-"] button')) {
+            document.querySelectorAll('[id^="dropdown-commande-"]').forEach(menu => {
+                menu.classList.add('hidden');
+            });
+        }
+    });
+
+    // Gestion du modal de suppression
+    function openDeleteModal(commandeId, commandeNom) {
+        const modal = document.getElementById('deleteModal');
+        const commandeNomElement = document.getElementById('commandeNom');
+        const deleteForm = document.getElementById('deleteForm');
+        
+        // Mettre à jour le nom de la commande
+        commandeNomElement.textContent = commandeNom;
+        
+        // Mettre à jour l'action du formulaire
+        deleteForm.action = "{{ route('delete.achat', ['id' => ':id']) }}".replace(':id', commandeId);
+        
+        // Afficher le modal
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('deleteModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    // Fermer le modal en cliquant à l'extérieur
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target.id === 'deleteModal') {
+            closeDeleteModal();
+        }
+    });
+
+    // Fermer le modal avec la touche Échap
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeDeleteModal();
+        }
+    });
+</script>
+
 <style>
+    .relative.inline-block {
+        position: relative;
+    }
+
+    [id^="dropdown-commande-"] {
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(8px);
+    }
+
+    /* Animation d'apparition */
+    [id^="dropdown-commande-"]:not(.hidden) {
+        animation: fadeInScale 0.2s ease-out;
+    }
+
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.95) translateY(-5px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    /* Style pour les icônes dans le menu */
+    .py-2 a,
+    .py-2 button {
+        transition: all 0.2s ease;
+    }
+
+    .py-2 a:hover,
+    .py-2 button:hover {
+        transform: translateX(2px);
+    }
+
+    /* Animation pour le modal */
+    #deleteModal {
+        transition: all 0.3s ease;
+    }
+
     /* Styles personnalisés pour améliorer l'apparence */
     select {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23374151'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");

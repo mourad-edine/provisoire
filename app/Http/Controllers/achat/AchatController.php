@@ -269,4 +269,38 @@ class AchatController extends Controller
      
         ]);
     }
+    public function deletecommande($id)
+    {
+        $commande = Commande::find($id);
+        if (!$commande) {
+            return redirect()->back()->with('error', 'Commande non trouvée.');
+        }
+
+        // Vérifier si la commande a des achats associés
+        if ($commande->achats()->exists()) {
+            foreach ($commande->achats as $achat) {
+                $article = Article::find($achat->article_id);
+                if ($article) {
+                    if ($achat->type_achat == 'cageot' || $achat->type_achat == 'pack') {
+                        $article->quantite -= $achat->quantite * $article->conditionnement;
+                    } else {
+                        $article->quantite -= $achat->quantite;
+                    }
+                    $article->save();
+                   
+                }
+
+
+                // Supprimer les consignations associées
+                if ($achat->consignation_achat) {
+                    $achat->consignation_achat->delete();
+                }
+                // Supprimer l'achat
+                $achat->delete();
+            }
+        }
+
+        $commande->delete();
+        return redirect()->back()->with('success', 'Commande supprimée avec succès.');
+    }
 }

@@ -20,7 +20,7 @@ class PdfController extends Controller
         // Données de base
         $article = Article::first();
         $cgt = $article->prix_cgt;
-        $commande = Commande::with(['payements', 'client', 'conditionnement'])->findOrFail($id);
+        $commande = Commande::with(['payements', 'client', 'conditionnements'])->findOrFail($id);
         $reste = $commande->payements()->where('operation', 'partiel')->sum('somme');
 
         // Récupération des ventes
@@ -104,7 +104,7 @@ class PdfController extends Controller
         });
 
         // Cageots
-        $nombreCageots = optional($commande->conditionnement)->nombre_cageot ?? 0;
+        $nombreCageots = optional($commande->conditionnements)->sum('nombre_cageot') ?? 0;
         $valeurCageots = $nombreCageots * $cgt;
         $totals['global'] += $valeurCageots;
 
@@ -115,7 +115,7 @@ class PdfController extends Controller
         $pdf = PDF::loadView('facture', [
             'ventes' => $ventesData,
             'commande' => $commande,
-            'conditionnement' => $commande->conditionnement,
+            'conditionnement' => $commande->conditionnements,
             'cgt' => $cgt,
             'reste' => $reste,
             'totals' => $totals,

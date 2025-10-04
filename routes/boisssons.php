@@ -60,6 +60,7 @@ Route::middleware('auth')->prefix('boissons')->group(function () {
 
 
     Route::get('/achats', [AchatController::class, 'show'])->name('achat.liste');
+    Route::delete('/deletecommande/{id}', [AchatController::class, 'deletecommande'])->name('delete.achat');
     Route::get('/achats-page', [AchatController::class, 'showachat'])->name('achat.page');
 
     Route::get('/commande-achats', [AchatController::class, 'commande'])->name('achat.commande');
