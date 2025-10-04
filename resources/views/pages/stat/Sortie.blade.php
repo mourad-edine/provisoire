@@ -41,30 +41,19 @@
         </li>
     </ul>
     <div class="p-4 bg-gray-50 rounded-t-lg shadow-sm">
-        <form method="GET" action="#" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+        <form method="GET" action="{{route('sortie.stat')}}" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
             <div>
                 <label for="search" class="block text-sm font-medium text-gray-700">Nom de l'article</label>
-                <input type="text" id="search" name="search" value=""
+                <input type="text" id="search" name="search" value="{{ old('search' , request('search')) }}"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
+           
             <div>
-                <label for="date_debut" class="block text-sm font-medium text-gray-700">Date début</label>
-                <input type="date" id="date_debut" name="date_debut" value=""
+                <label for="date_fin" class="block text-sm font-medium text-gray-700">Date</label>
+                <input type="date" id="date_fin" name="date" value="{{ old('date' , request('date')) }}"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
-            <div>
-                <label for="date_fin" class="block text-sm font-medium text-gray-700">Date fin</label>
-                <input type="date" id="date_fin" name="date_fin" value=""
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            <div>
-                <label for="tri" class="block text-sm font-medium text-gray-700">Trier par date</label>
-                <select name="tri" id="tri"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="desc" selected>Décroissant</option>
-                    <option value="asc">Croissant</option>
-                </select>
-            </div>
+         
             <div>
                 <button type="submit" class="w-full bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded text-sm">
                     <i class="fas fa-search mr-2"></i>Rechercher
@@ -125,9 +114,9 @@
                     <!-- Prix -->
                     <td class="px-4 py-3 w-2/12">
                         <div class="flex flex-col">
-                            <span class="text-xs text-slate-500">Prix unité</span>
+                            <span class="text-xs text-slate-500">valeur stock details</span>
                             <span class="text-green-600 font-medium text-sm">
-                                {{ number_format($article->prix_vente, 0, ',', ' ') }} Ar
+                                {{ number_format($article->prix_gros * $article->quantite, 0, ',', ' ') }} Ar
                             </span>
                         </div>
                     </td>
@@ -135,9 +124,9 @@
                     <!-- Valeur -->
                     <td class="px-4 py-3 w-2/12">
                         <div class="flex flex-col">
-                            <span class="text-xs text-slate-500">Valeur stock</span>
+                            <span class="text-xs text-slate-500">Valeur stock Gros</span>
                             <span class="text-blue-600 font-medium text-sm">
-                                {{ number_format($article->quantite * $article->prix_vente, 0, ',', ' ') }} Ar
+                                {{ number_format($article->quantite * $article->prix_unitaire, 0, ',', ' ') }} Ar
                             </span>
                         </div>
                     </td>

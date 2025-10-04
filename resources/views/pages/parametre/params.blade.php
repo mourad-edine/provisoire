@@ -236,8 +236,8 @@
                                     </div>
 
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Slogan</label>
-                                        <input disabled type="text" value="Votre partenaire de confiance"
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Nom site</label>
+                                        <input name="nom_site" type="text" value="{{$entreprise->nom_site}}"
                                             class="w-full px-4 py-3 border border-gray-200 bg-gray-400 text-gray-900 text-sm focus:outline-none focus:border-blue-500 transition-colors">
                                     </div>
                                 </div>

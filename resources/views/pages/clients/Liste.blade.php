@@ -163,8 +163,8 @@
         <!-- Modal de détails du client -->
         <div id="clientDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
             <div class="bg-white rounded-lg w-full max-w-2xl mx-4">
-                <div class="bg-gradient-to-r from-blue-600 to-blue-700 p-4 rounded-t-lg flex justify-between items-center">
-                    <h5 class="text-lg font-semibold text-white">
+                <div class="bg-gradient-to-r from-white to-white p-4 rounded-t-lg flex justify-between items-center">
+                    <h5 class="text-lg font-semibold text-dark">
                         <i class="fas fa-user-circle mr-2"></i>Détails du Client
                     </h5>
                     <button onclick="closeModal('clientDetailsModal')" class="text-white hover:text-blue-200">
@@ -185,8 +185,8 @@
         <!-- Modal d'édition du client -->
         <div id="clientEditModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
             <div class="bg-white rounded-lg w-full max-w-2xl mx-4">
-                <div class="bg-gradient-to-r from-green-600 to-green-700 p-4 rounded-t-lg flex justify-between items-center">
-                    <h5 class="text-lg font-semibold text-white">
+                <div class="bg-gradient-to-r from-white to-white p-4 rounded-t-lg flex justify-between items-center">
+                    <h5 class="text-lg font-semibold text-dark">
                         <i class="fas fa-edit mr-2"></i>Modifier le Client
                     </h5>
                     <button onclick="closeModal('clientEditModal')" class="text-white hover:text-green-200">
@@ -269,8 +269,8 @@
             function openClientDetailsModal(clientData) {
                 const content = `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                            <h6 class="font-semibold text-blue-800 mb-3 flex items-center">
+                        <div class="bg-white-50 p-4 rounded-lg border border-blue-200">
+                            <h6 class="font-semibold text-dark mb-3 flex items-center">
                                 <i class="fas fa-id-card mr-2"></i>Informations Personnelles
                             </h6>
                             <div class="space-y-2">

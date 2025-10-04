@@ -104,9 +104,9 @@
                             <th class="px-2 py-2 border border-gray-200">nom</th>
                             <th class="px-2 py-2 border border-gray-200">categorie</th>
                             <th class="px-2 py-2 border border-gray-200">quantite</th>
-                            <th class="px-2 py-2 border border-gray-200">valeur réelle(Ar)</th>
+                            <th class="px-2 py-2 border border-gray-200">valeur réelle détails(Ar)</th>
+                            <th class="px-2 py-2 border border-gray-200">valeur réelle gros(Ar)</th>
                             <th class="px-2 py-2 border border-gray-200">mise à jour</th>
-                            <th class="px-2 py-2 border border-gray-200">date</th>
                             <th class="px-2 py-2 border border-gray-200">actions</th>
                         </tr>
                     </thead>
@@ -121,14 +121,19 @@
                                 $quotient = intdiv($article->quantite, $article->conditionnement);
                                 $reste = $article->quantite % $article->conditionnement;
                                 @endphp
-                                @if($quotient > 0)
+                                @if($article->quantite > 24)
                                 <span class="text-green-600">{{ $quotient }} cageot{{ $quotient > 1 ? 's' : '' }} et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}</span>
                                 @else
                                 <span class="text-red-600">{{ $quotient }} cageot{{ $quotient > 1 ? 's' : '' }} et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }}</span>
                                 @endif
                             </td>
-                            <td class="px-2 py-2 border border-gray-200">{{ $article->quantite * $article->prix_unitaire }} Ar</td>
-                            <td class="px-2 py-2 border border-gray-200">{{ \Carbon\Carbon::parse($article->created_at)->format('Y-m-d') }}</td>
+                            <td class="px-2 py-2 border border-gray-200">
+                                {{ number_format($article->quantite * $article->prix_gros, 0, ',', ' ') }} Ar
+                            </td>
+                            <td class="px-2 py-2 border border-gray-200">
+                                {{ number_format($article->quantite * $article->prix_unitaire, 0, ',', ' ') }} Ar
+                            </td>
+
                             <td class="px-2 py-2 border border-gray-200">{{ \Carbon\Carbon::parse($article->updated_at)->format('Y-m-d') }}</td>
                             <td class="px-2 py-2 border border-gray-200">
                                 <div class="relative inline-block">

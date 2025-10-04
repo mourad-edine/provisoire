@@ -146,7 +146,7 @@
                         <img src="{{ asset('images/' . $entreprise->logo) }}" alt="Logo">
                     </div>
                     <span class="text-xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
-                        MonSite
+                        {{$entreprise->nom_site}}
                     </span>
                 </div>
 

@@ -95,7 +95,16 @@ class StockController extends Controller
         ];
 
         $resultats = [];
-        $alcoolfort = Article::where('prix_consignation', '>=', 1000)->get();
+        $search = request()->input('search');
+        $alcoolfort = Article::where('prix_consignation', '>=', 1000)
+            ->when($search, function ($query, $search) {
+                $query->where('nom', 'like', "%{$search}%")
+                    ->orWhereHas('categorie', function ($query) use ($search) {
+                        $query->where('nom', 'like', "%{$search}%");
+                    });
+            })
+            ->get();
+
         //dd($alcoolfort->toArray());
         foreach ($groupes as $key => $types) {
             $articles = Article::whereIn('type_btl', $types)->get();
@@ -157,9 +166,7 @@ class StockController extends Controller
         try {
             DB::transaction(function () use ($request) {
                 $emballage = Emballage::findOrFail($request->id);
-                $emballage->type_cageot   = $request->type_cageot;
                 $emballage->quantite      = $request->quantite;
-                $emballage->nom_emballage = $request->nom_emballage;
                 $emballage->save();
 
                 // 🛑 Debug : voir le contenu après modif

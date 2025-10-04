@@ -141,7 +141,6 @@ class StatController extends Controller
                 return $query->whereDate('date_sortie', $today);
             })
             ->orderBy('id', 'desc')
-            ->take(6)
             ->get();
 
         //dd($ventesParMois);
@@ -160,17 +159,32 @@ class StatController extends Controller
         ]);
     }
 
-    public function sortie()
-    {
-        $articles = Article::whereHas('historiqueventes', function ($query) {
-            $query->whereDate('created_at', now());
-        })->with(['historiqueventes' => function ($query) {
-            $query->whereDate('created_at', now());
-        }])->get();
-        //dd($articles->toArray());
-        return view('pages.stat.sortie', [
-            'articles' => $articles
-        ]);
-    }
+public function sortie()
+{
+    $search = request()->query('search');
+    $date = request()->query('date');
+
+    $articles = Article::with(['historiqueventes' => function ($query) use ($date) {
+        if ($date) {
+            $query->whereDate('created_at', $date);
+        }
+    }])
+    ->whereHas('historiqueventes', function ($query) use ($date) {
+        if ($date) {
+            $query->whereDate('created_at', $date);
+        }
+    })
+    ->when($search, function ($query, $search) {
+        $query->where('nom', 'like', "%{$search}%");
+    })
+    ->get();
+
+    return view('pages.stat.sortie', [
+        'articles' => $articles,
+        'search' => $search,
+        'date' => $date,
+    ]);
+}
+
     
 }

@@ -13,6 +13,7 @@ class EntrepriseController extends Controller
     {
         // dd($request->all());
         $request->validate([
+            'nom_site' => 'nullable|string|max:255',
             'nom' => 'required|string|max:255',
             'adresse' => 'required|string|max:255',
             'numero' => 'required|string|max:20',
@@ -34,6 +35,7 @@ class EntrepriseController extends Controller
                 // Upload du logo si présent
 
                 // Mise à jour des champs
+                $entreprise->nom_site = $request->nom_site;
                 $entreprise->nom = $request->nom;
                 $entreprise->adresse = $request->adresse;
                 $entreprise->numero = $request->numero;

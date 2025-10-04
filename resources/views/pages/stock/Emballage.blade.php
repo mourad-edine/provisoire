@@ -50,7 +50,7 @@
     </div>
     @if (session('success'))
     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6" role="alert">
-        <span class="block sm:inline">{{ session('success') }}</span>  
+        <span class="block sm:inline">{{ session('success') }}</span>
     </div>
     @endif
     @if (session('error'))
@@ -62,7 +62,7 @@
     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
         <ul class="list-disc list-inside">
             @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
+            <li>{{ $error }}</li>
             @endforeach
         </ul>
     </div>
@@ -88,7 +88,7 @@
                             <a href="{{route('emballage.bouteille' , ['type' => $type])}}" class="text-blue-600 hover:text-blue-800 transition-colors duration-200" title="Modifier">
                                 <i class="fas fa-list"></i>
                             </a>
-                           
+
                         </div>
                     </div>
                     <div class="space-y-3">
@@ -97,7 +97,7 @@
                             <div id="display-bouteille-{{ $type }}" class="flex items-center space-x-2">
                                 <span class="text-sm font-semibold text-gray-700">{{ $data['total_vide'] }}</span>
                             </div>
-                            
+
                         </div>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-200">
@@ -177,13 +177,41 @@
 
         <!-- Section Bouteilles Vides - Alcools Forts -->
         <div class="bg-white shadow-sm p-6 border border-gray-100">
-            <div class="bg-blue-50 border border-gray-200 p-4 mb-4">
-                <h2 class="text-xl font-semibold text-gray-800 flex items-center">
-                    <i class="fas fa-glass-whiskey text-gray-600 mr-3 text-lg"></i>
-                    Bouteilles Vides - Alcools Forts
-                    <span class="ml-3 text-sm font-normal text-gray-600 bg-gray-100 px-2 py-1">Inventaire</span>
-                </h2>
+            <div class="bg-blue-50 border border-gray-200 p-4 mb-4 flex flex-wrap justify-between items-center rounded-lg">
+    <!-- Titre à gauche -->
+    <div class="flex items-center">
+        <h2 class="text-xl font-semibold text-gray-800 flex items-center">
+            <i class="fas fa-glass-whiskey text-gray-600 mr-3 text-lg"></i>
+            Bouteilles Vides - Alcools Forts
+            <span class="ml-3 text-sm font-normal text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                Inventaire
+            </span>
+        </h2>
+    </div>
+
+    <!-- Barre de recherche à droite -->
+    <div class="bg-gray-100 px-4 py-3 rounded-lg flex items-center gap-3">
+        <form action="{{ route('emballage.index') }}" method="GET" class="flex items-center gap-3">
+            <div class="relative">
+                <input 
+                    type="text" 
+                    name="search" 
+                    value="{{ old('search', request('search')) }}"
+                    class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Rechercher..."
+                >
             </div>
+            <button 
+                type="submit"
+                class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white text-gray-600 hover:bg-gray-50 flex items-center transition"
+            >
+                <i class="fas fa-search mr-2"></i>
+                Rechercher
+            </button>
+        </form>
+    </div>
+</div>
+
 
             <!-- Tableau des bouteilles -->
             <div class="overflow-x-auto">
@@ -246,27 +274,27 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap relative">
-    <div class="flex justify-center">
-        <!-- Bouton menu -->
-        <button onclick="toggleMenu('menu-{{ $article->id }}')" 
-            class="text-gray-600 hover:text-gray-800 transition-colors duration-200">
-            <i class="fas fa-ellipsis-v"></i>
-        </button>
-    </div>
+                                <div class="flex justify-center">
+                                    <!-- Bouton menu -->
+                                    <button onclick="toggleMenu('menu-{{ $article->id }}')"
+                                        class="text-gray-600 hover:text-gray-800 transition-colors duration-200">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </div>
 
-    <!-- Menu déroulant caché par défaut -->
-    <div id="menu-{{ $article->id }}" 
-        class="hidden absolute right-0 mt-2 w-40 bg-white border rounded shadow-md z-10">
-        <button onclick="toggleEdit('alcool-{{ $article->id }}')" 
-            class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100">
-            <i class="fas fa-edit mr-2"></i> Modifier
-        </button>
-        <button onclick="resetQuantity('alcool-{{ $article->id }}')" 
-            class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
-            <i class="fas fa-undo mr-2"></i> Réinitialiser
-        </button>
-    </div>
-</td>
+                                <!-- Menu déroulant caché par défaut -->
+                                <div id="menu-{{ $article->id }}"
+                                    class="hidden absolute right-0 mt-2 w-40 bg-white border rounded shadow-md z-10">
+                                    <button onclick="toggleEdit('alcool-{{ $article->id }}')"
+                                        class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100">
+                                        <i class="fas fa-edit mr-2"></i> Modifier
+                                    </button>
+                                    <button onclick="resetQuantity('alcool-{{ $article->id }}')"
+                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                        <i class="fas fa-undo mr-2"></i> Réinitialiser
+                                    </button>
+                                </div>
+                            </td>
 
                         </tr>
                         @endforeach
@@ -311,77 +339,77 @@
 
 <script>
     function toggleMenu(id) {
-    // Fermer tous les autres menus
-    document.querySelectorAll('[id^="menu-"]').forEach(el => {
-        if (el.id !== id) el.classList.add('hidden');
-    });
-
-    // Ouvrir/fermer le menu cliqué
-    const menu = document.getElementById(id);
-    menu.classList.toggle('hidden');
-}
-
-// Fermer si on clique à l'extérieur
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('td')) {
+        // Fermer tous les autres menus
         document.querySelectorAll('[id^="menu-"]').forEach(el => {
-            el.classList.add('hidden');
+            if (el.id !== id) el.classList.add('hidden');
         });
+
+        // Ouvrir/fermer le menu cliqué
+        const menu = document.getElementById(id);
+        menu.classList.toggle('hidden');
     }
-});
 
-// Fonction pour basculer entre l'affichage et l'édition
-function toggleEdit(elementId) {
-    const displayElement = document.getElementById(`display-${elementId}`);
-    const editElement = document.getElementById(`edit-${elementId}`);
-    
-    displayElement.classList.add('hidden');
-    editElement.classList.remove('hidden');
-}
+    // Fermer si on clique à l'extérieur
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('td')) {
+            document.querySelectorAll('[id^="menu-"]').forEach(el => {
+                el.classList.add('hidden');
+            });
+        }
+    });
 
-// Fonction pour annuler l'édition
-function cancelEdit(elementId) {
-    const displayElement = document.getElementById(`display-${elementId}`);
-    const editElement = document.getElementById(`edit-${elementId}`);
-    
-    displayElement.classList.remove('hidden');
-    editElement.classList.add('hidden');
-}
+    // Fonction pour basculer entre l'affichage et l'édition
+    function toggleEdit(elementId) {
+        const displayElement = document.getElementById(`display-${elementId}`);
+        const editElement = document.getElementById(`edit-${elementId}`);
 
-// Fonction pour réinitialiser la quantité
-function resetQuantity(elementId) {
-    if (confirm('Êtes-vous sûr de vouloir réinitialiser cette quantité à 0 ?')) {
-        const form = document.getElementById(`form-${elementId}`);
-        const input = form.querySelector('input[name="quantite"]');
-        
-        // Mettre la valeur à 0
-        input.value = 0;
-        
-        // Soumettre le formulaire automatiquement
-        form.submit();
+        displayElement.classList.add('hidden');
+        editElement.classList.remove('hidden');
     }
-}
 
-// Ajouter un écouteur d'événement pour la confirmation sur la soumission des formulaires
-document.addEventListener('DOMContentLoaded', function() {
-    const forms = document.querySelectorAll('form[id^="form-"]');
-    
-    forms.forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const input = this.querySelector('input[name="quantite"]');
-            const newValue = input.value;
-            const type = this.querySelector('input[name="type"]').value;
-            const id = this.querySelector('input[name="id"]').value;
-            
-            if (confirm(`Êtes-vous sûr de vouloir modifier la quantité à ${newValue} ?`)) {
-                // Soumettre le formulaire
-                this.submit();
-            }
+    // Fonction pour annuler l'édition
+    function cancelEdit(elementId) {
+        const displayElement = document.getElementById(`display-${elementId}`);
+        const editElement = document.getElementById(`edit-${elementId}`);
+
+        displayElement.classList.remove('hidden');
+        editElement.classList.add('hidden');
+    }
+
+    // Fonction pour réinitialiser la quantité
+    function resetQuantity(elementId) {
+        if (confirm('Êtes-vous sûr de vouloir réinitialiser cette quantité à 0 ?')) {
+            const form = document.getElementById(`form-${elementId}`);
+            const input = form.querySelector('input[name="quantite"]');
+
+            // Mettre la valeur à 0
+            input.value = 0;
+
+            // Soumettre le formulaire automatiquement
+            form.submit();
+        }
+    }
+
+    // Ajouter un écouteur d'événement pour la confirmation sur la soumission des formulaires
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('form[id^="form-"]');
+
+        forms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const input = this.querySelector('input[name="quantite"]');
+                const newValue = input.value;
+                const type = this.querySelector('input[name="type"]').value;
+                const id = this.querySelector('input[name="id"]').value;
+
+                if (confirm(`Êtes-vous sûr de vouloir modifier la quantité à ${newValue} ?`)) {
+                    // Soumettre le formulaire
+                    this.submit();
+                }
+            });
         });
     });
-});
 </script>
 
 

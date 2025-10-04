@@ -10,6 +10,7 @@ class Entreprise extends Model
         'nom',
         'adresse',
         'numero',
+        'nom_site',
         'email',
         'nif',
         'stat',

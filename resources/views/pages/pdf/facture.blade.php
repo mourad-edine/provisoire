@@ -79,9 +79,13 @@
     <div class="contain">
         <div class="left">
             <strong>Distributeur :</strong><br>
-            Nom : Entreprise ABC<br>
-            Adresse : -----------<br>
-            Contact : -----------
+            Nom entreprise : {{$entreprise->nom}}<br>
+            Adresse : {{$entreprise->adresse}}<br>
+            Contact : {{$entreprise->numero}} <br>
+            Nif : {{$entreprise->nif}} <br>
+            Stat : {{$entreprise->stat}} <br>
+            Email : {{$entreprise->email}} <br>
+
         </div>
 
         <div class="right">

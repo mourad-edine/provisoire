@@ -142,7 +142,8 @@
                         <img src="{{ asset('images/' . $entreprise->logo) }}" alt="Logo">
                     </div>
                     <span class="text-xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
-                        MonSite
+                                                {{$entreprise->nom_site}}
+
                     </span>
                 </div>
 
@@ -365,6 +366,34 @@
 
             <!-- Card Body -->
             <div class="py-6  ">
+                @if(session('success'))
+                <div class="max-w-7xl mx-auto mb-4 px-4">
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                        <strong class="font-bold">Succès!</strong>
+                        <span class="block sm:inline">{{ session('success') }}</span>
+                        <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                            <svg class="fill-current h-6 w-6 text-green-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" onclick="this.parentElement.parentElement.style.display='none';">
+                                <title>Fermer</title>
+                                <path d="M14.348 14.849a1.2 1.2 0 01-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 11-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 111.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 111.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 010 1.698z" />
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+                @endif
+                @if(session('error'))
+                <div class="max-w-7xl mx-auto mb-4 px-4">
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                        <strong class="font-bold">Erreur!</strong>
+                        <span class="block sm:inline">{{ session('error') }}</span>
+                        <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                            <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" onclick="this.parentElement.parentElement.style.display='none';">
+                                <title>Fermer</title>
+                                <path d="M14.348 14.849a1.2 1.2 0 01-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 11-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 111.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 111.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 010 1.698z" />
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+                @endif
                 <form id="venteForm" action="{{ route('vente.store') }}" method="POST" onsubmit="disableSubmitButton(this)">
                     @csrf
 
@@ -639,31 +668,20 @@
                                                 </label>
                                             </div>
                                             <div id="choix_content" class="pl-7 mt-2 hidden">
-                                                <div class="flex justify-between items-center gap-4 flex-wrap">
-                                                    <!-- Cageot 24 -->
-                                                    <!-- Dans la section des cageots vides -->
-                                                    <div class="flex items-center gap-3">
-                                                        <div class="flex border border-gray-300 overflow-hidden">
-                                                            <input type="number" class="w-20 px-3 py-2 border-0 focus:ring-0" name="embale" id="embale" placeholder="Nombre" min="0">
-                                                            <span class="bg-gray-100 px-3 py-2 text-gray-600 border-l border-gray-300">x 24</span>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="flex items-center gap-3">
-                                                        <div class="flex border border-gray-300 overflow-hidden">
-                                                            <input type="number" class="w-20 px-3 py-2 border-0 focus:ring-0" name="cageot20" id="cageot20" placeholder="Nombre" min="0">
-                                                            <span class="bg-gray-100 px-3 py-2 text-gray-600 border-l border-gray-300">x 20</span>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="flex items-center gap-3">
-                                                        <div class="flex border border-gray-300 overflow-hidden">
-                                                            <input type="number" class="w-20 px-3 py-2 border-0 focus:ring-0" name="cageot12" id="cageot12" placeholder="Nombre" min="0">
-                                                            <span class="bg-gray-100 px-3 py-2 text-gray-600 border-l border-gray-300">x 12</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+    <div class="flex justify-between items-center gap-4 flex-wrap">
+        <!-- Cageot 24 -->
+        <!-- Dans la section des cageots vides -->
+        @foreach($cageots as $cageot)
+        <div class="flex flex-col items-start gap-1">
+            <label for="{{$cageot->nom_emballage}}" class="text-gray-600">Stock {{$cageot->quantite}}</label>
+            <div class="flex border border-gray-300 overflow-hidden">
+                <input type="number" class="w-20 px-3 py-2 border-0 focus:ring-0" name="{{$cageot->nom_emballage}}" id="{{$cageot->nom_emballage}}" placeholder="Nombre" min="0" max="{{$cageot->quantite}}">
+                <span class="bg-gray-100 px-3 py-2 text-gray-600 border-l border-gray-300">x {{$cageot->type_cageot}}</span>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</div>
                                         </div>
 
                                         <!-- Options de paiement en ligne -->
@@ -956,8 +974,8 @@
             const cageotsByType = calculateCageotsByType();
 
             // Mettre à jour les champs seulement s'ils ne sont pas en cours de modification
-            if (!$('#embale').is(':focus') || $('#embale').val() === '') {
-                $('#embale').val(cageotsByType.cageots24);
+            if (!$('#cageot24').is(':focus') || $('#cageot24').val() === '') {
+                $('#cageot24').val(cageotsByType.cageots24);
             }
             if (!$('#cageot20').is(':focus') || $('#cageot20').val() === '') {
                 $('#cageot20').val(cageotsByType.cageots20);
@@ -1044,7 +1062,7 @@
             });
 
             // Récupérer les valeurs des champs de cageots vides
-            const emptyCageots24 = parseInt($('#embale').val()) || 0;
+            const emptyCageots24 = parseInt($('#cageot24').val()) || 0;
             const emptyCageots20 = parseInt($('#cageot20').val()) || 0;
             const emptyCageots12 = parseInt($('#cageot12').val()) || 0;
 
@@ -1124,7 +1142,7 @@
         });
 
         // Écouter les modifications manuelles des champs de cageots vides
-        $(document).on('input', '#embale, #cageot20, #cageot12', function() {
+        $(document).on('input', '#cageot24, #cageot20, #cageot12', function() {
             calculateGlobalTotal();
         });
 
@@ -1178,7 +1196,7 @@
                 syncCageotsFields();
             } else {
                 $('#choix_content').hide();
-                $('#embale').val('0');
+                $('#cageot24').val('0');
                 $('#cageot20').val('0');
                 $('#cageot12').val('0');
                 calculateGlobalTotal();

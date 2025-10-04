@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\Article;
 use App\Models\Commande;
 use App\Models\Payement;
+use App\Models\Emballage;
 use App\Models\Consignation;
 use Illuminate\Http\Request;
 use App\Models\Conditionnement;
@@ -373,6 +374,7 @@ class VenteController extends Controller
     public function Vente()
     {
         return view('pages.vente.Vente', [
+            'cageots' => Emballage::all(),
             'articles' => Article::where('status', 1)->get(),
             'clients' => Client::where('status', 1)->get(),
             'dernier' => Commande::latest()->first()
@@ -622,184 +624,193 @@ class VenteController extends Controller
 
     public function store(Request $request)
     {
-
-        //
-        //dd($request->all());
-        if ($request->nouveau) {
-            $nouvclient = Client::create([
-                'nom' => $request->nouveau,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-        }
-        $commande = Commande::create([
-            'user_id' => Auth::id(),
-            'client_id' => ($request->client_id != null) ? $request->client_id : $nouvclient->id,
-            'etat_client' => $request->has('fidele') ? 1 : ($request->has('disposition') ? 2 : 0),
-            'etat_commande' => $request->has('payer') ? 'payé' : 'non payé'
-        ]);
-
-        $conditionnement = $request->has('choix') ? 1 : 0;
-        $cgs = Article::first()->prix_cgt;
-
-        if ($conditionnement == 1) {
-            if($request->embale && (int)$request->embale > 0){
-                Conditionnement::create([
-                'commande_id' => $commande->id,
-                'nombre_cageot' => $request->embale ? $request->embale : 0,
-                'type_cageot' => 24,
-                'montant' => $request->embale ? $request->embale * $cgs : 0,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+        return DB::transaction(function () use ($request) {
+            if ($request->nouveau) {
+                $nouvclient = Client::create([
+                    'nom' => $request->nouveau,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
             }
-            if($request->cageot20 && (int)$request->cageot20 > 0){
-                Conditionnement::create([
-                'commande_id' => $commande->id,
-                'nombre_cageot' => $request->cageot20 ? $request->cageot20 : 0,
-                'type_cageot' => 20,
-                'montant' => $request->cageot20 ? $request->cageot20 * $cgs : 0,
-                'created_at' => now(),
-                'updated_at' => now()
+
+            $commande = Commande::create([
+                'user_id' => Auth::id(),
+                'client_id' => ($request->client_id != null) ? $request->client_id : $nouvclient->id,
+                'etat_client' => $request->has('fidele') ? 1 : ($request->has('disposition') ? 2 : 0),
+                'etat_commande' => $request->has('payer') ? 'payé' : 'non payé'
             ]);
-            }
-            if($request->cageot12 && (int)$request->cageot12 > 0){
-                Conditionnement::create([
-                'commande_id' => $commande->id,
-                'nombre_cageot' => $request->cageot12 ? $request->cageot12 : 0,
-                'type_cageot' => 12,
-                'montant' => $request->cageot12 ? $request->cageot12  * $cgs : 0,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-            }
-        }
 
-        if ($request->articles) {
-            foreach ($request->articles as $index) {
-                $article = Article::find($index['id']);
+            $conditionnement = $request->has('choix') ? 1 : 0;
+            $cgs = Article::first()->prix_cgt;
 
-                if (!$article) {
-                    continue; // Article non trouvé
-                }
-
-                // Détection des options cageot/bouteille
-                $avecBouteille = isset($index['avec_bouteille']);
-                $avecCageot = isset($index['avec_cageot']);
-
-                $bouteille = $avecBouteille ? 0 : 1;
-                $cageot = $avecCageot ? 0 : 1;
-                //dd(['bouteille' => $bouteille, 'cageot' => $cageot, 'prix_cgt' => $article->prix_cgt]);
-                // Vente en cageot
-
-                if (!empty($index['quantite_cageot'])) {
-                    $quantiteCageot = (int)$index['quantite_cageot'];
-
-
-                    $venteCageot = Vente::create([
-                        'article_id' => $index['id'],
+            if ($conditionnement == 1) {
+                if ($request->cageot24 && (int)$request->cageot24 > 0) {
+                    Conditionnement::create([
                         'commande_id' => $commande->id,
-                        'quantite' => $quantiteCageot,
-                        'prix' => $index['prix_unitaire'],
-                        'prix_cage' => $article->prix_conditionne,
-                        'type_achat' => ($article->prix_consignation == 0 && $article->prix_cgt == 0) || ($article->prix_consignation > 0 && $article->prix_cgt == 0) ? 'pack' : 'cageot',
-                        'btl' => $bouteille,
-                        'cgt' => $cageot,
-                        'etat' => $request->has('payer') ? 1 : 0,
-                        'client' => $request->has('fidele') ? 1 : 0,
-                        'date_sortie' => now(),
-                        'cat' => $request->cat
+                        'nombre_cageot' => $request->cageot24 ? $request->cageot24 : 0,
+                        'type_cageot' => 24,
+                        'montant' => $request->cageot24 ? $request->cageot24 * $cgs : 0,
+                        'created_at' => now(),
+                        'updated_at' => now()
                     ]);
-                    $this->historiquestore($article->id, $quantiteCageot * $article->conditionnement, $venteCageot->id, $index['prix_unitaire'], $index['prix_unitaire'] * $quantiteCageot);
-                    $article->quantite -= $quantiteCageot * $article->conditionnement;
-                    $article->save();
-
-                    // Créer une consignation si cageot non rendu
-                    if ($cageot == 0 && $article->prix_cgt != 0) {
-                        //dd('tsy mandalo eto');
-                        Consignation::create([
-                            'vente_id' => $venteCageot->id,
-                            'etat' => $bouteille == 0 ? 'non rendu' : 'non consigné',
-                            'etat_cgt' => 'non rendu',
-                            'prix' => $bouteille == 0
-                                ? $quantiteCageot * $article->conditionnement
-                                : 0,
-                            'prix_cgt' => $quantiteCageot,
-                            'date_consignation' => now(),
-                            'type_consignation' => false,
-                        ]);
-                    } else if ($cageot == 1 && $bouteille == 0 && $article->prix_cgt != 0) {
-                        Consignation::create([
-                            'vente_id' => $venteCageot->id,
-                            'etat' => 'non rendu',
-                            'etat_cgt' => 'non consigné',
-                            'prix' => $quantiteCageot * $article->conditionnement,
-                            'prix_cgt' => 0,
-                            'date_consignation' => now(),
-                            'type_consignation' => false,
-                        ]);
-                    }
-                    if (($cageot == 1 || $cageot == 0) && $bouteille == 0 && $article->prix_cgt == 0) {
-                        //dd((int)$index['quantite_cageot'] * $article->prix_consignation * $article->conditionnement);
-                        Consignation::create([
-                            'vente_id' => $venteCageot->id,
-                            'etat' => ($article->prix_consignation != 0) ? 'non rendu' : 'non consigné',
-                            'etat_cgt' => 'non consigné',
-                            'prix' => ($article->prix_consignation != 0) ? (int)$index['quantite_cageot'] * $article->conditionnement : 0,
-                            'prix_cgt' => 0,
-                            'date_consignation' => now(),
-                            'type_consignation' => false,
-                        ]);
+                    $emballage = Emballage::where('type_cageot', 24)->first();
+                    if ($emballage) {
+                        $emballage->quantite -= (int)$request->cageot24; // Corrected to use cageot24
+                        $emballage->save();
                     }
                 }
 
-                // Vente à l’unité
-                if (!empty($index['quantite_unite'])) {
-                    $quantiteUnite = (int)$index['quantite_unite'];
-
-
-                    $venteUnite = Vente::create([
-                        'article_id' => $index['id'],
+                if ($request->cageot20 && (int)$request->cageot20 > 0) {
+                    Conditionnement::create([
                         'commande_id' => $commande->id,
-                        'quantite' => $quantiteUnite,
-                        'prix' => $index['prix_unitaire'],
-                        'prix_cage' => $article->prix_conditionne,
-                        'type_achat' => 'bouteille',
-                        'btl' => $bouteille,
-                        'cgt' => $cageot,
-                        'etat' => $request->has('payer') ? 1 : 0,
-                        'client' => $request->has('fidele') ? 1 : 0,
-                        'date_sortie' => now(),
-                        'cat' => $request->cat
-
+                        'nombre_cageot' => $request->cageot20 ? $request->cageot20 : 0,
+                        'type_cageot' => 20,
+                        'montant' => $request->cageot20 ? $request->cageot20 * $cgs : 0,
+                        'created_at' => now(),
+                        'updated_at' => now(),
                     ]);
-                    $this->historiquestore($article->id, $quantiteUnite, $venteUnite->id, $index['prix_unitaire'], $index['prix_unitaire'] * $quantiteUnite);
-                    $article->quantite -= $quantiteUnite;
-                    $article->save();
-                    if ($bouteille == 0 && $article->prix_consignation != 0) {
-                        Consignation::create([
-                            'vente_id' => $venteUnite->id,
-                            'etat' => 'non rendu',
-                            'etat_cgt' => $conditionnement == 1 ? 'conditionné' : 'sans CGT',
-                            'prix' => $quantiteUnite,
-                            'prix_cgt' => 0,
-                            'date_consignation' => now(),
-                            'type_consignation' => true,
-                        ]);
+                    $emballage = Emballage::where('type_cageot', 20)->first();
+                    if ($emballage) {
+                        $emballage->quantite -= (int)$request->cageot20;
+                        $emballage->save();
+                    }
+                }
+
+                if ($request->cageot12 && (int)$request->cageot12 > 0) {
+                    Conditionnement::create([
+                        'commande_id' => $commande->id,
+                        'nombre_cageot' => $request->cageot12 ? $request->cageot12 : 0,
+                        'type_cageot' => 12,
+                        'montant' => $request->cageot12 ? $request->cageot12 * $cgs : 0,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                    $emballage = Emballage::where('type_cageot', 12)->first();
+                    if ($emballage) {
+                        $emballage->quantite -= (int)$request->cageot12; // Corrected to use cageot12
+                        $emballage->save();
                     }
                 }
             }
-        }
-        if ($request->has('payer')) {
-            Payement::create([
-                'commande_id' => $commande->id,
-                'mode_paye' => 'espèce',
-                'somme' => $request->tot_glob,
-                'operation' => 'partiel',
-            ]);
-        }
-        return redirect()->route('commande.liste.vente.detail', $commande->id)->with('success', 'Ventes enregistrées avec succès.');
+
+            if ($request->articles) {
+                foreach ($request->articles as $index) {
+                    $article = Article::find($index['id']);
+
+                    if (!$article) {
+                        continue; // Article non trouvé
+                    }
+
+                    $avecBouteille = isset($index['avec_bouteille']);
+                    $avecCageot = isset($index['avec_cageot']);
+                    $bouteille = $avecBouteille ? 0 : 1;
+                    $cageot = $avecCageot ? 0 : 1;
+
+                    if (!empty($index['quantite_cageot'])) {
+                        $quantiteCageot = (int)$index['quantite_cageot'];
+
+                        $venteCageot = Vente::create([
+                            'article_id' => $index['id'],
+                            'commande_id' => $commande->id,
+                            'quantite' => $quantiteCageot,
+                            'prix' => $index['prix_unitaire'],
+                            'prix_cage' => $article->prix_conditionne,
+                            'type_achat' => ($article->prix_consignation == 0 && $article->prix_cgt == 0) || ($article->prix_consignation > 0 && $article->prix_cgt == 0) ? 'pack' : 'cageot',
+                            'btl' => $bouteille,
+                            'cgt' => $cageot,
+                            'etat' => $request->has('payer') ? 1 : 0,
+                            'client' => $request->has('fidele') ? 1 : 0,
+                            'date_sortie' => now(),
+                            'cat' => $request->cat
+                        ]);
+
+                        $this->historiquestore($article->id, $quantiteCageot * $article->conditionnement, $venteCageot->id, $index['prix_unitaire'], $index['prix_unitaire'] * $quantiteCageot);
+                        $article->quantite -= $quantiteCageot * $article->conditionnement;
+                        $article->save();
+
+                        if ($cageot == 0 && $article->prix_cgt != 0) {
+                            Consignation::create([
+                                'vente_id' => $venteCageot->id,
+                                'etat' => $bouteille == 0 ? 'non rendu' : 'non consigné',
+                                'etat_cgt' => 'non rendu',
+                                'prix' => $bouteille == 0 ? $quantiteCageot * $article->conditionnement : 0,
+                                'prix_cgt' => $quantiteCageot,
+                                'date_consignation' => now(),
+                                'type_consignation' => false,
+                            ]);
+                        } elseif ($cageot == 1 && $bouteille == 0 && $article->prix_cgt != 0) {
+                            Consignation::create([
+                                'vente_id' => $venteCageot->id,
+                                'etat' => 'non rendu',
+                                'etat_cgt' => 'non consigné',
+                                'prix' => $quantiteCageot * $article->conditionnement,
+                                'prix_cgt' => 0,
+                                'date_consignation' => now(),
+                                'type_consignation' => false,
+                            ]);
+                        } elseif (($cageot == 1 || $cageot == 0) && $bouteille == 0 && $article->prix_cgt == 0) {
+                            Consignation::create([
+                                'vente_id' => $venteCageot->id,
+                                'etat' => ($article->prix_consignation != 0) ? 'non rendu' : 'non consigné',
+                                'etat_cgt' => 'non consigné',
+                                'prix' => ($article->prix_consignation != 0) ? (int)$index['quantite_cageot'] * $article->conditionnement : 0,
+                                'prix_cgt' => 0,
+                                'date_consignation' => now(),
+                                'type_consignation' => false,
+                            ]);
+                        }
+                    }
+
+                    if (!empty($index['quantite_unite'])) {
+                        $quantiteUnite = (int)$index['quantite_unite'];
+
+                        $venteUnite = Vente::create([
+                            'article_id' => $index['id'],
+                            'commande_id' => $commande->id,
+                            'quantite' => $quantiteUnite,
+                            'prix' => $index['prix_unitaire'],
+                            'prix_cage' => $article->prix_conditionne,
+                            'type_achat' => 'bouteille',
+                            'btl' => $bouteille,
+                            'cgt' => $cageot,
+                            'etat' => $request->has('payer') ? 1 : 0,
+                            'client' => $request->has('fidele') ? 1 : 0,
+                            'date_sortie' => now(),
+                            'cat' => $request->cat
+                        ]);
+
+                        $this->historiquestore($article->id, $quantiteUnite, $venteUnite->id, $index['prix_unitaire'], $index['prix_unitaire'] * $quantiteUnite);
+                        $article->quantite -= $quantiteUnite;
+                        $article->save();
+
+                        if ($bouteille == 0 && $article->prix_consignation != 0) {
+                            Consignation::create([
+                                'vente_id' => $venteUnite->id,
+                                'etat' => 'non rendu',
+                                'etat_cgt' => $conditionnement == 1 ? 'conditionné' : 'sans CGT',
+                                'prix' => $quantiteUnite,
+                                'prix_cgt' => 0,
+                                'date_consignation' => now(),
+                                'type_consignation' => true,
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            if ($request->has('payer')) {
+                Payement::create([
+                    'commande_id' => $commande->id,
+                    'mode_paye' => 'espèce',
+                    'somme' => $request->tot_glob,
+                    'operation' => 'partiel',
+                ]);
+            }
+
+            return redirect()->route('commande.liste.vente.detail', $commande->id)->with('success', 'Ventes enregistrées avec succès.');
+        });
     }
+
 
     public function RendreStore(Request $request)
     {
@@ -1057,29 +1068,29 @@ class VenteController extends Controller
 
 
     public function rendu($id)
-{
-    $article = Article::first();
-    $cgt = $article->prix_cgt ?? 0;
+    {
+        $article = Article::first();
+        $cgt = $article->prix_cgt ?? 0;
 
-    // ⚡ Correction : chercher directement la commande par id
-    $commande = Commande::where('commande_id' , $id)->with('payements')->first();
+        // ⚡ Correction : chercher directement la commande par id
+        $commande = Commande::where('commande_id', $id)->with('payements')->first();
 
-    // ⚡ Correction : utiliser paginate directement sur la requête
-    $ventes = Vente::with(['article', 'consignation', 'commande'])
-        ->where('commande_id', $commande->id)
-        ->orderBy('id', 'DESC')
-        ->paginate(10);
+        // ⚡ Correction : utiliser paginate directement sur la requête
+        $ventes = Vente::with(['article', 'consignation', 'commande'])
+            ->where('commande_id', $commande->id)
+            ->orderBy('id', 'DESC')
+            ->paginate(10);
 
-    $conditionnement = Commande::with('conditionnements')->find($id);
+        $conditionnement = Commande::with('conditionnements')->find($id);
 
-    return view('pages.vente.Rendu', [
-        'ventes' => $ventes,
-        'commande_id' => $id,
-        'conditionnement' => $conditionnement,
-        'cgt' => $cgt,
-        'commande' => $commande,
-    ]);
-}
+        return view('pages.vente.Rendu', [
+            'ventes' => $ventes,
+            'commande_id' => $id,
+            'conditionnement' => $conditionnement,
+            'cgt' => $cgt,
+            'commande' => $commande,
+        ]);
+    }
 
 
     public function delete(Request $request)

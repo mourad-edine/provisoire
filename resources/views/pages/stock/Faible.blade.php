@@ -103,9 +103,9 @@
                             <th class="px-2 py-2 border border-gray-200">nom</th>
                             <th class="px-2 py-2 border border-gray-200">categorie</th>
                             <th class="px-2 py-2 border border-gray-200">quantite</th>
-                            <th class="px-2 py-2 border border-gray-200">valeur réelle(Ar)</th>
+                            <th class="px-2 py-2 border border-gray-200">valeur réelle Details(Ar)</th>
+                            <th class="px-2 py-2 border border-gray-200">valeur réelle Gros(Ar)</th>
                             <th class="px-2 py-2 border border-gray-200">mise à jour</th>
-                            <th class="px-2 py-2 border border-gray-200">date</th>
                             <th class="px-2 py-2 border border-gray-200">actions</th>
                         </tr>
                     </thead>
@@ -126,15 +126,12 @@
                                 @if($reste > 0) et {{ $reste }} unité{{ $reste > 1 ? 's' : '' }} @endif
                             </td>
 
-                            <td class="px-2 py-2 border border-gray-200">
-                                @if(isset($article->prix_unitaire))
-                                {{ $article->quantite * $article->prix_unitaire }} Ar
-                                @else
-                                <span class="text-gray-400">-</span>
-                                @endif
-                            </td>
-
-                            <td class="px-2 py-2 border border-gray-200">{{ \Carbon\Carbon::parse($article->created_at)->format('Y-m-d') }}</td>
+<td class="px-2 py-2 border border-gray-200">
+    {{ number_format($article->quantite * $article->prix_gros, 0, ',', ' ') }} Ar
+</td>
+<td class="px-2 py-2 border border-gray-200">
+    {{ number_format($article->quantite * $article->prix_unitaire, 0, ',', ' ') }} Ar
+</td>
                             <td class="px-2 py-2 border border-gray-200">{{ \Carbon\Carbon::parse($article->updated_at)->format('Y-m-d') }}</td>
                             <td class="px-2 py-2 border border-gray-200">
                                 <div class="relative inline-block">

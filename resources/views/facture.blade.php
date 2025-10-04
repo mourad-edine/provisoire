@@ -94,8 +94,15 @@
     
     <div class="header">
         <div class="company-info">
-            <h2>Mourad - Bars</h2>
-            <p>Tél: {{ $company['phone'] }}</p>
+            <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <img src="{{ asset('images/' . $entreprise->logo) }}" alt="Logo">
+            </div>
+            <h2>{{$entreprise->nom}}</h2>
+            <p>Tél: {{ $entreprise->numero }}</p>
+            <p>Adresse: {{ $entreprise->adresse }}</p>
+            <p>NIF: {{ $entreprise->nif }}</p>
+            <p>STAT: {{ $entreprise->stat }}</p>
+            <p>Email: {{ $entreprise->email }}</p>
         </div>
         
         <div class="invoice-info">
@@ -120,7 +127,6 @@
     <table>
         <thead>
             <tr>
-                <th>ID</th>
                 <th>ARTICLE</th>
                 <th>BTL</th>
                 <th>CGT</th>
@@ -133,7 +139,6 @@
         <tbody>
             @foreach($ventes as $vente)
             <tr>
-                <td>{{ $vente['id'] }}</td>
                 <td>{{ $vente['article'] }}</td>
                 <td class="{{ $vente['etat'] == 'non rendu' ? 'text-danger' : 'text-success' }}">
                     {{ $vente['etat'] ? ($vente['prix_consignation'] == 0 ? 0 : $vente['consignation'] / $vente['prix_consignation']) : '--' }}

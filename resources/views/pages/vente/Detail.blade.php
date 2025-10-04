@@ -186,6 +186,14 @@
                                     <i class="fas fa-download"></i>
                                 </button>
                             </div>
+                            <div class="flex gap-2">
+                            <a href="{{ route('pdf.download', ['id' => $commande_id]) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
+                                <i class="fas fa-print mr-1"></i> Facture
+                            </a>
+                            <a href="{{ url()->previous() }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
+                                <i class="fas fa-arrow-left mr-1"></i> Retour
+                            </a>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -243,7 +251,7 @@
 
     <!-- Client Information -->
     <div class="mb-6">
-        <div class="bg-white shadow-sm  border-l-4 border-t-gray-500 border-b-gray-500 border-t-1 border-b-1  border-blue-500">
+        <div class=" shadow-sm  border-t-gray-500 border-b-gray-500 border-t-1 border-b-1 ">
             <!-- <div class="px-6 py-4 flex flex-wrap items-center justify-between border-b border-gray-200">
                 <h6 class="font-semibold text-gray-700">
                     <i class="fas fa-user-circle mr-2 text-blue-500"></i>Informations Client
@@ -252,8 +260,8 @@
                     {{ $commande->etat_commande }}
                 </span>
             </div> -->
-            <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+            <div class="p-6 bg-gray-200">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                     <div class="flex items-center">
                         <div class="bg-blue-500 p-2 rounded mr-3">
                             <i class="fas fa-user text-white"></i>
@@ -345,25 +353,7 @@
         @endif
 
         <!-- Actions Bar -->
-        <div class="mb-6">
-            <div class="bg-gray-200  shadow-sm">
-                <div class="px-6 py-4">
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                        <h5 class="font-semibold text-gray-800 mb-2 md:mb-0">
-                            <i class="fas fa-receipt mr-2 text-blue-500"></i>Détails de la vente C-{{ $commande->id }}
-                        </h5>
-                        <div class="flex gap-2">
-                            <a href="{{ route('pdf.download', ['id' => $commande_id]) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
-                                <i class="fas fa-print mr-1"></i> Facture
-                            </a>
-                            <a href="{{ url()->previous() }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2  text-sm font-medium transition duration-150 flex items-center">
-                                <i class="fas fa-arrow-left mr-1"></i> Retour
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+       
 
         <!-- Sales Table -->
         <div class="bg-white  shadow-sm overflow-hidden">
@@ -374,7 +364,7 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">Article</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">Consignation</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">Bouteille</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">Cageot</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">----</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">Statut</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">Quantité</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">Prix unitaire</th>
@@ -417,7 +407,7 @@
                                 {{ $vente['etat'] ? ($vente['prix_consignation'] == 0 ? 0 : $vente['consignation'] / $vente['prix_consignation']) : '--' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {{ $vente['etat_cgt'] ? ($vente['consi_cgt'] == 0 ? 0 : $vente['prix_cgt'] / $vente['consi_cgt']) : '--' }}
+                                ---
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($vente['etat_payement'] == 0)
