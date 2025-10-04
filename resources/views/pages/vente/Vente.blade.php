@@ -139,7 +139,7 @@
                 <!-- Logo -->
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-store text-white"></i>
+                        <img src="{{ asset('images/' . $entreprise->logo) }}" alt="Logo">
                     </div>
                     <span class="text-xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
                         MonSite
